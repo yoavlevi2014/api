@@ -1,0 +1,23 @@
+version: "3"
+
+services:
+  web:
+    image: node:17.3.0-bullseye
+    restart: always
+    volumes:
+      - ../:/workspace:cached
+
+    command: sleep infinity
+    env_file:
+      - node.env
+
+    ports:
+      - "8080:8080"
+      
+  db:
+    image: mongo
+    restart: always
+    env_file:
+      - mongo.env
+    ports:
+      - "27017:27017"

@@ -1,0 +1,40 @@
+{
+  "name": "drawdojo",
+  "version": "1.0.0",
+  "description": "",
+  "main": "src/index.ts",
+  "scripts": {
+    "start": "npx -y ts-node -r tsconfig-paths/register src/index.ts",
+    "dev": "npx -y ts-node-dev --poll --respawn -r tsconfig-paths/register ./src/index.ts"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/artcollab/drawdojo.git"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/artcollab/drawdojo/issues"
+  },
+  "homepage": "https://github.com/artcollab/drawdojo#readme",
+  "devDependencies": {
+    "@types/node": "^17.0.2",
+    "@typescript-eslint/eslint-plugin": "^5.8.0",
+    "@typescript-eslint/parser": "^5.8.0",
+    "eslint": "^8.5.0",
+    "eslint-config-prettier": "^8.3.0",
+    "eslint-plugin-prettier": "^4.0.0",
+    "prettier": "^2.5.1",
+    "ts-node-dev": "^1.1.8",
+    "tsconfig-paths": "^3.12.0",
+    "typescript": "^4.5.4"
+  },
+  "dependencies": {
+    "@nestjs/swagger": "^5.1.5",
+    "bcrypt": "^5.0.1",
+    "express-jwt": "^6.1.0",
+    "jest": "^27.4.5",
+    "ts-node": "^10.4.0"
+  }
+}

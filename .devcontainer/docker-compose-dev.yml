@@ -1,0 +1,25 @@
+version: "3"
+
+services:
+  web:
+    image: node:17.3.0-bullseye
+    restart: always
+    volumes:
+      - ../:/workspace:cached
+
+    # Overrides default command so things don't shut down after the process ends.
+    command: sleep infinity
+    network_mode: service:db
+
+    # Uncomment the next line to use a non-root user for all processes.
+    # user: node
+
+    # Use "forwardPorts" in **devcontainer.json** to forward an app port locally.
+    # (Adding the "ports" property to this file will not forward from a Codespace.)
+    env_file:
+      - node.env
+  db:
+    image: mongo
+    restart: always
+    env_file:
+      - mongo.env

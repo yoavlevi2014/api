@@ -1,0 +1,15 @@
+{
+  "name": "nodejs + mongodb",
+  "dockerComposeFile": "docker-compose-dev.yml",
+  "service": "web",
+  "workspaceFolder": "/workspace",
+  "postCreateCommand": "npm install",
+  "postStartCommand": "npm start",
+  "forwardPorts": [8080, 27017],
+  "extensions": [
+    "dbaeumer.vscode-eslint",
+    "esbenp.prettier-vscode",
+    "humao.rest-client",
+    "cweijan.vscode-mysql-client2"
+  ]
+}
