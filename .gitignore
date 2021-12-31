@@ -18,6 +18,7 @@ pids
 # nyc test coverage
 .nyc_output
 
+.history
 
 # node-waf configuration
 .lock-wscript
