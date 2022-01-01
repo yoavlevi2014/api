@@ -1,22 +1,20 @@
-import express from "express";
+import express, { Application } from "express";
+import morgan from "morgan";
 import nocache from "nocache";
-import { helloWorld } from "@controller";
+
+import { RegisterRoutes } from "@tsoa/routes";
 
 const main = async () => {
-  const app = express();
-  const port = process.env.PORT;
+  const app: Application = express();
+  const port = process.env.PORT || 3000;
 
   app.set("etag", false);
   app.use(nocache());
   app.use(express.json());
+  app.use(morgan("tiny"));
   app.use(express.urlencoded());
 
-  app.get("/", helloWorld);
-  //   app.get("/posts", posts);
-  //   app.post("/auth/login", login);
-  //   app.post("/auth/register", register);
-  //   app.post("/auth/refresh", refresh);
-  //   app.post("/admin/post", post);
+  RegisterRoutes(app);
 
   app.listen(port, () => {
     console.log(`listening on port ${port}`);
