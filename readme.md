@@ -1,26 +1,26 @@
 # Drawdojo backend
 
-### WIP readme
+## WIP readme
 
 Libraries used
 
-- [x] Swagger (/docs)
-- [x] Express ( server )
-- [] Jest ( unit testing )
-- [] Mocha ?
-- [] Chai ?
+    - [x] Swagger (/docs)
+    - [x] Express ( server )
+    - [] Jest ( unit testing )
+    - [] Mocha ?
+    - [] Chai ?
 
 ## Quick start
 
-1. Install docker ( https://www.docker.com/get-started )
-2. install vscode ( https://code.visualstudio.com/ )
-3. Fork repo
-4. Clone your fork `git clone https://github.com/artcollab/api`
-5. Open in vscode, install the remote development extention ( https://marketplace.visualstudio.com/items?itemName=ms-vscode-remote.vscode-remote-extensionpack )
-6. Open the cloned repo in vscode
-7. In windows/linux press `ctrl+shift+p`, macos `command+shift+p` a menu will pop up, type `Remote-containers: Open folder in container` and press enter. Now docker will build the container for you and open it.
-8. The api should auto start on port "8080", and mongo on port "27017"
-9. If you need to restart the back end simply open a terminal in the container and type `npm run dev`
+    1. Install docker ( <https://www.docker.com/get-started> )
+    2. install vscode ( <https://code.visualstudio.com/> )
+    3. Fork repo
+    4. Clone your fork `git clone https://github.com/artcollab/api`
+    5. Open in vscode, install the remote development extention ( <https://marketplace.visualstudio.com/items?itemName=ms-vscode-remote.vscode-remote-extensionpack> )
+    6. Open the cloned repo in vscode
+    7. In windows/linux press `ctrl+shift+p`, macos `command+shift+p` a menu will pop up, type `Remote-containers: Open folder in container` and press enter. Now docker will build the container for you and open it.
+    8. The api should auto start on port "8080", and mongo on port "27017"
+    9. If you need to restart the back end simply open a terminal in the container and type `npm run dev`
 
 ## Folders, files, and their purpose
 
