@@ -4,4 +4,3 @@ COPY . /api/
 WORKDIR /api
 RUN npm install --quiet
 ENTRYPOINT ["npm"]
-CMD start
