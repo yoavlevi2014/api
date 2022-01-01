@@ -4,8 +4,6 @@ services:
   web:
     build: .
     restart: always
-    volumes:
-      - ../:/workspace:cached
 
     command: sleep infinity
     env_file:
