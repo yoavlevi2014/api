@@ -10,4 +10,8 @@ export class indexController extends Controller {
   public async getDaddy() {
     return { msg: "daddy!" };
   }
+  @Get("Test")
+  public async getTest() {
+    return { msg: "it's working!!" };
+  }
 }
