@@ -4,6 +4,9 @@ import nocache from "nocache";
 
 import { RegisterRoutes } from "@tsoa/routes";
 
+import swaggerUi from "swagger-ui-express";
+import swaggerDoc from "@tsoa/swagger.json";
+
 const main = async () => {
   const app: Application = express();
   const port = process.env.PORT || 3000;
@@ -15,6 +18,8 @@ const main = async () => {
   app.use(express.urlencoded());
 
   RegisterRoutes(app);
+
+  app.use("/docs", swaggerUi.serve, swaggerUi.setup(swaggerDoc));
 
   app.listen(port, () => {
     console.log(`listening on port ${port}`);
