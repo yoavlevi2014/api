@@ -4,8 +4,7 @@ services:
   web:
     build: .
     restart: always
-
-    command: sleep infinity
+    command: start
     env_file:
       - node.env
 
