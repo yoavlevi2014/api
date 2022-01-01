@@ -3,4 +3,5 @@ RUN mkdir /api
 COPY . /api/
 WORKDIR /api
 RUN npm install --quiet
-CMD npm start
+ENTRYPOINT ["npm"]
+CMD start
