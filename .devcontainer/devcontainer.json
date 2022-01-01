@@ -4,7 +4,7 @@
   "service": "web",
   "workspaceFolder": "/workspace",
   "postCreateCommand": "npm install",
-  "postStartCommand": "npm start",
+  "postStartCommand": "npm run dev",
   "forwardPorts": [8080, 27017],
   "extensions": [
     "dbaeumer.vscode-eslint",
