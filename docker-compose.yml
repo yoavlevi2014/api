@@ -2,8 +2,7 @@ version: "3"
 
 services:
   web:
-    image: node:17.3.0-bullseye
-    command: npm start
+    build: .
     restart: always
     volumes:
       - ../:/workspace:cached
@@ -14,7 +13,7 @@ services:
 
     ports:
       - "8080:8080"
-      
+
   db:
     image: mongo
     restart: always
