@@ -1,15 +1,6 @@
-import {
-  Body,
-  Controller,
-  Get,
-  Path,
-  Post,
-  Query,
-  Route,
-  SuccessResponse,
-} from "tsoa";
+import { Controller, Get, Path, Query, Route } from "tsoa";
 import { User } from "@models/user";
-import { UsersService, UserCreationParams } from "@services/users";
+import { UsersService } from "@services/users";
 
 @Route("users")
 export class UsersController extends Controller {
