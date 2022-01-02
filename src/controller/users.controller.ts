@@ -1,4 +1,4 @@
-import { Body, Controller, Get, Path, Post, Query, Route } from "tsoa";
+import { Controller, Get, Path, Query, Route } from "tsoa";
 import { User } from "@models/user";
 import { UsersService } from "@services/users";
 
