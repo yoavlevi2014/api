@@ -7,7 +7,9 @@
     "prestart": "npx -y tsoa spec-and-routes && npx -y tsoa swagger",
     "start": "npx -y ts-node -r tsconfig-paths/register src/index.ts",
     "predev": "npx -y tsoa spec-and-routes && npx -y tsoa swagger",
-    "dev": "npx -y ts-node-dev --poll --respawn -r tsconfig-paths/register src/index.ts"
+    "dev": "npx -y ts-node-dev --poll --respawn -r tsconfig-paths/register src/index.ts",
+    "pretest": "npx -y tsoa spec-and-routes && npx -y tsoa swagger",
+    "test": "npx -y mocha -r ts-node/register -r tsconfig-paths/register \"tests/**/*.ts\""
   },
   "repository": {
     "type": "git",
@@ -21,20 +23,25 @@
   },
   "homepage": "https://github.com/artcollab/drawdojo#readme",
   "devDependencies": {
+    "@types/chai": "^4.3.0",
     "@types/express": "^4.17.13",
     "@types/morgan": "^1.9.3",
     "@types/node": "^17.0.5",
+    "@types/supertest": "^2.0.11",
     "@types/swagger-ui-express": "^4.1.3",
     "@typescript-eslint/eslint-plugin": "^5.8.0",
     "@typescript-eslint/parser": "^5.8.0",
+    "chai": "^4.3.4",
     "concurrently": "^6.5.1",
     "eslint": "^8.5.0",
     "eslint-config-prettier": "^8.3.0",
     "eslint-plugin-prettier": "^4.0.0",
     "express": "^4.17.2",
+    "mocha": "^9.1.3",
     "nocache": "^3.0.1",
     "nodemon": "^2.0.15",
     "prettier": "^2.5.1",
+    "supertest": "^6.1.6",
     "swagger-jsdoc": "^6.1.0",
     "swagger-ui-express": "^4.3.0",
     "ts-node": "^10.4.0",
@@ -45,9 +52,9 @@
   },
   "dependencies": {
     "@nestjs/swagger": "^5.1.5",
+    "@types/mocha": "^9.0.0",
     "bcrypt": "^5.0.1",
     "express-jwt": "^6.1.0",
-    "jest": "^27.4.5",
     "morgan": "^1.10.0"
   }
 }

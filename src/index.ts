@@ -7,23 +7,22 @@ import { RegisterRoutes } from "@tsoa/routes";
 import swaggerUi from "swagger-ui-express";
 import swaggerDoc from "@tsoa/swagger.json";
 
-const main = async () => {
-  const app: Application = express();
-  const port = process.env.PORT || 3000;
+const app: Application = express();
+const port = process.env.PORT || 3000;
 
-  app.set("etag", false);
-  app.use(nocache());
-  app.use(express.json());
-  app.use(morgan("tiny"));
-  app.use(express.urlencoded());
+app.set("etag", false);
+app.use(nocache());
+app.use(express.json());
+app.use(morgan("tiny"));
+app.use(express.urlencoded());
 
-  RegisterRoutes(app);
+RegisterRoutes(app);
 
-  app.use("/docs", swaggerUi.serve, swaggerUi.setup(swaggerDoc));
+app.use("/docs", swaggerUi.serve, swaggerUi.setup(swaggerDoc));
 
-  app.listen(port, () => {
-    console.log(`listening on port ${port}`);
-  });
-};
+app.listen(port, () => {
+  // eslint-disable-next-line no-console
+  console.log(`listening on port ${port}`);
+});
 
-main();
+export default app;
