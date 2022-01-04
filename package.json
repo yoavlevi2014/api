@@ -55,6 +55,7 @@
     "@types/mocha": "^9.0.0",
     "bcrypt": "^5.0.1",
     "express-jwt": "^6.1.0",
+    "mongoose": "^6.1.4",
     "morgan": "^1.10.0"
   }
 }

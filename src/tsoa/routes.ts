@@ -17,7 +17,6 @@ const models: TsoaRoute.Models = {
             "id": {"dataType":"double","required":true},
             "email": {"dataType":"string","required":true},
             "name": {"dataType":"string","required":true},
-            "status": {"dataType":"union","subSchemas":[{"dataType":"enum","enums":["Happy"]},{"dataType":"enum","enums":["Sad"]}]},
             "phoneNumbers": {"dataType":"array","array":{"dataType":"string"},"required":true},
         },
         "additionalProperties": false,
@@ -55,34 +54,11 @@ export function RegisterRoutes(app: express.Router) {
             }
         });
         // WARNING: This file was auto-generated with tsoa. Please do not modify it. Re-run tsoa to re-generate this file: https://github.com/lukeautry/tsoa
-        app.get('/daddy',
-
-            function indexController_getDaddy(request: any, response: any, next: any) {
-            const args = {
-            };
-
-            // WARNING: This file was auto-generated with tsoa. Please do not modify it. Re-run tsoa to re-generate this file: https://github.com/lukeautry/tsoa
-
-            let validatedArgs: any[] = [];
-            try {
-                validatedArgs = getValidatedArgs(args, request, response);
-
-                const controller = new indexController();
-
-
-              const promise = controller.getDaddy.apply(controller, validatedArgs as any);
-              promiseHandler(controller, promise, response, undefined, next);
-            } catch (err) {
-                return next(err);
-            }
-        });
-        // WARNING: This file was auto-generated with tsoa. Please do not modify it. Re-run tsoa to re-generate this file: https://github.com/lukeautry/tsoa
         app.get('/users/:userId',
 
             function UsersController_getUser(request: any, response: any, next: any) {
             const args = {
                     userId: {"in":"path","name":"userId","required":true,"dataType":"double"},
-                    name: {"in":"query","name":"name","dataType":"string"},
             };
 
             // WARNING: This file was auto-generated with tsoa. Please do not modify it. Re-run tsoa to re-generate this file: https://github.com/lukeautry/tsoa
