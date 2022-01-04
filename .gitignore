@@ -14,7 +14,7 @@ pids
 *.pid
 *.seed
 *.pid.lock
-src/tsoa
+src/tsoa/
 # nyc test coverage
 .nyc_output
 
