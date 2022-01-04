@@ -17,6 +17,11 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v1
 
+      - name: Copy dev env files
+        run: |
+          pwd
+          cp .devcontainer/*.env ./
+
       - name: Start containers
         run: docker-compose -f "docker-compose.yml" up -d --build
 
@@ -27,11 +32,6 @@ jobs:
 
       - name: Install dependencies
         run: npm ci
-
-      - name: Copy dev env files
-        run: |
-          pwd
-          cp .devcontainer/*.env ./
 
       - name: Run tests
         run: npm test
