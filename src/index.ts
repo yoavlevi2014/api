@@ -1,6 +1,7 @@
 import express, { Application } from "express";
 import morgan from "morgan";
 import nocache from "nocache";
+import dotenv from "dotenv";
 
 import { RegisterRoutes } from "@tsoa/routes";
 
@@ -9,8 +10,12 @@ import swaggerDoc from "@tsoa/swagger.json";
 
 import mongoose from "mongoose";
 
+if (!process.env.PORT) {
+  dotenv.config();
+}
+
 const app: Application = express();
-const port = process.env.PORT || 3000;
+const port = process.env.PORT;
 
 const db: { [key: string]: string } = {
   username: process.env.DB_ADMIN_USERNAME as string,
