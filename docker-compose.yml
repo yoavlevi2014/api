@@ -7,10 +7,8 @@ services:
     command: start
     env_file:
       - node.env
-
     ports:
       - "80:80"
-
   db:
     image: mongo
     restart: always

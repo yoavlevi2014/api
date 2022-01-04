@@ -1,0 +1,33 @@
+name: Build containers and run test
+
+on:
+  push:
+    branches:
+      - main
+  pull_request:
+    branches:
+      - main
+
+jobs:
+  docker:
+    timeout-minutes: 10
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v1
+
+      - name: Copy dev env files
+        run: |
+          cp .devcontainer/*.env ./
+          cp node.env .env
+
+      - name: Start containers
+        run: docker-compose up -d --build
+
+      - name: Run tests
+        run: docker run -e CI=true api_web "test"
+
+      - name: Stop containers
+        if: always()
+        run: docker-compose -f "docker-compose.yml" down

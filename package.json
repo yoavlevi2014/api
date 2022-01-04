@@ -9,7 +9,7 @@
     "predev": "npx -y tsoa spec-and-routes && npx -y tsoa swagger",
     "dev": "npx -y ts-node-dev --poll --respawn -r tsconfig-paths/register src/index.ts",
     "pretest": "npx -y tsoa spec-and-routes && npx -y tsoa swagger",
-    "test": "npx -y mocha -r ts-node/register -r tsconfig-paths/register \"tests/**/*.ts\""
+    "test": "npx -y mocha --exit -r ts-node/register -r tsconfig-paths/register -r dotenv/config \"tests/**/*.ts\""
   },
   "repository": {
     "type": "git",
@@ -33,6 +33,7 @@
     "@typescript-eslint/parser": "^5.8.0",
     "chai": "^4.3.4",
     "concurrently": "^6.5.1",
+    "dotenv": "^10.0.0",
     "eslint": "^8.5.0",
     "eslint-config-prettier": "^8.3.0",
     "eslint-plugin-prettier": "^4.0.0",
