@@ -13,10 +13,10 @@ const app: Application = express();
 const port = process.env.PORT || 3000;
 
 const db: { [key: string]: string } = {
-  username: "root" as string,
-  password: "password" as string,
-  uri: "db" as string,
-  port: "27017" as string,
+  username: process.env.DB_ADMIN_USERNAME as string,
+  password: process.env.DB_ADMIN_PASSWORD as string,
+  uri: process.env.DB_URI as string,
+  port: process.env.DB_PORT as string,
 };
 
 const uri = `mongodb://${db.username}:${db.password}@${db.uri}:${db.port}/drawdojo?authSource=admin`;

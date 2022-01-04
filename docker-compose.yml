@@ -7,7 +7,6 @@ services:
     command: start
     env_file:
       - node.env
-
     ports:
       - "80:80"
 
