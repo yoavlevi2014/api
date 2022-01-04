@@ -7,6 +7,6 @@ describe("index", async () => {
     const res = await request(app).get("/");
 
     expect(res.status).to.eql(200);
-    expect(res.body.msg).to.eql("Hello world!?");
+    expect(res.body.msg).to.eql("Hello world!");
   });
 });
