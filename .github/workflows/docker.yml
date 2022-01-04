@@ -24,7 +24,7 @@ jobs:
         run: docker-compose -f "./test/docker-compose.yml" up -d --build
 
       - name: Run tests
-        run: docker exec -it api_web_1 "npm test"
+        run: docker run -e CI=true api_web "npm test"
 
       - name: Stop containers
         if: always()
