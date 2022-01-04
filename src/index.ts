@@ -20,6 +20,7 @@ const db: { [key: string]: string } = {
 };
 
 const uri = `mongodb://${db.username}:${db.password}@${db.uri}:${db.port}/drawdojo?authSource=admin`;
+console.log(db);
 mongoose.connect(uri);
 
 // eslint-disable-next-line no-console
