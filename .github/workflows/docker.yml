@@ -18,13 +18,13 @@ jobs:
         uses: actions/checkout@v1
 
       - name: Copy dev env files
-        run: cp .devcontainer/*.env ./test
+        run: cp .devcontainer/*.env ./
 
       - name: Start containers
-        run: docker-compose -f "./test/docker-compose.yml" up -d --build
+        run: docker-compose -f "docker-compose.yml" up -d --build
 
       - name: Run tests
-        run: docker run -e CI=true api_web "npm test"
+        run: docker run -e CI=true api_web "test"
 
       - name: Stop containers
         if: always()
