@@ -1,0 +1,20 @@
+version: "3"
+
+services:
+  web:
+    build: .
+    restart: always
+    command: test
+    env_file:
+      - node.env
+
+    ports:
+      - "80:80"
+
+  db:
+    image: mongo
+    restart: always
+    env_file:
+      - mongo.env
+    ports:
+      - "27017:27017"
