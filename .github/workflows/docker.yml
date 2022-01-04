@@ -18,7 +18,9 @@ jobs:
         uses: actions/checkout@v1
 
       - name: Copy dev env files
-        run: cp .devcontainer/*.env ./
+        run: |
+          cp .devcontainer/*.env ./
+          cp node.env .env
 
       - name: Start containers
         run: docker-compose up -d --build
