@@ -29,7 +29,9 @@ jobs:
         run: npm ci
 
       - name: Copy dev env files
-        run: cp .devcontainer/*.env ./
+        run: |
+          pwd
+          cp .devcontainer/*.env ./
 
       - name: Run tests
         run: npm test
