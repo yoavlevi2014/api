@@ -21,7 +21,7 @@ jobs:
         run: cp .devcontainer/*.env ./
 
       - name: Start containers
-        run: docker-compose --env-file "global.env" -f "docker-compose.yml" up -d --build
+        run: docker-compose up -d --build
 
       - name: Run tests
         run: docker run -e CI=true api_web "test"
