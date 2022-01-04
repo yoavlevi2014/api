@@ -9,7 +9,6 @@ services:
       - node.env
     ports:
       - "80:80"
-
   db:
     image: mongo
     restart: always
