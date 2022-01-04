@@ -10,12 +10,3 @@ describe("index", async () => {
     expect(res.body.msg).to.eql("Hello world!");
   });
 });
-
-describe("daddy", async () => {
-  it("Init daddy page, returns daddy!", async () => {
-    const res = await request(app).get("/daddy");
-
-    expect(res.status).to.eql(200);
-    expect(res.body.msg).to.eql("daddy!");
-  });
-});
