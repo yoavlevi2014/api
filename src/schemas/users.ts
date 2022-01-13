@@ -27,7 +27,7 @@ import { User } from "@models/user";
  *         username:
  *           type: string
  *           description: User's username(ASCII only).
- *           example: Hello!!
+ *           example: Hello
  *         createdAt:
  *           type: string
  *           description: POSIX creaion time.
