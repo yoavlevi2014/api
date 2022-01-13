@@ -1,3 +1,5 @@
+/* eslint-disable no-console */
+
 import express, { Application } from "express";
 import morgan from "morgan";
 import nocache from "nocache";
@@ -24,13 +26,11 @@ const uri = `mongodb://${db.username}:${db.password}@${db.uri}:${db.port}/drawdo
 console.log(db);
 mongoose.connect(uri);
 
-// eslint-disable-next-line no-console
 mongoose.connection.on("open", () => {
   console.log("Connected to mongo server.");
 });
 
 // TODO - Swap console.error for some proper logging
-// eslint-disable-next-line no-console
 mongoose.connection.on(
   "error",
   console.error.bind(console, "MongoDB connection error:")
@@ -77,7 +77,6 @@ app.use(
 app.get("/", index);
 
 app.listen(port, () => {
-  // eslint-disable-next-line no-console
   console.log(`listening on port ${port}`);
 });
 
