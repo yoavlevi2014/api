@@ -35,17 +35,6 @@ mongoose.connection.on(
   console.error.bind(console, "MongoDB connection error:")
 );
 
-const spec = swaggerDoc({
-  definition: {
-    openapi: "3.0.0",
-    info: {
-      title: "Hello World",
-      version: "1.0.0",
-    },
-  },
-  apis: ["./src/controller/*.controller.ts"], // files containing annotations as above
-});
-
 app.set("etag", false);
 app.use(nocache());
 app.use(express.json());
@@ -54,7 +43,22 @@ app.use(express.urlencoded());
 
 app.get("/", index);
 
-app.use("/docs", swaggerUi.serve, swaggerUi.setup(spec));
+app.use(
+  "/docs",
+  swaggerUi.serve,
+  swaggerUi.setup(
+    swaggerDoc({
+      definition: {
+        openapi: "3.0.0",
+        info: {
+          title: "Hello World",
+          version: "1.0.0",
+        },
+      },
+      apis: ["./src/controller/*.ts"], // files containing annotations as above
+    })
+  )
+);
 
 app.listen(port, () => {
   // eslint-disable-next-line no-console
