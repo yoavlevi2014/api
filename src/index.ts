@@ -2,10 +2,10 @@ import express, { Application } from "express";
 import morgan from "morgan";
 import nocache from "nocache";
 
+import swaggerDoc from "swagger-jsdoc";
 import swaggerUi from "swagger-ui-express";
-import swaggerDoc from "@tsoa/swagger.json";
 
-import index from "@controller/index.controller";
+import index from "@controller";
 
 import mongoose from "mongoose";
 
@@ -35,6 +35,17 @@ mongoose.connection.on(
   console.error.bind(console, "MongoDB connection error:")
 );
 
+const spec = swaggerDoc({
+  definition: {
+    openapi: "3.0.0",
+    info: {
+      title: "Hello World",
+      version: "1.0.0",
+    },
+  },
+  apis: ["./src/controller/*.controller.ts"], // files containing annotations as above
+});
+
 app.set("etag", false);
 app.use(nocache());
 app.use(express.json());
@@ -43,7 +54,7 @@ app.use(express.urlencoded());
 
 app.get("/", index);
 
-app.use("/docs", swaggerUi.serve, swaggerUi.setup(swaggerDoc));
+app.use("/docs", swaggerUi.serve, swaggerUi.setup(spec));
 
 app.listen(port, () => {
   // eslint-disable-next-line no-console
