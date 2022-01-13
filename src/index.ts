@@ -8,7 +8,9 @@ import swaggerDoc from "swagger-jsdoc";
 import swaggerUi from "swagger-ui-express";
 
 import index from "@controller";
-import eJwt from "express-jwt";
+import UserController from "@controller/users";
+
+// import eJwt from "express-jwt";
 
 import mongoose from "mongoose";
 
@@ -65,16 +67,22 @@ app.use(
   )
 );
 
-app.use(
-  eJwt({
-    secret: process.env.SEED as string,
-    algorithms: ["HS256"],
-  }).unless({
-    path: ["/auth/login", "/auth/register", "/auth/refresh", "/docs", "/"],
-  })
-);
+// app.use(
+//   eJwt({
+//     secret: process.env.SEED as string,
+//     algorithms: ["HS256"],
+//   }).unless({
+//     path: ["/auth/login", "/auth/register", "/auth/refresh", "/docs", "/", "/users/"],
+//   })
+// );
 
+// Index
 app.get("/", index);
+
+// User routes
+app.get("/users", UserController.getAllUsers);
+app.get("/users/id/:id", UserController.getUserByID);
+app.get("/users/name/:username", UserController.getUserByUsername);
 
 app.listen(port, () => {
   console.log(`listening on port ${port}`);
