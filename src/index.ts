@@ -6,7 +6,7 @@ import swaggerDoc from "swagger-jsdoc";
 import swaggerUi from "swagger-ui-express";
 
 import index from "@controller";
-// import eJwt from "express-jwt";
+import eJwt from "express-jwt";
 
 import mongoose from "mongoose";
 
@@ -42,17 +42,6 @@ app.use(express.json());
 app.use(morgan("tiny"));
 app.use(express.urlencoded());
 
-// app.use(
-//   eJwt({
-//     secret: process.env.SEED as string,
-//     algorithms: ["HS256"],
-//   }).unless({
-//     path: ["/auth/login", "/auth/register", "/auth/refresh", "/docs", "/"],
-//   })
-// );
-
-app.get("/", index);
-
 app.use(
   "/docs",
   swaggerUi.serve,
@@ -75,6 +64,17 @@ app.use(
     })
   )
 );
+
+app.use(
+  eJwt({
+    secret: process.env.SEED as string,
+    algorithms: ["HS256"],
+  }).unless({
+    path: ["/auth/login", "/auth/register", "/auth/refresh", "/docs", "/"],
+  })
+);
+
+app.get("/", index);
 
 app.listen(port, () => {
   // eslint-disable-next-line no-console
