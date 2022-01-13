@@ -74,7 +74,7 @@ app.use(
   })
 );
 
-app.get("/", index);
+app.post("/", index);
 
 app.listen(port, () => {
   // eslint-disable-next-line no-console

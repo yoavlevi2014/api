@@ -9,6 +9,21 @@ import jwt from "jsonwebtoken";
  *   post:
  *     summary: Login endpoint
  *     description: Get user information, access token, and a refresh token.
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             properties:
+ *               email:
+ *                 type: string
+ *                 description: Login email.
+ *                 example: "user@gmail.com"
+ *               password:
+ *                 type: string
+ *                 description: user's password.
+ *                 example: "IlOveT0b3tR1cky"
  *     responses:
  *       200:
  *         description: Login successful
@@ -30,7 +45,6 @@ import jwt from "jsonwebtoken";
  *                       type: string
  *                       description: Refresh token.
  *                       example: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiIxMjM0NTY3ODkwIiwibmFtZSI6IkpvaG4gRG9lIiwiaWF0IjoxNTE2MjM5MDIyfQ.SflKxwRJSMeKKF2QT4fwpMeJf36POk6yJV_adQssw5c
- *
  */
 
 export const login: RequestHandler = async (req, res) => {
