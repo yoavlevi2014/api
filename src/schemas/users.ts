@@ -49,7 +49,17 @@ import { User } from "@models/user";
  *                 type: string
  *                 description: followed user's Username.
  *                 example: CoolPerson420
- *
+ *             required:
+ *               - id
+ *               - username
+ *       required:
+ *         - id
+ *         - name
+ *         - surname
+ *         - email
+ *         - username
+ *         - createdAt
+ *         - updatedAt
  */
 
 const UserSchema = new Schema<User>(
