@@ -1,14 +1,9 @@
-import { RequestHandler } from "express";
-import UserModel from "@models/user";
-import bcrypt from "bcrypt";
-import jwt from "jsonwebtoken";
-
 /**
  * @openapi
- * /auth/login:
+ * /auth/register:
  *   post:
- *     summary: Login endpoint
- *     description: Get user information, access token, and a refresh token.
+ *     summary: Register endpoint
+ *     description: Create user information, generate an access token and a refresh token.
  *     requestBody:
  *       required: true
  *       content:
@@ -16,20 +11,35 @@ import jwt from "jsonwebtoken";
  *           schema:
  *             type: object
  *             properties:
+ *               name:
+ *                 type: string
+ *                 description: User's first name.
+ *                 example: Leanne
+ *               surname:
+ *                 type: string
+ *                 description: User's last name.
+ *                 example: Graham
  *               email:
  *                 type: string
- *                 description: Login email.
- *                 example: "user@gmail.com"
+ *                 description: User's email.
+ *                 example: test@gmail.com
+ *               username:
+ *                 type: string
+ *                 description: User's username(ASCII only).
+ *                 example: Hello
  *               password:
  *                 type: string
  *                 description: User's password.
  *                 example: "IlOveT0b3tR1cky"
  *             required:
+ *               - name
+ *               - surname
  *               - email
+ *               - username
  *               - password
  *     responses:
  *       200:
- *         description: Login successful
+ *         description: Register successful
  *         content:
  *           application/json:
  *             schema:
@@ -55,38 +65,3 @@ import jwt from "jsonwebtoken";
  *                 - user
  *                 - tokens
  */
-
-export const login: RequestHandler = async (req, res) => {
-  await UserModel.findOne({ email: req.body.email })
-    .then(async (user) => {
-      if (user) {
-        const result = await bcrypt.compare(req.body.password, user.password);
-        if (result) {
-          const at = jwt.sign({ sub: user.id }, process.env.SEED as string, {
-            expiresIn: "120m",
-          });
-          const rt = jwt.sign({ sub: user.id }, process.env.SEED as string, {
-            expiresIn: "7d",
-          });
-
-          // old redis code, adding refresh token to array
-          //   arrappend("tokens", ".", [JSON.stringify(rt)]).catch(async (err) => {
-          //     throw err;
-          //   });
-
-          return res.json({
-            id: user.id,
-            email: user.email,
-            username: user.username,
-            accessToken: at,
-            refreshToken: rt,
-          });
-        }
-      }
-    })
-    .catch((error: Error) => {
-      throw error;
-    });
-
-  return res.json({ error: "Oops, you typed something incorrectly!" });
-};
