@@ -1,8 +1,7 @@
-import { Controller, Get, Route } from "tsoa";
-@Route("")
-export class indexController extends Controller {
-  @Get("")
-  public async get() {
-    return { msg: "Hello world!" };
-  }
-}
+import { RequestHandler } from "express";
+
+const index: RequestHandler = async (_req, res) => {
+  return res.json({ msg: "Hello world!" });
+};
+
+export default index;

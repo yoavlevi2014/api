@@ -4,11 +4,8 @@
   "description": "",
   "main": "src/index.ts",
   "scripts": {
-    "prestart": "npx -y tsoa spec-and-routes && npx -y tsoa swagger",
     "start": "npx -y ts-node -r tsconfig-paths/register src/index.ts",
-    "predev": "npx -y tsoa spec-and-routes && npx -y tsoa swagger",
     "dev": "npx -y ts-node-dev --poll --respawn -r tsconfig-paths/register src/index.ts",
-    "pretest": "npx -y tsoa spec-and-routes && npx -y tsoa swagger",
     "test": "npx -y mocha --exit -r ts-node/register -r tsconfig-paths/register -r dotenv/config \"tests/**/*.ts\""
   },
   "repository": {
@@ -48,7 +45,6 @@
     "ts-node": "^10.4.0",
     "ts-node-dev": "^1.1.8",
     "tsconfig-paths": "^3.12.0",
-    "tsoa": "^3.14.1",
     "typescript": "^4.5.4"
   },
   "dependencies": {
