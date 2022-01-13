@@ -2,10 +2,10 @@ import express, { Application } from "express";
 import morgan from "morgan";
 import nocache from "nocache";
 
-import { RegisterRoutes } from "@tsoa/routes";
-
+import swaggerDoc from "swagger-jsdoc";
 import swaggerUi from "swagger-ui-express";
-import swaggerDoc from "@tsoa/swagger.json";
+
+import index from "@controller";
 
 import mongoose from "mongoose";
 
@@ -41,9 +41,24 @@ app.use(express.json());
 app.use(morgan("tiny"));
 app.use(express.urlencoded());
 
-RegisterRoutes(app);
+app.get("/", index);
 
-app.use("/docs", swaggerUi.serve, swaggerUi.setup(swaggerDoc));
+app.use(
+  "/docs",
+  swaggerUi.serve,
+  swaggerUi.setup(
+    swaggerDoc({
+      definition: {
+        openapi: "3.0.0",
+        info: {
+          title: "Hello World",
+          version: "1.0.0",
+        },
+      },
+      apis: ["./src/controller/*.ts"], // files containing annotations as above
+    })
+  )
+);
 
 app.listen(port, () => {
   // eslint-disable-next-line no-console
