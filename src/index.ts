@@ -1,3 +1,5 @@
+/* eslint-disable no-console */
+
 import express, { Application } from "express";
 import eJwt from "express-jwt";
 import nocache from "nocache";
@@ -8,13 +10,17 @@ import swaggerDoc from "swagger-jsdoc";
 import doc from "@doc";
 
 import index from "@controller";
+
 import { login } from "@auth";
+
+import UserController from "@controller/users";
 
 import db from "@db";
 
 const app: Application = express();
 
 const main = async () => {
+  
   const port = process.env.PORT;
 
   db();
@@ -36,14 +42,23 @@ const main = async () => {
     })
   );
 
+  // Index
   app.get("/", index);
+  
+  // Auth routes
   app.post("/auth/login", login);
 
+  // User routes
+  app.get("/users", UserController.getAllUsers);
+  app.get("/users/id/:id", UserController.getUserByID);
+  app.get("/users/name/:username", UserController.getUserByUsername);
+
   app.listen(port, () => {
-    // eslint-disable-next-line no-console
     console.log(`listening on port ${port}`);
   });
-};
+  
+}
+
 main();
 
 export default app;

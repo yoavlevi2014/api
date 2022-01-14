@@ -2,12 +2,20 @@ import request from "supertest";
 import app from "@index";
 import { expect } from "chai";
 
-describe("index", async () => {
-  it("Index page returns 200", async () => {
+describe("Users", async () => {
+
+  it("GET /users/ returns an array", async (done) => {
+
     await request(app)
-      .get("/")
+      .get("/users/")
       .then((res) => {
         expect(res.status).to.eql(200);
+        expect(res.body.msg).to.be.an('array');
+
+        done();
+
       });
+
   });
+
 });
