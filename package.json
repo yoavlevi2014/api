@@ -6,7 +6,7 @@
   "scripts": {
     "start": "npx -y ts-node -r tsconfig-paths/register src/index.ts",
     "dev": "npx -y ts-node-dev --poll --respawn -r tsconfig-paths/register src/index.ts",
-    "test": "npx -y mocha --exit -r ts-node/register -r tsconfig-paths/register -r dotenv/config \"tests/**/*.ts\""
+    "test": "npx -y mocha --timeout 50000 --exit -r ts-node/register -r tsconfig-paths/register -r dotenv/config -r 'tests/hooks.ts' \"tests/**/*.ts\""
   },
   "repository": {
     "type": "git",
