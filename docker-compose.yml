@@ -16,3 +16,9 @@ services:
       - mongo.env
     ports:
       - "27017:27017"
+    command: ["--bind_ip_all"]
+    healthcheck:
+      test: ["CMD-SHELL", "mongo"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
