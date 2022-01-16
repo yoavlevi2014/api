@@ -1,5 +1,6 @@
 import { RequestHandler } from "express";
-import UserModel from "@models/user";
+import UserModel, { User } from "@models/user";
+import RTModel from "@models/rt";
 import bcrypt from "bcrypt";
 import { v4 as uuidv4 } from "uuid";
 import jwt from "jsonwebtoken";
@@ -77,42 +78,22 @@ import { isEmail } from "@helpers/regex";
 
  export const register: RequestHandler = async (req, res) => {
 
-    // Need to make this more typescripty
-    // At the moment User doesn't have an _id arribute
-    let user = req.body;
-
-    console.log(user.name);
-
-    // Check the correct keys are present
-    const keys :string[] = ["username", "email", "name", "surname", "password"];
-
-    for (let i = 0; i < keys.length; i++) {
-
-        // eslint-disable-next-line no-prototype-builtins
-        if (!user.hasOwnProperty(keys[i])) {
-
-            return res.status(400).json({error: "Request body is incomplete"});
-
-        }
-
+    const user: User = {
+        id: uuidv4(),
+        username: req.body.username,
+        email: req.body.email,
+        name: req.body.name,
+        surname: req.body.surname,
+        password: req.body.password
     }
-
-    // Check there is the right number of properties
-    if (Object.keys(user).length > keys.length)
-        return res.status(400).json({error: "Request body is badly constructed"});
 
     if (!isEmail(user.email))
         return res.status(400).json({error: "Email is invalid"});
 
-    user = {
-        id: uuidv4(),
-        ...user
-    };
-
-    const at = jwt.sign({ sub: user._id }, process.env.SEED as string, {
+    const at = jwt.sign({ sub: user.id }, process.env.SEED as string, {
         expiresIn: "120m",
       });
-    const rt = jwt.sign({ sub: user._id }, process.env.SEED as string, {
+    const rt = jwt.sign({ sub: user.id }, process.env.SEED as string, {
         expiresIn: "7d",
     });
 
@@ -134,18 +115,17 @@ import { isEmail } from "@helpers/regex";
         
                     user.password = bcrypt.hashSync(user.password, 10);
 
-                    await new UserModel({...user}).save().then(() => {
+                    await new UserModel({...user}).save().then(async() => {
 
-                        // Probably should make an interface for this
-                        const userObject = {
-                            id: user.id,
-                            email: user.email,
-                            username: user.username,
-                            accessToken: at,
-                            refreshToken: rt,
-                        };
+                        await new RTModel({token: rt}).save().then(async() => {
+
+                            return res.status(201).json({user: user, tokens: {at: at, rt: rt}});
+                        
+                        }).catch((e: Error) => {
+                
+                            console.log(e);
     
-                        return res.status(201).json(userObject);
+                        });;
 
                     }).catch((e: Error) => {
                 
@@ -161,6 +141,6 @@ import { isEmail } from "@helpers/regex";
 
     });
 
-    res.status(501);
+    res.status(501).json({error: "error"});
 
 };
