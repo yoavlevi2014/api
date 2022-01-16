@@ -1,6 +1,6 @@
 import db from "@db";
-import axios from "axios";
-// import app from "index";
+import request from "supertest";
+import app from "index";
 import mongoose from "mongoose";
 
 export const mochaHooks = {
@@ -39,8 +39,8 @@ export const mochaHooks = {
       // Create new user
       // In the future we'll create an admin user and a normal user for the tests
       // TODO get this url from env
-      return await axios.post(`http://localhost:8080/auth/register`,
-      {
+      return await request(app).post(`/auth/register`)
+      .send({
         email: "admin@test.co.uk",
         name: "Admin",
         surname: "User",
@@ -49,7 +49,7 @@ export const mochaHooks = {
       }).then((response) => {
         console.log(response.status);
         console.log("Finished creating new user");
-        process.env.authToken = response.data.tokens.at;
+        process.env.authToken = response.body.tokens.at;
         console.log(process.env.authToken);
       }).catch((error) => {
         console.error(error);
