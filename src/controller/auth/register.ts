@@ -123,9 +123,10 @@ import { isEmail } from "@helpers/regex";
                         
                         }).catch((e: Error) => {
                 
+                            // eslint-disable-next-line no-console
                             console.log(e);
     
-                        });;
+                        });
 
                     }).catch((e: Error) => {
                 
