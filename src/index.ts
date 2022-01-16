@@ -11,8 +11,7 @@ import doc from "@doc";
 
 import index from "@controller";
 
-import { login } from "@auth";
-import { register } from "@controller/auth/register";
+import { login, register } from "@auth";
 
 import UserController from "@controller/users";
 
