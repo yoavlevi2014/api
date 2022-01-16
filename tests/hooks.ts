@@ -12,7 +12,7 @@ export const mochaHooks = {
       await db();
     },
 
-    async function () {
+    function () {
       
       // wipe local db
       
@@ -21,7 +21,7 @@ export const mochaHooks = {
       for (const key in collections) {
 
         const collection = collections[key];
-        await collection.deleteMany({});
+        collection.deleteMany({});
 
       }
 
