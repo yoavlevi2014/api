@@ -12,6 +12,7 @@ import doc from "@doc";
 import index from "@controller";
 
 import { login } from "@auth";
+import { register } from "@controller/auth/register";
 
 import UserController from "@controller/users";
 
@@ -47,6 +48,7 @@ const main = async () => {
   
   // Auth routes
   app.post("/auth/login", login);
+  app.post("/auth/register", register);
 
   // User routes
   app.get("/users", UserController.getAllUsers);
