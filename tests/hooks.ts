@@ -9,12 +9,14 @@ export const mochaHooks = {
     
     // Connect to the database before running tests
     async function () {
-      await db();
+      console.log("Connecting to database");
+      return await db();
     },
 
     function () {
       
       // wipe local db
+      console.log("Started wiping database");
       
       const collections = mongoose.connection.collections
 
@@ -25,15 +27,19 @@ export const mochaHooks = {
 
       }
 
+      console.log("Finished wiping database");
+
     },
 
     // Authorise the user before running tests
     async function() {
 
+      console.log("Creating new user");
+
       // Create new user
       // In the future we'll create an admin user and a normal user for the tests
       // TODO get this url from env
-      await axios.post(`http://localhost:8080/auth/register`,
+      return await axios.post(`http://localhost:8080/auth/register`,
       {
         email: "admin@test.co.uk",
         name: "Admin",
@@ -42,6 +48,7 @@ export const mochaHooks = {
         username: "admin"
       }).then((response) => {
         console.log(response.status);
+        console.log("Finished creating new user");
         process.env.authToken = response.data.tokens.at;
         console.log(process.env.authToken);
       }).catch((error) => {
