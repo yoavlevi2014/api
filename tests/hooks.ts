@@ -1,7 +1,7 @@
 import db from "@db";
 import request from "supertest";
 import app from "index";
-import mongoose from "mongoose";
+// import mongoose from "mongoose";
 
 export const mochaHooks = {
 
