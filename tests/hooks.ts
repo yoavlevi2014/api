@@ -40,7 +40,7 @@ export const mochaHooks = {
 
       console.log("Test GET request (with DB)")
 
-      await request(app).get("/").then((response) => {console.log(response.statusCode);}).catch((error) => {console.log(error)});
+      await request(app).get("/users").then((response) => {console.log(response.statusCode);}).catch((error) => {console.log(error)});
 
       console.log("Creating new user");
 
