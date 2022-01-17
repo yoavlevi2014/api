@@ -14,6 +14,7 @@ export const mochaHooks = {
       // test stuff
       return await request(app).get("/users").then((response) => {console.log(response.statusCode);});
     },
+  ],
 
   //   function () {
       
