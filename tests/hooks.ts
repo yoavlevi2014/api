@@ -34,6 +34,14 @@ export const mochaHooks = {
     // Authorise the user before running tests
     async function() {
 
+      console.log("Test GET request (without DB)");
+      
+      await request(app).get("/").then((response) => {console.log(response.statusCode);}).catch((error) => {console.log(error)});
+
+      console.log("Test GET request (with DB)")
+
+      await request(app).get("/").then((response) => {console.log(response.statusCode);}).catch((error) => {console.log(error)});
+
       console.log("Creating new user");
 
       // Create new user
