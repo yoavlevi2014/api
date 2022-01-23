@@ -6,7 +6,7 @@ import bcrypt from "bcrypt";
 
 describe("Auth", async () => {
 
-  it("Create new user", async () => {
+  it("Create new user", (done) => {
 
     const user: User = {
         id: "undefined",
@@ -17,14 +17,14 @@ describe("Auth", async () => {
         username: "test"
     }
 
-    return await request(app).post(`/auth/register`)
+    request(app).post(`/auth/register`)
       .send({
         email: user.email,
         name: user.name,
         surname: user.surname,
         password: user.password,
         username: user.username
-      }).then(async (response) => {
+      }).end(async (error, response) => {
 
         const passwordMatches: boolean = await bcrypt.compare(user.password, response.body.user.password);
           
@@ -35,15 +35,13 @@ describe("Auth", async () => {
         expect(passwordMatches).to.be.eql(true);
         expect(response.body.user.username).to.be.eql(user.username);
 
-      }).catch((error) => {
-        console.error(error);
-      });
+        done(error);
 
-      // Tests actually work but dont fail
+      });
 
   });
 
-  it("Don't create new user with invalid email address", async () => {
+  it("Don't create new user with invalid email address", (done) => {
 
     const user: User = {
       id: "undefined",
@@ -54,23 +52,22 @@ describe("Auth", async () => {
       username: "test"
     }
 
-    return await request(app).post(`/auth/register`)
+    request(app).post(`/auth/register`)
     .send({
       email: user.email,
       name: user.name,
       surname: user.surname,
       password: user.password,
       username: user.username
-    }).then((response) => {
+    }).end((error, response) => {
         expect(response.status).to.eql(400);
         expect(response.body.error).to.eql("Email is invalid")
-      }).catch((error) => {
-        console.error(error);
+        done(error);
       });
 
   });
 
-  it("Don't create new user with missing email address", async () => {
+  it("Don't create new user with missing email address", (done) => {
 
     const user: User = {
       id: "undefined",
@@ -81,22 +78,21 @@ describe("Auth", async () => {
       username: "test"
     }
 
-    return await request(app).post(`/auth/register`)
+    request(app).post(`/auth/register`)
     .send({
       name: user.name,
       surname: user.surname,
       password: user.password,
       username: user.username
-    }).then((response) => {
+    }).end((error, response) => {
         expect(response.status).to.eql(400);
         expect(response.body.error).to.eql("Email is missing")
-      }).catch((error) => {
-        console.error(error);
+        done(error);
       });
 
   });
 
-  it("Don't create new user with missing name", async () => {
+  it("Don't create new user with missing name", (done) => {
 
     const user: User = {
       id: "undefined",
@@ -107,22 +103,21 @@ describe("Auth", async () => {
       username: "test"
     }
 
-    return await request(app).post(`/auth/register`)
+    request(app).post(`/auth/register`)
     .send({
       email: user.email,
       surname: user.surname,
       password: user.password,
       username: user.username
-    }).then((response) => {
+    }).end((error, response) => {
         expect(response.status).to.eql(400);
-        expect(response.body.error).to.eql("Name is missing")
-      }).catch((error) => {
-        console.error(error);
+        expect(response.body.error).to.eql("Name is missing");
+        done(error);
       });
 
   });
 
-  it("Don't create new user with missing surname", async () => {
+  it("Don't create new user with missing surname", (done) => {
 
     const user: User = {
       id: "undefined",
@@ -133,24 +128,23 @@ describe("Auth", async () => {
       username: "test"
   }
 
-  return await request(app).post(`/auth/register`)
+  request(app).post(`/auth/register`)
     .send({
       email: user.email,
       name: user.name,
       password: user.password,
       username: user.username
-    }).then(async (response) => {
+    }).end((error, response) => {
 
       expect(response.status).to.eql(400);
-      expect(response.body.error).to.eql("Surname is missing")
+      expect(response.body.error).to.eql("Surname is missing");
+      done(error);
 
-    }).catch((error) => {
-      console.error(error);
     });
 
   });
 
-  it("Don't create new user with missing password", async () => {
+  it("Don't create new user with missing password", (done) => {
 
     const user: User = {
       id: "undefined",
@@ -161,23 +155,22 @@ describe("Auth", async () => {
       username: "test"
   }
 
-  return await request(app).post(`/auth/register`)
+  request(app).post(`/auth/register`)
     .send({
       email: user.email,
       name: user.name,
       surname: user.surname,
       username: user.username
-    }).then(async (response) => {
+    }).end((error, response) => {
 
       expect(response.status).to.eql(400);
-      expect(response.body.error).to.eql("Password is missing")
+      expect(response.body.error).to.eql("Password is missing");
+      done(error);
 
-    }).catch((error) => {
-      console.error(error);
     });
   });
 
-  it("Don't create new user with missing username", async () => {
+  it("Don't create new user with missing username", (done) => {
 
     const user: User = {
       id: "undefined",
@@ -188,24 +181,23 @@ describe("Auth", async () => {
       username: "undefined"
   }
 
-  return await request(app).post(`/auth/register`)
+  request(app).post(`/auth/register`)
     .send({
       email: user.email,
       name: user.name,
       surname: user.surname,
       password: user.password
-    }).then(async (response) => {
+    }).end((error, response) => {
 
       expect(response.status).to.eql(400);
-      expect(response.body.error).to.eql("Username is missing")
+      expect(response.body.error).to.eql("Username is missing");
+      done(error);
 
-    }).catch((error) => {
-      console.error(error);
     });
 
   });
 
-  it("Don't create new user with duplicate email address", async () => {
+  it("Don't create new user with duplicate email address", (done) => {
 
     const user: User = {
       id: "undefined",
@@ -216,23 +208,22 @@ describe("Auth", async () => {
       username: "new username"
     }
 
-    return await request(app).post(`/auth/register`)
+    request(app).post(`/auth/register`)
     .send({
       email: user.email,
       name: user.name,
       surname: user.surname,
       password: user.password,
       username: user.username
-    }).then((response) => {
+    }).end((error, response) => {
         expect(response.status).to.eql(200);
-        expect(response.body.error).to.eql("Email is already taken")
-      }).catch((error) => {
-        console.error(error);
+        expect(response.body.error).to.eql("Email is already taken");
+        done(error);
       });
 
   });
 
-  it("Don't create new user with duplicate username", async () => {
+  it("Don't create new user with duplicate username", (done) => {
 
     const user: User = {
       id: "undefined",
@@ -243,18 +234,17 @@ describe("Auth", async () => {
       username: "test"
     }
 
-    return await request(app).post(`/auth/register`)
+    request(app).post(`/auth/register`)
     .send({
       email: user.email,
       name: user.name,
       surname: user.surname,
       password: user.password,
       username: user.username
-    }).then((response) => {
+    }).end((error, response) => {
         expect(response.status).to.eql(200);
-        expect(response.body.error).to.eql("Username is already taken")
-      }).catch((error) => {
-        console.error(error);
+        expect(response.body.error).to.eql("Username is already taken");
+        done(error);
       });
 
   });

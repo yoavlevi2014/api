@@ -20,41 +20,37 @@ before(async () => {
 
 });
 
-describe("Users", async () => {
+describe("Users", () => {
 
-  it("GET /users/ returns an array of correct size", async () => {
+  it("GET /users/ returns an array of correct size", (done) => {
 
-    return await request(app)
+    request(app)
       .get("/users/").set('Authorization', `Bearer ${authToken}`)
-      .then((res) => {
+      .end((error, response) => {
 
-        expect(res.status).to.eql(200);
-        expect(res.body).to.be.an('array');
-        expect(res.body.length).to.eql(1);
+        expect(response.status).to.eql(200);
+        expect(response.body).to.be.an('array');
+        expect(response.body.length).to.eql(1);
 
-      }).catch((error: Error) => {
-
-        console.error(error);
+        done(error);
 
       });
 
   });
 
-  it("GET /users/name/:name returns the correct user", async () => {
+  it("GET /users/name/:name returns the correct user", (done) => {
 
-    return await request(app)
+    request(app)
       .get("/users/name/admin").set('Authorization', `Bearer ${authToken}`)
-      .then((res) => {
+      .end((error, response) => {
 
-        expect(res.status).to.eql(200);
-        expect(res.body.email).to.eql("admin@test.co.uk");
-        expect(res.body.name).to.eql("Admin");
-        expect(res.body.surname).to.eql("User");
-        expect(res.body.username).to.eql("admin");
+        expect(response.status).to.eql(200);
+        expect(response.body.email).to.eql("admin@test.co.uk");
+        expect(response.body.name).to.eql("Admin");
+        expect(response.body.surname).to.eql("User");
+        expect(response.body.username).to.eql("admin");
 
-      }).catch((error: Error) => {
-
-        console.error(error);
+        done(error);
 
       });
 
