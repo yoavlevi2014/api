@@ -73,6 +73,39 @@ import { isEmail } from "@helpers/regex";
  *               required:
  *                 - user
  *                 - tokens
+ *       200:
+ *         description: Username or email address have already been taken
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 error:
+ *                   type: string
+ *                   description: Error message
+ *                   example: Email is already taken
+ *       400:
+ *         description: There is an error with one or more of the provided attributes
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 error:
+ *                   type: string
+ *                   description: Error message
+ *                   example: Username is missing
+ *       500:
+ *         description: An internal error occured while trying to create the user
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 error:
+ *                   type: string
+ *                   description: Error message
+ *                   example: MongooseError
  */
 
 
@@ -87,9 +120,28 @@ import { isEmail } from "@helpers/regex";
         password: req.body.password
     }
 
+    // There's probably a better way of doing this but you need to check all properties are defined
+    if (!user.username)
+        return res.status(400).json({error: "Username is missing"});
+
+    if (!user.email)
+        return res.status(400).json({error: "Email is missing"});
+
+    if (!user.name)
+        return res.status(400).json({error: "Name is missing"});
+
+    if (!user.surname)
+        return res.status(400).json({error: "Surname is missing"});
+        
+    if (!user.password)
+        return res.status(400).json({error: "Password is missing"});
+
+    
+    // Check supplied email is valid
     if (!isEmail(user.email))
         return res.status(400).json({error: "Email is invalid"});
 
+    // Create tokens
     const at = jwt.sign({ sub: user.id }, process.env.SEED as string, {
         expiresIn: "120m",
       });
@@ -105,7 +157,7 @@ import { isEmail } from "@helpers/regex";
 
         } else {
 
-            await UserModel.findOne({username: user.email}).then(async (u) => {
+            await UserModel.findOne({email: user.email}).then(async (u) => {
 
                 if (u) {
         
@@ -119,6 +171,7 @@ import { isEmail } from "@helpers/regex";
 
                         await new RTModel({token: rt}).save().then(async() => {
 
+                            // Return the user object
                             return res.status(201).json({user: user, tokens: {at: at, rt: rt}});
                         
                         }).catch((e: Error) => {
@@ -130,7 +183,7 @@ import { isEmail } from "@helpers/regex";
 
                     }).catch((e: Error) => {
                 
-                        return res.status(500).json({error: {name: e.name, message: e.message}});
+                        return res.status(500).json({error: e.name});
 
                     });
 
@@ -141,7 +194,5 @@ import { isEmail } from "@helpers/regex";
         }
 
     });
-
-    res.status(501).json({error: "error"});
 
 };
