@@ -11,7 +11,7 @@ import doc from "@doc";
 
 import index from "@controller";
 
-import { login } from "@auth";
+import { login, register } from "@auth";
 
 import UserController from "@controller/users";
 
@@ -38,7 +38,7 @@ const main = async () => {
       secret: process.env.SEED as string,
       algorithms: ["HS256"],
     }).unless({
-      path: ["/auth/login", "/auth/register", "/auth/refresh", "/docs", "/"],
+      path: ["/auth/login", "/auth/register", "/auth/refresh", "/docs", "/", "/users"],
     })
   );
 
@@ -47,6 +47,7 @@ const main = async () => {
   
   // Auth routes
   app.post("/auth/login", login);
+  app.post("/auth/register", register);
 
   // User routes
   app.get("/users", UserController.getAllUsers);

@@ -1,18 +1,56 @@
 import request from "supertest";
 import app from "@index";
 import { expect } from "chai";
+// import  UserModel from '@models/user';
 
-describe("Users", async () => {
 
-  it("GET /users/ returns an array", async (done) => {
+let authToken: string;
 
-    await request(app)
-      .get("/users/")
-      .then((res) => {
-        expect(res.status).to.eql(200);
-        expect(res.body.msg).to.be.an('array');
+before(async () => {
 
-        done();
+  if (process.env.authToken  !== undefined) {
+
+    authToken = process.env.authToken;
+
+  } else {
+
+    throw new Error("Auth token isn't set, exiting")
+
+  }
+
+});
+
+describe("Users", () => {
+
+  it("GET /users/ returns an array of correct size", (done) => {
+
+    request(app)
+      .get("/users/").set('Authorization', `Bearer ${authToken}`)
+      .end((error, response) => {
+
+        expect(response.status).to.eql(200);
+        expect(response.body).to.be.an('array');
+        expect(response.body.length).to.eql(1);
+
+        done(error);
+
+      });
+
+  });
+
+  it("GET /users/name/:name returns the correct user", (done) => {
+
+    request(app)
+      .get("/users/name/admin").set('Authorization', `Bearer ${authToken}`)
+      .end((error, response) => {
+
+        expect(response.status).to.eql(200);
+        expect(response.body.email).to.eql("admin@test.co.uk");
+        expect(response.body.name).to.eql("Admin");
+        expect(response.body.surname).to.eql("User");
+        expect(response.body.username).to.eql("admin");
+
+        done(error);
 
       });
 
