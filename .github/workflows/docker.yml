@@ -22,7 +22,7 @@ jobs:
           cp .devcontainer/*.env ./
           cp node.env .env
 
-      - name: Start containers (and run tests)
+      - name: Start containers
         run: docker-compose up -d --build
 
       # - name: Ping mongo
@@ -35,7 +35,7 @@ jobs:
       #   run: docker exec api_db_1 printenv
 
       - name: Run tests
-        run: docker run -e CI=true api_web "npm run test"
+        run: docker run -e CI=true api_web "test"
 
       - name: Stop containers
         if: always()
