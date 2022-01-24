@@ -7,6 +7,7 @@ services:
       - node.env
     ports:
       - "80:80"
+    command: tail -F /dev/null
   db:
     image: mongo
     restart: always
