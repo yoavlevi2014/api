@@ -3,8 +3,6 @@ version: "3"
 services:
   web:
     build: .
-    # restart: always
-    command: npm test
     env_file:
       - node.env
     ports:
