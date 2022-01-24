@@ -2,7 +2,7 @@ FROM node:17.3.0-bullseye
 RUN mkdir /api
 COPY . /api/
 WORKDIR /api
-RUN rm -r node_modules
+RUN rm -rf node_modules
 RUN npm install --quiet
 RUN apt update
 RUN apt install -y iputils-ping
