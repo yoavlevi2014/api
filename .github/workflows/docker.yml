@@ -23,7 +23,7 @@ jobs:
           cp node.env .env
 
       - name: Start containers
-        run: docker-compose up -it --build
+        run: docker-compose up -dit --build
 
       # - name: Ping mongo
       #   run: docker exec api_web_1 ping -c 5 db
