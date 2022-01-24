@@ -4,7 +4,7 @@ services:
   web:
     build: .
     # restart: always
-    command: test
+    command: npm test
     env_file:
       - node.env
     ports:

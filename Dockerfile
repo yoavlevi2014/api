@@ -6,4 +6,4 @@ RUN rm -rf node_modules
 RUN npm install --quiet
 RUN apt update
 RUN apt install -y iputils-ping
-ENTRYPOINT ["npm"]
+# ENTRYPOINT ["npm"]
