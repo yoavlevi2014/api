@@ -35,7 +35,7 @@ jobs:
       #   run: docker exec api_db_1 printenv
 
       - name: Run tests
-        run: docker exec i api_web_1 npm run test
+        run: docker exec -i api_web_1 npm run test
 
       - name: Stop containers
         if: always()
