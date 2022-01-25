@@ -3,7 +3,7 @@ version: "3"
 services:
   web:
     build:
-      context: .
+      context: ./.
       dockerfile: Dockerfile.testing
     env_file:
       - node.env
