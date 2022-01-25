@@ -3,8 +3,8 @@ version: "3"
 services:
   web:
     build:
-      context: ./
-      dockerfile: Dockerfile.testing
+      context: .
+      dockerfile: ./Dockerfile.testing
     env_file:
       - node.env
     ports:
