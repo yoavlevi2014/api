@@ -2,13 +2,14 @@ version: "3"
 
 services:
   web:
-    build: .
-    restart: always
-    command: start
+    build:
+      context: .
+      dockerfile: Dockerfile.testing
     env_file:
       - node.env
     ports:
       - "80:80"
+    command: tail -F /dev/null
   db:
     image: mongo
     restart: always
