@@ -16,6 +16,7 @@ import { login, register } from "@auth";
 import UserController from "@controller/users";
 
 import db from "@db";
+import { createSocketServer } from "socket";
 
 const app: Application = express();
 
@@ -38,7 +39,7 @@ const main = async () => {
       secret: process.env.SEED as string,
       algorithms: ["HS256"],
     }).unless({
-      path: ["/auth/login", "/auth/register", "/auth/refresh", "/docs", "/", "/users"],
+      path: ["/auth/login", "/auth/register", "/auth/refresh", "/docs", "/", "/users", "/socket.io"],
     })
   );
 
@@ -53,6 +54,9 @@ const main = async () => {
   app.get("/users", UserController.getAllUsers);
   app.get("/users/id/:id", UserController.getUserByID);
   app.get("/users/name/:username", UserController.getUserByUsername);
+
+  // Launch socket server
+  createSocketServer(app);
 
   app.listen(port, () => {
     console.log(`listening on port ${port}`);
