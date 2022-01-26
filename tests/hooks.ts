@@ -12,22 +12,17 @@ export const mochaHooks = {
 
   ],
 
-  // Clean up the database after running tests
-  afterAll: [
-
-    function() {
-
-      const collections = mongoose.connection.collections
-
-      for (const key in collections) {
-
-        const collection = collections[key];
-        collection.deleteMany({});
-
-      }
-
-    }
-
-  ]
- 
 };
+
+export async function mochaGlobalTeardown() {
+ 
+  const collections = mongoose.connection.collections
+
+  for (const key in collections) {
+
+    const collection = collections[key];
+    collection.deleteMany({});
+
+  }
+
+}

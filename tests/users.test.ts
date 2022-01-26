@@ -68,7 +68,7 @@ describe("Users", () => {
 
         expect(response.status).to.eql(200);
         expect(response.body).to.be.an('array');
-        expect(response.body.length).to.eql(2);
+        expect(response.body.length).to.eql(1);
 
         done(error);
 
