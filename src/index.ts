@@ -56,7 +56,7 @@ const main = async () => {
   app.get("/users/name/:username", UserController.getUserByUsername);
 
   // Launch socket server
-  createSocketServer(app);
+  createSocketServer();
 
   app.listen(port, () => {
     console.log(`listening on port ${port}`);
