@@ -25,11 +25,11 @@ export function createSocketServer() {
         })
 
         socket.on('disconnect', () => {
-            const user = userLeave(socket.id);
-            if (user) {
-                // below will be replaced by a message action in the future
-                // console.log(user.username + " has left " + user.room);
-            }
+            userLeave(socket.id);
+            // if (user) {
+            //     // below will be replaced by a message action in the future
+            //     // console.log(user.username + " has left " + user.room);
+            // }
         });
 
         socket.on('newMessage', (msg) => {
@@ -58,5 +58,3 @@ export function createSocketServer() {
         console.log('listening on *:8081');
     });
 }
-
-
