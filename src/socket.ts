@@ -2,12 +2,12 @@ import express, { Application } from "express";
 import { Socket } from "socket.io";
 
 import http from 'http';
-import {Server} from 'socket.io';
+import { Server } from 'socket.io';
 import eJwt from "express-jwt";
 import { getCurrentUser, userJoin, userLeave } from "@helpers/socketUsers";
 
 export function createSocketServer() {
-    const app : Application = express();
+    const app: Application = express();
     const server = http.createServer(app);
     const io = new Server(server);
 
@@ -16,20 +16,21 @@ export function createSocketServer() {
             secret: socket.handshake.query.token as string,
             algorithms: ["HS256"]
         }));
-        
+
         socket.on("joinRoom", ({ username, room }) => {
             const user = userJoin(socket.id, username, room);
             socket.join(user.room);
-            // below will be replaced by a message action in the future
-            // console.log(user.username + " joined " + user.room);
+
+            const msg = `${user.username} joined the room`
+            io.to(user.room).emit('addStatus', msg);
         })
 
         socket.on('disconnect', () => {
-            userLeave(socket.id);
-            // if (user) {
-            //     // below will be replaced by a message action in the future
-            //     // console.log(user.username + " has left " + user.room);
-            // }
+            const user = userLeave(socket.id);
+            if (user) {
+                const msg = `${user.username  } left the room`;
+                io.to(user.room).emit('addStatus', msg);
+            }
         });
 
         socket.on('newMessage', (msg) => {
@@ -39,17 +40,17 @@ export function createSocketServer() {
 
         socket.on('requestCanvasClear', () => {
             const user = getCurrentUser(socket.id);
-            if(user) io.to(user.room).emit('clearCanvas');
+            if (user) io.to(user.room).emit('clearCanvas');
         })
 
         socket.on('newObject', (object) => {
             const user = getCurrentUser(socket.id);
-            if(user) socket.broadcast.to(user.room).emit('addObject', object);
+            if (user) socket.broadcast.to(user.room).emit('addObject', object);
         });
 
         socket.on('newModification', (object) => {
             const user = getCurrentUser(socket.id);
-            if(user) socket.broadcast.to(user.room).emit('modifyObject', object);
+            if (user) socket.broadcast.to(user.room).emit('modifyObject', object);
         });
     });
 
