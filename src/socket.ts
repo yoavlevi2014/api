@@ -56,6 +56,6 @@ export function createSocketServer() {
 
     server.listen(8081, () => {
         // eslint-disable-next-line no-console
-        console.log('listening on *:8081');
+        console.log('socket IO server listening on *:8081');
     });
 }
