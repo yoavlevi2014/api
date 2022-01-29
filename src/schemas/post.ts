@@ -55,12 +55,12 @@ import { Post } from "@models/post";
 const PostSchema = new Schema<Post>(
   {
     id: { type: String, required: true, unique: true, index: true },
-    user_id: { type: String, required: true, index: true },
+    author: { type: Object, required: true, index: true },
     title: { type: String, required: true },
     content: { type: String, required: true },
     likes: { type: Number, required: true },
     created: { type: Number, required: true, index: true },
-    users: [{ type: String, required: false }],
+    users: [{ type: Object, required: false }],
   },
   { timestamps: true }
 );

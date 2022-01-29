@@ -57,8 +57,9 @@ const main = async () => {
 
   // Post routes
   app.get("/posts", PostController.getAllPosts);
-  app.get("/posts/id/:id", PostController.getPostsByUserID);
-  app.get("/posts/name/:username", PostController.getPostsByUsername);
+  app.get("/posts/user", PostController.getPostsByUser);
+  // app.get("/posts/id/:id", PostController.getPostsByUserID);
+  // app.get("/posts/name/:username", PostController.getPostsByUsername);
   app.post("/posts", PostController.createPost);
 
   app.listen(port, () => {
