@@ -3,8 +3,20 @@ import app from "@index";
 import { expect } from "chai";
 import { User } from '@models/user';
 import bcrypt from "bcrypt";
+import mongoose from "mongoose";
 
 describe("Auth", async () => {
+
+  before((done) => {
+
+    // TODO make this better
+    mongoose.connection.collections.users.drop(() => {
+      mongoose.connection.collections.refreshes.drop(() => {
+        done();
+      });
+    });
+  
+  });
 
   it("Create new user", (done) => {
 
@@ -60,10 +72,13 @@ describe("Auth", async () => {
       password: user.password,
       username: user.username
     }).end((error, response) => {
+
         expect(response.status).to.eql(400);
-        expect(response.body.error).to.eql("Email is invalid")
+        expect(response.body.error).to.eql("Email is invalid");
+        
         done(error);
-      });
+
+    });
 
   });
 
@@ -85,10 +100,13 @@ describe("Auth", async () => {
       password: user.password,
       username: user.username
     }).end((error, response) => {
+
         expect(response.status).to.eql(400);
-        expect(response.body.error).to.eql("Email is missing")
+        expect(response.body.error).to.eql("Email is missing");
+
         done(error);
-      });
+
+    });
 
   });
 
@@ -110,10 +128,13 @@ describe("Auth", async () => {
       password: user.password,
       username: user.username
     }).end((error, response) => {
+
         expect(response.status).to.eql(400);
         expect(response.body.error).to.eql("Name is missing");
+
         done(error);
-      });
+
+    });
 
   });
 
@@ -138,6 +159,7 @@ describe("Auth", async () => {
 
       expect(response.status).to.eql(400);
       expect(response.body.error).to.eql("Surname is missing");
+
       done(error);
 
     });
@@ -165,9 +187,11 @@ describe("Auth", async () => {
 
       expect(response.status).to.eql(400);
       expect(response.body.error).to.eql("Password is missing");
+
       done(error);
 
     });
+
   });
 
   it("Don't create new user with missing username", (done) => {
@@ -191,6 +215,7 @@ describe("Auth", async () => {
 
       expect(response.status).to.eql(400);
       expect(response.body.error).to.eql("Username is missing");
+
       done(error);
 
     });
@@ -216,10 +241,13 @@ describe("Auth", async () => {
       password: user.password,
       username: user.username
     }).end((error, response) => {
+
         expect(response.status).to.eql(200);
         expect(response.body.error).to.eql("Email is already taken");
+
         done(error);
-      });
+
+    });
 
   });
 
@@ -242,13 +270,14 @@ describe("Auth", async () => {
       password: user.password,
       username: user.username
     }).end((error, response) => {
+      
         expect(response.status).to.eql(200);
         expect(response.body.error).to.eql("Username is already taken");
+
         done(error);
+
       });
 
   });
-
-// wipe db after this
 
 });
