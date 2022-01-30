@@ -58,6 +58,7 @@
   "dependencies": {
     "@nestjs/swagger": "^5.1.5",
     "@types/mocha": "^9.0.0",
+    "cors": "^2.8.5",
     "express-jwt": "^6.1.0",
     "mongoose": "^6.1.4",
     "morgan": "^1.10.0",

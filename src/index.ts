@@ -17,6 +17,7 @@ import UserController from "@controller/users";
 
 import db from "@db";
 import { createSocketServer } from "socket";
+import cors from "cors";
 
 const app: Application = express();
 
@@ -42,6 +43,10 @@ const main = async () => {
       path: ["/auth/login", "/auth/register", "/auth/refresh", "/docs", "/", "/users", "/socket.io"],
     })
   );
+
+  app.use(cors({
+    origin: "https://operce.net/"
+  }));
 
   // Index
   app.get("/", index);
