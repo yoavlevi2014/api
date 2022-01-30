@@ -12,7 +12,9 @@ describe("Auth", async () => {
     // TODO make this better
     mongoose.connection.collections.users.drop(() => {
       mongoose.connection.collections.refreshes.drop(() => {
-        done();
+        mongoose.connection.collections.posts.drop(() => {
+          done();
+        });
       });
     });
   

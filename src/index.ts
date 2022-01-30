@@ -14,6 +14,7 @@ import index from "@controller";
 import { login, register } from "@auth";
 
 import UserController from "@controller/users";
+import PostController from "@controller/post";
 
 import db from "@db";
 
@@ -53,6 +54,13 @@ const main = async () => {
   app.get("/users", UserController.getAllUsers);
   app.get("/users/id/:id", UserController.getUserByID);
   app.get("/users/name/:username", UserController.getUserByUsername);
+
+  // Post routes
+  app.get("/posts", PostController.getAllPosts);
+  app.get("/posts/user", PostController.getPostsByUser);
+  // app.get("/posts/id/:id", PostController.getPostsByUserID);
+  // app.get("/posts/name/:username", PostController.getPostsByUsername);
+  app.post("/posts", PostController.createPost);
 
   app.listen(port, () => {
     console.log(`listening on port ${port}`);
