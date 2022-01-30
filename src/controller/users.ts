@@ -4,6 +4,8 @@ import { RequestHandler } from "express";
 // All these routes could do with being a bit more typescripty
 class UserController {
 
+    // TODO Add unauthorised 401 to the documentation
+
     /**
      * @openapi
      * /users:
@@ -11,7 +13,7 @@ class UserController {
      *     description: Retrieves all user accounts from the database
      *     responses:
      *       200:
-     *         description: Returns a JSON array of all the users in the databse
+     *         description: Returns a JSON array of all the users in the database
      *       500:
      *          description: Internal server error
      */
@@ -52,6 +54,7 @@ class UserController {
         
         // validate id
 
+        // TODO investigate if this needs to be id not _id 
         await UserModel.findOne({_id: id}).then(async (user) => {
 
             if (user == null) {
