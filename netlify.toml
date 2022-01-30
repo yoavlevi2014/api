@@ -1,0 +1,5 @@
+[[redirects]]
+  # SSR and SPA
+  from = "/*"
+  to = "/index.html"
+  status = 200
