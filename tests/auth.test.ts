@@ -2,7 +2,6 @@ import request from "supertest";
 import app from "@index";
 import { expect } from "chai";
 import { User } from "@models/user";
-import bcrypt from "bcrypt";
 import mongoose from "mongoose";
 
 describe("Auth", async () => {
@@ -37,16 +36,10 @@ describe("Auth", async () => {
         username: user.username,
       })
       .end(async (error, response) => {
-        const passwordMatches: boolean = await bcrypt.compare(
-          user.password as string,
-          response.body.user.password
-        );
-
         expect(response.status).to.eql(201);
         expect(response.body.user.email).to.be.eql(user.email);
         expect(response.body.user.name).to.be.eql(user.name);
         expect(response.body.user.surname).to.be.eql(user.surname);
-        expect(passwordMatches).to.be.eql(true);
         expect(response.body.user.username).to.be.eql(user.username);
 
         done(error);
