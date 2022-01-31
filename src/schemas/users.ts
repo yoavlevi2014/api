@@ -30,7 +30,7 @@ import { User } from "@models/user";
  *           example: Hello
  *         createdAt:
  *           type: string
- *           description: POSIX creaion time.
+ *           description: POSIX creation time.
  *           example: 1642082603
  *         updatedAt:
  *           type: string
