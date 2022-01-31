@@ -60,7 +60,10 @@ export const login: RequestHandler = async (req, res) => {
   await UserModel.findOne({ email: req.body.email })
     .then(async (user) => {
       if (user) {
-        const result = await bcrypt.compare(req.body.password, user.password);
+        const result = await bcrypt.compare(
+          req.body.password,
+          user.password as string
+        );
         if (result) {
           const at = jwt.sign({ sub: user.id }, process.env.SEED as string, {
             expiresIn: "120m",
@@ -73,20 +76,16 @@ export const login: RequestHandler = async (req, res) => {
           //   arrappend("tokens", ".", [JSON.stringify(rt)]).catch(async (err) => {
           //     throw err;
           //   });
-
-          return res.json({
-            id: user.id,
-            email: user.email,
-            username: user.username,
-            accessToken: at,
-            refreshToken: rt,
-          });
+          delete user.password;
+          return res.json({ user: user, tokens: { at: at, rt: rt } });
+        } else {
+          return res.json({ error: "Oops, you typed something incorrectly!" });
         }
+      } else {
+        return res.json({ error: "Oops, you typed something incorrectly!" });
       }
     })
     .catch((error: Error) => {
-      throw error;
+      console.log(error);
     });
-
-  return res.json({ error: "Oops, you typed something incorrectly!" });
 };

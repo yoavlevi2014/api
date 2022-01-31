@@ -6,7 +6,6 @@ import { v4 as uuidv4 } from "uuid";
 import jwt from "jsonwebtoken";
 import { isEmail } from "@helpers/regex";
 
-
 /**
  * @openapi
  * /auth/register:
@@ -108,91 +107,75 @@ import { isEmail } from "@helpers/regex";
  *                   example: MongooseError
  */
 
+export const register: RequestHandler = async (req, res) => {
+  const user: User = {
+    id: uuidv4(),
+    username: req.body.username,
+    email: req.body.email,
+    name: req.body.name,
+    surname: req.body.surname,
+    password: req.body.password,
+  };
 
- export const register: RequestHandler = async (req, res) => {
+  // There's probably a better way of doing this but you need to check all properties are defined
+  if (!user.username)
+    return res.status(400).json({ error: "Username is missing" });
 
-    const user: User = {
-        id: uuidv4(),
-        username: req.body.username,
-        email: req.body.email,
-        name: req.body.name,
-        surname: req.body.surname,
-        password: req.body.password
-    }
+  if (!user.email) return res.status(400).json({ error: "Email is missing" });
 
-    // There's probably a better way of doing this but you need to check all properties are defined
-    if (!user.username)
-        return res.status(400).json({error: "Username is missing"});
+  if (!user.name) return res.status(400).json({ error: "Name is missing" });
 
-    if (!user.email)
-        return res.status(400).json({error: "Email is missing"});
+  if (!user.surname)
+    return res.status(400).json({ error: "Surname is missing" });
 
-    if (!user.name)
-        return res.status(400).json({error: "Name is missing"});
+  if (!user.password)
+    return res.status(400).json({ error: "Password is missing" });
 
-    if (!user.surname)
-        return res.status(400).json({error: "Surname is missing"});
-        
-    if (!user.password)
-        return res.status(400).json({error: "Password is missing"});
+  // Check supplied email is valid
+  if (!isEmail(user.email))
+    return res.status(400).json({ error: "Email is invalid" });
 
-    
-    // Check supplied email is valid
-    if (!isEmail(user.email))
-        return res.status(400).json({error: "Email is invalid"});
+  // Create tokens
+  const at = jwt.sign({ sub: user.id }, process.env.SEED as string, {
+    expiresIn: "120m",
+  });
+  const rt = jwt.sign({ sub: user.id }, process.env.SEED as string, {
+    expiresIn: "7d",
+  });
 
-    // Create tokens
-    const at = jwt.sign({ sub: user.id }, process.env.SEED as string, {
-        expiresIn: "120m",
-      });
-    const rt = jwt.sign({ sub: user.id }, process.env.SEED as string, {
-        expiresIn: "7d",
-    });
-
-    await UserModel.findOne({username: user.username}).then(async (u) => {
-
+  await UserModel.findOne({ username: user.username }).then(async (u) => {
+    if (u) {
+      return res.status(200).json({ error: "Username is already taken" });
+    } else {
+      await UserModel.findOne({ email: user.email }).then(async (u) => {
         if (u) {
-
-            return res.status(200).json({error: "Username is already taken"});
-
+          return res.status(200).json({ error: "Email is already taken" });
         } else {
+          user.password = bcrypt.hashSync(user.password as string, 10);
 
-            await UserModel.findOne({email: user.email}).then(async (u) => {
+          await new UserModel({ ...user })
+            .save()
+            .then(async () => {
+              await new RTModel({ token: rt })
+                .save()
+                .then(async () => {
+                  // Return the user object without hashed password
+                  delete user["password"];
 
-                if (u) {
-        
-                    return res.status(200).json({error: "Email is already taken"});
-        
-                } else {
-        
-                    user.password = bcrypt.hashSync(user.password, 10);
-
-                    await new UserModel({...user}).save().then(async() => {
-
-                        await new RTModel({token: rt}).save().then(async() => {
-
-                            // Return the user object
-                            return res.status(201).json({user: user, tokens: {at: at, rt: rt}});
-                        
-                        }).catch((e: Error) => {
-                
-                            // eslint-disable-next-line no-console
-                            console.log(e);
-    
-                        });
-
-                    }).catch((e: Error) => {
-                
-                        return res.status(500).json({error: e.name});
-
-                    });
-
-                }
-
+                  return res
+                    .status(201)
+                    .json({ user: user, tokens: { at: at, rt: rt } });
+                })
+                .catch((e: Error) => {
+                  // eslint-disable-next-line no-console
+                  console.log(e);
+                });
+            })
+            .catch((e: Error) => {
+              return res.status(500).json({ error: e.name });
             });
-
         }
-
-    });
-
+      });
+    }
+  });
 };

@@ -22,7 +22,6 @@ import { createSocketServer } from "socket";
 const app: Application = express();
 
 const main = async () => {
-  
   const port = process.env.PORT;
 
   db();
@@ -31,7 +30,7 @@ const main = async () => {
   app.use(nocache());
   app.use(express.json());
   app.use(morgan("tiny"));
-  app.use(express.urlencoded());
+  app.use(express.urlencoded({ extended: true }));
 
   app.use("/docs", swaggerUi.serve, swaggerUi.setup(swaggerDoc(doc)));
 
@@ -46,7 +45,7 @@ const main = async () => {
 
   // Index
   app.get("/", index);
-  
+
   // Auth routes
   app.post("/auth/login", login);
   app.post("/auth/register", register);
@@ -70,8 +69,7 @@ const main = async () => {
   app.listen(port, () => {
     console.log(`listening on port ${port}`);
   });
-  
-}
+};
 
 main();
 
