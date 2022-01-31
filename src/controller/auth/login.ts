@@ -81,6 +81,8 @@ export const login: RequestHandler = async (req, res) => {
         } else {
           return res.json({ error: "Oops, you typed something incorrectly!" });
         }
+      } else {
+        return res.json({ error: "Oops, you typed something incorrectly!" });
       }
     })
     .catch((error: Error) => {
