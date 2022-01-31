@@ -34,7 +34,7 @@
     "@typescript-eslint/eslint-plugin": "^5.10.1",
     "@typescript-eslint/parser": "^5.10.1",
     "bcrypt": "^5.0.1",
-    "chai": "^4.3.5",
+    "chai": "^4.3.6",
     "concurrently": "^6.5.1",
     "dotenv": "^10.0.0",
     "eslint": "^8.7.0",
