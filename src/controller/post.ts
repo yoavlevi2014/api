@@ -8,7 +8,6 @@ import { v4 as uuidv4 } from "uuid";
 class PostController {
 
     /**
-     * THIS NEEDS DOING PROPERLY
      * @openapi
      * /posts:
      *   get:
@@ -16,8 +15,19 @@ class PostController {
      *     responses:
      *       200:
      *         description: Returns a JSON array of all the posts in the database
+     *         content:
+     *           application/json:
+     *             schema:
+     *               type: array
+     *               items:
+     *                 allOf:
+     *                   - $ref: '#/components/schemas/Post'
+     * 
+     *       401:
+     *          description: Unauthorised
      *       500:
      *          description: Internal server error
+     * 
      */
     public static getAllPosts: RequestHandler = async (_req, res) => {
 
@@ -39,15 +49,23 @@ class PostController {
  
     /**
      * @openapi
-     * THIS NEEDS DOING PROPERLY
-     * /posts/id/:id:
+     * /posts/user:
      *   get:
-     *     description: Retrieves all the posts created by a user with a provided user id
+     *     description: Retrieves all the posts created by a user
      *     responses:
      *       200:
-     *         description: Returns a JSON array  of all the posts created by a user with the provided user id
+     *         description: Returns a JSON array of all the posts created by the provided user
+     *         content:
+     *           application/json:
+     *             schema:
+     *               type: array
+     *               items:
+     *                 allOf:
+     *                   - $ref: '#/components/schemas/Post'
      *       404:
-     *          description: User not found
+     *          description: No posts returned
+     *       401:
+     *          description: Unauthorised
      *       500:
      *          description: Internal server error
      */
@@ -66,7 +84,7 @@ class PostController {
             // Might need to check for an empty array if the user hasn't made any posts
             if (posts == null) {
  
-                return res.status(404).json({error: "User not found"});
+                return res.status(404).json({error: "No posts returned"});
  
             } else {
  
@@ -84,7 +102,7 @@ class PostController {
     };
  
     // /**
-    //  * THIS NEEDS DOING PROPERLY
+    //  * // TODO THIS NEEDS DOING PROPERLY
     // * @openapi
     // * /posts/name/:username:
     // *   get:
@@ -155,23 +173,47 @@ class PostController {
     //TODO Get all posts (sorted by score)
 
     /**
-     * THIS NEEDS DOING PROPERLY
      * @openapi
      * /posts:
      *   post:
      *     description: Creates a new post in the database
+     *     requestBody:
+     *       required: true
+     *       content:
+     *         application/json:
+     *           schema:
+     *             type: object
+     *             properties:
+     *               author:
+     *                 type: User
+     *                 description: User object representing the author of the post
+     *                 $ref: '#/components/schemas/User'
+     *               title:
+     *                 type: string
+     *                 description: Title of the post
+     *                 example: Post title
+     *               content:
+     *                 type: string
+     *                 description: SVG data of the post image
+     *                 example: <?xml version=\"1.0\" encoding=\"utf-8\"?><!DOCTYPE svg PUBLIC \"-//W3C//DTD SVG 1.1//EN\" \"http://www.w3.org/Graphics/SVG/1.1/DTD/svg11.dtd\"><svg version=\"1.1\" xmlns=\"http://www.w3.org/2000/svg\" xmlns:xlink=\"http://www.w3.org/1999/xlink\" x=\"0px\" y=\"0px\" viewBox=\"0 0 1000 1000\" enable-background=\"new 0 0 1000 1000\" xml:space=\"preserve\"><g><path d=\"M881.1,132.5H118.9C59,132.5,10,181.5,10,241.4v517.3c0,59.9,49,108.9,108.9,108.9h762.2c59.9,0,108.9-49,108.9-108.9V241.4C990,181.5,941,132.5,881.1,132.5z M949.2,747.3c0,54.9-24.5,79.4-79.4,79.4H130.3c-54.9,0-79.4-24.5-79.4-79.4V252.7c0-54.9,24.5-79.4,79.4-79.4h739.5c54.9,0,79.4,24.5,79.4,79.4V747.3z M316.3,418.3L418.3,500l265.4-224.6l204.2,183.8v306.3H112.1V581.7L316.3,418.3z M193.8,234.6c-45.1,0-81.7,36.6-81.7,81.7s36.6,81.7,81.7,81.7s81.7-36.6,81.7-81.7S238.9,234.6,193.8,234.6z\"/></g></svg>
+     *             required:
+     *               - author
+     *               - title
+     *               - content
      *     responses:
      *       201:
      *         description: New post successfully created
      *         content:
-     *           application/json
+     *           application/json:
      *             schema:
      *               type: object
-     *                 properties:
-     *                    post:
-     *                      $ref: '#/components/schemas/Post'
-     *               required:
-     *                 - 
+     *               properties:
+     *                 post:
+     *                   $ref: '#/components/schemas/Post'
+     *       400:
+     *          description: Request is badly formed
+     *       401:
+     *          description: Unauthorised
      *       500:
      *          description: Internal server error
      */
