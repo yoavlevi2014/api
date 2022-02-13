@@ -3,19 +3,18 @@ import { Socket } from "socket.io";
 
 import http from 'http';
 import { Server } from 'socket.io';
-import eJwt from "express-jwt";
-import { getCurrentUser, userJoin, userLeave } from "@helpers/socketUsers";
+import { getCurrentUser, userJoin, userLeave } from "./helpers/socketUsers";
 
 export function createSocketServer() {
     const app: Application = express();
     const server = http.createServer(app);
-    const io = new Server(server);
+    const io = new Server(server, {
+        cors: {
+            origin: "*"
+        }
+    });
 
     io.on('connection', (socket: Socket) => {
-        app.use(eJwt({
-            secret: socket.handshake.query.token as string,
-            algorithms: ["HS256"]
-        }));
 
         socket.on("joinRoom", ({ username, room }) => {
             const user = userJoin(socket.id, username, room);
@@ -28,7 +27,7 @@ export function createSocketServer() {
         socket.on('disconnect', () => {
             const user = userLeave(socket.id);
             if (user) {
-                const msg = `${user.username  } left the room`;
+                const msg = `${user.username} left the room`;
                 io.to(user.room).emit('addStatus', msg);
             }
         });
