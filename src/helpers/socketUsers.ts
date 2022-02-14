@@ -1,7 +1,7 @@
-const users = [];
+const users: { id: string; username: string; room: string; }[] = [];
 
 // Join user to chat
-function userJoin(id, username, room) {
+export function userJoin(id: string, username: string, room: string) {
   const user = { id, username, room };
 
   users.push(user);
@@ -10,12 +10,12 @@ function userJoin(id, username, room) {
 }
 
 // Get current user
-function getCurrentUser(id) {
+export function getCurrentUser(id : string) {
   return users.find(user => {return user.id === id});
 }
 
 // User leaves chat
-function userLeave(id) {
+export function userLeave(id : string) {
   const index = users.findIndex(user => {return user.id === id});
 
   if (index !== -1) {
