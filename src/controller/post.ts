@@ -29,21 +29,58 @@ class PostController {
      *          description: Internal server error
      * 
      */
-    public static getAllPosts: RequestHandler = async (_req, res) => {
+    public static getAllPosts: RequestHandler = async (req, res) => {
 
-        await PostModel.find({}).then(async (posts) => {
+        /*
+
+        ?sortby=new
+        ?sortby=top
+        ?
+
+        */
+
+        let sortingOrder: string = req.params.sortby;
+
+        // If the sorting order isn't supplied or is invalid default it to newest first
+        if (sortingOrder != "new" && sortingOrder != "top") {
+
+            sortingOrder = "new";
+
+        }
+
+        // Theres a bit of duplication here but its readable so probably not worth fixing
+        if (sortingOrder == "new") {
+
+            await PostModel.find({}).sort({'created': -1}).then(async (posts) => {
  
-            return res.status(200).json(posts);
+                return res.status(200).json(posts);
+     
+            }).catch((error: Error) => {
+     
+                // TODO handle this shit
+                // maybe it handles itself idk
+                // either way this seems to throw a 500 if it breaks so thats great i guess
+                throw error;
+     
+            });
+
+        } else {
+
+            await PostModel.find({}).sort({'likes': -1}).then(async (posts) => {
  
-        }).catch((error: Error) => {
- 
-            // TODO handle this shit
-            // maybe it handles itself idk
-            // either way this seems to throw a 500 if it breaks so thats great i guess
-            throw error;
- 
-        });
- 
+                return res.status(200).json(posts);
+     
+            }).catch((error: Error) => {
+     
+                // TODO handle this shit
+                // maybe it handles itself idk
+                // either way this seems to throw a 500 if it breaks so thats great i guess
+                throw error;
+     
+            });
+
+        }
+         
     };
  
  
