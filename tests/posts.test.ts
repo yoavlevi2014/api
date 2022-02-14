@@ -193,7 +193,7 @@ describe("Posts", () => {
   });
 
   // Unimplemented because there isn't a way to change the score yet
-  it("GET /posts?sortby=top/");
+  // it("GET /posts?sortby=top/");
 
   //TODO date range options
 
