@@ -29,16 +29,9 @@ class PostController {
      *          description: Internal server error
      * 
      */
+    //TODO Add docs for sortby
     public static getAllPosts: RequestHandler = async (req, res) => {
-
-        /*
-
-        ?sortby=new
-        ?sortby=top
-        ?
-
-        */
-
+        
         let sortingOrder: string = req.params.sortby;
 
         // If the sorting order isn't supplied or is invalid default it to newest first
