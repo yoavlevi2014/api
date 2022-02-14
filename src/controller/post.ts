@@ -3,14 +3,23 @@ import UserModel, { User } from "@models/user";
 import { RequestHandler } from "express";
 import { v4 as uuidv4 } from "uuid";
 
-// TODO do all the docs for this
-
 class PostController {
 
     /**
      * @openapi
      * /posts:
      *   get:
+     *     parameters:
+     *       - in: query
+     *         name: sortby
+     *         required: false
+     *         schema:
+     *           type: string
+     *           default: new
+     *           enum:
+     *             - new
+     *             - top
+     *         description: The order posts are sorted
      *     description: Retrieves all posts from the database
      *     responses:
      *       200:
@@ -29,9 +38,8 @@ class PostController {
      *          description: Internal server error
      * 
      */
-    //TODO Add docs for sortby
     public static getAllPosts: RequestHandler = async (req, res) => {
-        
+
         let sortingOrder: string = req.params.sortby;
 
         // If the sorting order isn't supplied or is invalid default it to newest first
