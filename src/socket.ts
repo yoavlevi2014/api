@@ -8,9 +8,16 @@ import { getCurrentUser, userJoin, userLeave } from "./helpers/socketUsers";
 export function createSocketServer() {
     const app: Application = express();
     const server = http.createServer(app);
+    app.use(function (_req, res, next) {
+        res.setHeader('Access-Control-Allow-Origin', '*');
+        res.setHeader('Access-Control-Allow-Methods', 'GET, POST, OPTIONS, PUT, PATCH, DELETE');
+        res.setHeader('Access-Control-Allow-Headers', 'X-Requested-With,content-type');
+        next();
+    });
     const io = new Server(server, {
         cors: {
-            origin: "*"
+            origin: "*",
+            methods: ["GET", "POST"]
         }
     });
 
