@@ -265,7 +265,8 @@ class PostController {
             content: req.body.content,
             likes: 0,
             created: Math.floor(new Date().getTime() / 1000), // UNIX timestamp
-            users: [req.body.author]
+            users: [req.body.author],
+            
 
         }
 
