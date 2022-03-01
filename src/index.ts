@@ -68,6 +68,7 @@ const main = async () => {
   app.get("/posts", PostController.getAllPosts);
   app.get("/posts/user", PostController.getPostsByUser);
   app.post("/posts", PostController.createPost);
+  app.post("/posts/comment", PostController.addComment);
 
 
   app.listen(port, () => {

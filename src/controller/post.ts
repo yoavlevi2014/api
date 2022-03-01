@@ -1,3 +1,4 @@
+import { Comment } from "@models/comment";
 import PostModel, { Post } from "@models/post";
 import UserModel, { User } from "@models/user";
 import { RequestHandler } from "express";
@@ -266,7 +267,7 @@ class PostController {
             likes: 0,
             created: Math.floor(new Date().getTime() / 1000), // UNIX timestamp
             users: [req.body.author],
-            
+
 
         }
 
@@ -313,6 +314,94 @@ class PostController {
     };
 
     //TODO Update post
+
+    //TODO Post comment route
+    public static addComment: RequestHandler = async (req, res) => {
+
+        const comment: Comment = {
+
+            id: uuidv4(),
+            author: req.body.author,
+            content: req.body.content,
+            likes: 0,
+            created: Math.floor(new Date().getTime() / 1000), // UNIX timestamp,
+            isOnOwnPost: false, // Set this after checking post and user exists
+            post_id: req.body.post_id
+
+        };
+
+        // There's probably a better way of doing this but you need to check all properties are defined
+        if (!comment.author)
+            return res.status(400).json({error: "Author is missing"});
+
+        if (!comment.content)
+            return res.status(400).json({error: "Comment is missing"});
+
+        await UserModel.findOne({id: comment.author.id}).then(async (user) => {
+
+            if (user == null) {
+        
+                return res.status(400).json({error: "Invalid user"});
+        
+            } else {
+
+                await PostModel.findOne({id: comment.post_id}).then(async (post) => {
+
+                    if (post == null) {
+                
+                        return res.status(400).json({error: "Invalid post"});
+                
+                    } else {
+                
+                        // User is commenting on their own post
+                        if (comment.author.id == post.author.id) {
+
+                            comment.isOnOwnPost = true;
+
+                        }
+
+                        // Now we need to add the comment
+                        if (post.comments == null) {
+
+                            post.comments = [comment];
+
+                        } else {
+
+                            post.comments.push(comment);
+
+                        }
+
+                        await post.save().then(async () => {
+
+                            // Return the post object
+                            return res.status(201).json(post);  
+                
+                        }).catch((e: Error) => {
+                
+                            return res.status(500).json({error: e.name});
+                
+                
+                        });
+                
+                    }
+                 
+                }).catch((error: Error) => {
+                 
+                    // TODO handle this shit
+                    throw error;
+                 
+                });
+                
+            }
+         
+        }).catch((error: Error) => {
+         
+            // TODO handle this shit
+            throw error;
+         
+        });
+
+    }
 
 }
 
