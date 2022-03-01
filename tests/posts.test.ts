@@ -405,6 +405,8 @@ describe("Posts", () => {
         expect(response.body.comments.length).to.eql(1);
         expect(response.body.comments[0].author.username).to.eql(userTwo.username);
         expect(response.body.comments[0].content).to.eql("Comment one");
+        expect(response.body.comments[0].isOnOwnPost).to.eql(false);
+
 
         done(error);
 
@@ -450,8 +452,10 @@ describe("Posts", () => {
         expect(response.body.comments.length).to.eql(2);
         expect(response.body.comments[0].author.username).to.eql(userTwo.username);
         expect(response.body.comments[0].content).to.eql("Comment one");
+        expect(response.body.comments[0].isOnOwnPost).to.eql(false);
         expect(response.body.comments[1].author.username).to.eql(userTwo.username);
         expect(response.body.comments[1].content).to.eql("Comment two");
+        expect(response.body.comments[1].isOnOwnPost).to.eql(false);
 
         done(error);
 
@@ -461,46 +465,245 @@ describe("Posts", () => {
 
   });
 
-  // it("Add comment to a post as the author", (done) => {
+  it("Add comment to a post as the author", (done) => {
 
+    request(app).get(`/posts`).set('Authorization', `Bearer ${authTokenOne}`)
+    .end((error, response) => {
 
+      if (error)
+        done(error);
+          
+      // We have to get the second post because of the default sorting order of GET /posts
+      const post: Post = response.body[1] as Post;
 
-  // });
+      // Mocking up properties that will normally be set on the server
+      const comment: Comment = {
 
-  // it("Don't add a comment to an invalid post", (done) => {
+        id: "",
+        author: userOne,
+        content: "Author comment",
+        likes: 0,
+        created: 0,
+        isOnOwnPost: false,
+        post_id: post.id
 
+      };
 
+      request(app).post(`/posts/comment`).set('Authorization', `Bearer ${authTokenOne}`)
+      .send({
+        author: comment.author,
+        content: comment.content,
+        post_id: comment.post_id
+      }).end((error, response) => {
+          
+        expect(response.status).to.eql(201);
+        expect(response.body.comments[2].author.username).to.eql(userOne.username);
+        expect(response.body.comments[2].content).to.eql("Author comment");
+        expect(response.body.comments[2].isOnOwnPost).to.eql(true);
 
-  // });
+        done(error);
 
-  // it("Don't add a comment with an invalid user", (done) => {
+      });
 
+    });
 
+  });
+
+  it("Don't add a comment to an invalid post", (done) => {
+
+    // Mocking up properties that will normally be set on the server
+    const comment: Comment = {
+
+      id: "",
+      author: userTwo,
+      content: "Comment one",
+      likes: 0,
+      created: 0,
+      isOnOwnPost: false,
+      post_id: "invalid-post-id"
+
+    };
+
+    request(app).post(`/posts/comment`).set('Authorization', `Bearer ${authTokenOne}`)
+    .send({
+      author: comment.author,
+      content: comment.content,
+      post_id: comment.post_id
+    }).end((error, response) => {
+        
+      expect(response.status).to.eql(400);
+      expect(response.body.error).to.eql("Invalid post");
+
+      done(error);
+
+    });
+
+  });
+
+  it("Don't add a comment with an invalid user", (done) => {
+
+    request(app).get(`/posts`).set('Authorization', `Bearer ${authTokenOne}`)
+    .end((error, response) => {
+
+      if (error)
+        done(error);
+          
+      // We have to get the second post because of the default sorting order of GET /posts
+      const post: Post = response.body[1] as Post;
+
+      // Create invalid user for testing
+      const newUser: User = {
+        id: "undefined",
+        email: "test@test.co.uk",
+        name: "Test",
+        surname: "User",
+        password: "password",
+        username: "test"
+    }
+
+      // Mocking up properties that will normally be set on the server
+      const comment: Comment = {
+
+        id: "",
+        author: newUser,
+        content: "Comment one",
+        likes: 0,
+        created: 0,
+        isOnOwnPost: false,
+        post_id: post.id
+
+      };
+
+      request(app).post(`/posts/comment`).set('Authorization', `Bearer ${authTokenOne}`)
+      .send({
+        author: comment.author,
+        content: comment.content,
+        post_id: comment.post_id
+      }).end((error, response) => {
+          
+        expect(response.status).to.eql(400);
+        expect(response.body.error).to.eql("Invalid user");
+
+        done(error);
+
+      });
+
+    });
     
-  // });
+  });
 
-  // it("Don't create a comment with missing ...", (done) => {
+  //Author, comment, post_id
 
+  it("Don't create a comment with missing author", (done) => {
 
+    request(app).get(`/posts`).set('Authorization', `Bearer ${authTokenOne}`)
+    .end((error, response) => {
+
+      if (error)
+        done(error);
+          
+      // We have to get the second post because of the default sorting order of GET /posts
+      const post: Post = response.body[1] as Post;
+
+      // Mocking up properties that will normally be set on the server
+      const comment: Comment = {
+
+        id: "",
+        author: userOne,
+        content: "Comment",
+        likes: 0,
+        created: 0,
+        isOnOwnPost: false,
+        post_id: post.id
+
+      };
+
+      request(app).post(`/posts/comment`).set('Authorization', `Bearer ${authTokenOne}`)
+      .send({
+        content: comment.content,
+        post_id: comment.post_id
+      }).end((error, response) => {
+          
+        expect(response.status).to.eql(400);
+        expect(response.body.error).to.eql("Author is missing");
+
+        done(error);
+
+      });
+
+    });
     
-  // });
+  });
 
-  // it("", (done) => {
+  it("Don't create a comment with missing comment", (done) => {
 
+    request(app).get(`/posts`).set('Authorization', `Bearer ${authTokenOne}`)
+    .end((error, response) => {
 
+      if (error)
+        done(error);
+          
+      // We have to get the second post because of the default sorting order of GET /posts
+      const post: Post = response.body[1] as Post;
+
+      // Mocking up properties that will normally be set on the server
+      const comment: Comment = {
+
+        id: "",
+        author: userOne,
+        content: "Comment",
+        likes: 0,
+        created: 0,
+        isOnOwnPost: false,
+        post_id: post.id
+
+      };
+
+      request(app).post(`/posts/comment`).set('Authorization', `Bearer ${authTokenOne}`)
+      .send({
+        author: comment.author,
+        post_id: comment.post_id
+      }).end((error, response) => {
+
+        expect(response.status).to.eql(400);
+        expect(response.body.error).to.eql("Comment is missing");
+
+        done(error);
+
+      });
+
+    });
     
-  // });
+  });
 
-  // it("", (done) => {
+  it("Don't create a comment with missing post id", (done) => {
 
+    // Mocking up properties that will normally be set on the server
+    const comment: Comment = {
 
+      id: "",
+      author: userOne,
+      content: "Comment",
+      likes: 0,
+      created: 0,
+      isOnOwnPost: false,
+      post_id: "undefined"
+
+    };
+
+    request(app).post(`/posts/comment`).set('Authorization', `Bearer ${authTokenOne}`)
+    .send({
+      author: comment.author,
+      content: comment.content,
+    }).end((error, response) => {
+        
+      expect(response.status).to.eql(400);
+      expect(response.body.error).to.eql("Post id is missing");
+
+      done(error);
+
+    });
     
-  // });
-
-  // it("", (done) => {
-
-
-    
-  // });
+  });
 
 });
