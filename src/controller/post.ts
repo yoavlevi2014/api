@@ -337,6 +337,9 @@ class PostController {
         if (!comment.content)
             return res.status(400).json({error: "Comment is missing"});
 
+        if (!comment.post_id)
+            return res.status(400).json({error: "Post id is missing"});
+
         await UserModel.findOne({id: comment.author.id}).then(async (user) => {
 
             if (user == null) {
