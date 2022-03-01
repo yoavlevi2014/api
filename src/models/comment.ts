@@ -6,6 +6,6 @@ export interface Comment {
   content: string;
   likes: number;
   created: number;
-  users: [User];
+  post_id: number // (Might use a post model instead of an id here idk)
   // replies: [Comment];
 }
