@@ -7,6 +7,6 @@ export interface Comment {
   likes: number;
   created: number;
   isOnOwnPost: boolean;
-  post_id: number; // (Might use a post model instead of an id here idk)
+  post_id: string; // (Might use a post model instead of an id here idk)
   // replies: [Comment];
 }
