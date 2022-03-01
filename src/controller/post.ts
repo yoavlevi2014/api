@@ -315,7 +315,7 @@ class PostController {
 
     //TODO Update post
 
-    //TODO Post comment route
+    //TODO docs and shit
     public static addComment: RequestHandler = async (req, res) => {
 
         const comment: Comment = {
@@ -325,7 +325,7 @@ class PostController {
             content: req.body.content,
             likes: 0,
             created: Math.floor(new Date().getTime() / 1000), // UNIX timestamp,
-            isOnOwnPost: false, // Set this after checking post and user exists
+            isOnOwnPost: false, // This gets set after checking post and user exists
             post_id: req.body.post_id
 
         };
