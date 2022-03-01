@@ -4,6 +4,7 @@ import { expect } from "chai";
 import mongoose from "mongoose";
 import { User } from "@models/user";
 import { Post } from "@models/post";
+import { Comment } from "@models/comment";
 
 let authTokenOne: string;
 let authTokenTwo: string;
@@ -367,5 +368,139 @@ describe("Posts", () => {
       });
 
   });
+
+  it("Add first comment to a post", (done) => {
+
+    request(app).get(`/posts`).set('Authorization', `Bearer ${authTokenOne}`)
+    .end((error, response) => {
+
+      if (error)
+        done(error);
+          
+      // We have to get the second post because of the default sorting order of GET /posts
+      const post: Post = response.body[1] as Post;
+
+      // Mocking up properties that will normally be set on the server
+      const comment: Comment = {
+
+        id: "",
+        author: userTwo,
+        content: "Comment one",
+        likes: 0,
+        created: 0,
+        isOnOwnPost: false,
+        post_id: post.id
+
+      };
+
+      request(app).post(`/posts/comment`).set('Authorization', `Bearer ${authTokenOne}`)
+      .send({
+        author: comment.author,
+        content: comment.content,
+        post_id: comment.post_id
+      }).end((error, response) => {
+          
+        expect(response.status).to.eql(201);
+        expect(response.body.comments).to.be.an('array');
+        expect(response.body.comments.length).to.eql(1);
+        expect(response.body.comments[0].author.username).to.eql(userTwo.username);
+        expect(response.body.comments[0].content).to.eql("Comment one");
+
+        done(error);
+
+      });
+
+    });
+
+  });
+  
+  it("Add second comment to a post", (done) => {
+
+    request(app).get(`/posts`).set('Authorization', `Bearer ${authTokenOne}`)
+    .end((error, response) => {
+
+      if (error)
+        done(error);
+          
+      // We have to get the second post because of the default sorting order of GET /posts
+      const post: Post = response.body[1] as Post;
+
+      // Mocking up properties that will normally be set on the server
+      const comment: Comment = {
+
+        id: "",
+        author: userTwo,
+        content: "Comment two",
+        likes: 0,
+        created: 0,
+        isOnOwnPost: false,
+        post_id: post.id
+
+      };
+
+      request(app).post(`/posts/comment`).set('Authorization', `Bearer ${authTokenOne}`)
+      .send({
+        author: comment.author,
+        content: comment.content,
+        post_id: comment.post_id
+      }).end((error, response) => {
+          
+        expect(response.status).to.eql(201);
+        expect(response.body.comments).to.be.an('array');
+        expect(response.body.comments.length).to.eql(2);
+        expect(response.body.comments[0].author.username).to.eql(userTwo.username);
+        expect(response.body.comments[0].content).to.eql("Comment one");
+        expect(response.body.comments[1].author.username).to.eql(userTwo.username);
+        expect(response.body.comments[1].content).to.eql("Comment two");
+
+        done(error);
+
+      });
+
+    });
+
+  });
+
+  // it("Add comment to a post as the author", (done) => {
+
+
+
+  // });
+
+  // it("Don't add a comment to an invalid post", (done) => {
+
+
+
+  // });
+
+  // it("Don't add a comment with an invalid user", (done) => {
+
+
+    
+  // });
+
+  // it("Don't create a comment with missing ...", (done) => {
+
+
+    
+  // });
+
+  // it("", (done) => {
+
+
+    
+  // });
+
+  // it("", (done) => {
+
+
+    
+  // });
+
+  // it("", (done) => {
+
+
+    
+  // });
 
 });
