@@ -3,7 +3,7 @@ import { Socket } from "socket.io";
 
 import http from 'http';
 import { Server } from 'socket.io';
-import { getCurrentUser, userJoin, userLeave } from "./helpers/socketUsers";
+import { checkUserAdmin, getCurrentUser, userJoin, userLeave } from "./helpers/socketUsers";
 
 export function createSocketServer() {
     const app: Application = express();
@@ -24,8 +24,11 @@ export function createSocketServer() {
     io.on('connection', (socket: Socket) => {
 
         socket.on("joinRoom", ({ username, room }) => {
-            const user = userJoin(socket.id, username, room);
+            const admin = checkUserAdmin(room);
+            const user = userJoin(socket.id, username, room, admin);
             socket.join(user.room);
+            
+            io.to(socket.id).emit('adminCheck', admin);
 
             const msg = `${user.username} joined the room`
             io.to(user.room).emit('addStatus', msg);
