@@ -133,7 +133,7 @@ describe("Users", () => {
 
   });
 
-  it("Basic search test, more coming", (done) => {
+  it("GET /users/search returns correct matches (part one)", (done) => {
 
     request(app)
       .get("/users/search").set('Authorization', `Bearer ${authToken}`)
@@ -153,7 +153,7 @@ describe("Users", () => {
   
   });
 
-  it("Basic search test, more coming", (done) => {
+  it("GET /users/search returns correct matches (part two)", (done) => {
 
     request(app)
       .get("/users/search").set('Authorization', `Bearer ${authToken}`)
