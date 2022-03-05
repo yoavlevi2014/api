@@ -131,7 +131,7 @@ class UserController {
         await UserModel.find({ username: { $regex: query, $options: "i" } }).then(async (users) => {
 
             // Only return best 4 matches
-            return res.status(200).json(users.slice(3));
+            return res.status(200).json(users.slice(0, 3));
         
         }).catch((error: Error) => {
  
