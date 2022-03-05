@@ -158,13 +158,31 @@ describe("Users", () => {
     request(app)
       .get("/users/search").set('Authorization', `Bearer ${authToken}`)
       .send({
-        query: "A"
+        query: "Adm"
       })
       .end((error, response) => {
   
         expect(response.body.length).to.eql(1);
         expect(response.status).to.eql(200);
         expect(response.body[0].username).to.eql("admin");
+  
+        done(error);
+  
+      });
+  
+  });
+
+  it("GET /users/search errors if too few characters are supplied", (done) => {
+
+    request(app)
+      .get("/users/search").set('Authorization', `Bearer ${authToken}`)
+      .send({
+        query: "A"
+      })
+      .end((error, response) => {
+  
+        expect(response.body.error).to.eql("Too few characters supplied");
+        expect(response.status).to.eql(400);
   
         done(error);
   

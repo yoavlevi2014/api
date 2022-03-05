@@ -120,7 +120,13 @@ class UserController {
 
         const query = _req.body.query;
 
-        // Do some validation on query
+        if (query.length < 3) {
+
+            return res.status(400).json({error: "Too few characters supplied"});
+
+        }
+
+        // TODO Do some validation on query
 
         await UserModel.find({ username: { $regex: query, $options: "i" } }).then(async (users) => {
 
