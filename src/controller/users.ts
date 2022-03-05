@@ -116,6 +116,26 @@ class UserController {
   
      };
 
+     public static search: RequestHandler = async (_req, res) => {
+
+        const query = _req.body.query;
+
+        // Do some validation on query
+
+        await UserModel.find({ username: { $regex: query, $options: "i" } }).then(async (users) => {
+
+            // Only return best 4 matches
+            return res.status(200).json(users);
+        
+        }).catch((error: Error) => {
+ 
+            // TODO handle this shit
+            throw error;
+
+        });
+  
+     };
+
 }
 
 

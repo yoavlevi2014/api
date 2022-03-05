@@ -60,6 +60,7 @@ const main = async () => {
   app.get("/users", UserController.getAllUsers);
   app.get("/users/id/:id", UserController.getUserByID);
   app.get("/users/name/:username", UserController.getUserByUsername);
+  app.get("/users/search", UserController.search);
 
   // Launch socket server
   createSocketServer();
@@ -69,7 +70,6 @@ const main = async () => {
   app.get("/posts/user", PostController.getPostsByUser);
   app.post("/posts", PostController.createPost);
   app.post("/posts/comment", PostController.addComment);
-
 
   app.listen(port, () => {
     console.log(`listening on port ${port}`);
