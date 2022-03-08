@@ -118,6 +118,42 @@ class UserController {
 
 }
 
+// Friends and shit
+
+// ---Friends---
+
+// -GET-
+// Number of friends
+// List of friends
+// List of invites
+
+
+// -POST-
+// Send request
+// Accept request
+// Decline request
+// Remove request
+// Remove friend
+// Send message
+
+
+// ---Following---
+
+// -GET-
+// Number of following
+// List of following
+// List of posts from following
+
+// -POST-
+// Follow
+// Unfollow
+
+
+// ---Followers---
+
+// -GET-
+// Number of followers
+// List of followers
 
 
 export default UserController;

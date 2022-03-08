@@ -96,4 +96,78 @@ describe("Users", () => {
 
   });
 
+  // Friends and shit
+
+  // ---Friends---
+
+
+  // Send request (with all the right data)
+  it("Send friend request", (done) => {});
+  // Send request (permutations of missing data)
+  it("Send friend request (missing current user)", (done) => {});
+  it("Send friend request (missing user)", (done) => {});
+  // Send request (permutations of bad data)
+  it("Send friend request (current user doesn't exit)", (done) => {});
+  it("Send friend request (user doesn't exist)", (done) => {});
+  // Accept request (with all the right data)
+  it("Accept friend request", (done) => {});
+  // Accept request (permutations of missing data)
+  it("Accept friend request (missing request id? not sure how i want to do this one)", (done) => {});
+  // Accept request (permutations of bad data)
+  it("Accept friend request (request id doesn't exist? not sure how i want to do this one)", (done) => {});
+  // Decline request (with all the right data)
+  it("Decline friend request", (done) => {});
+  // Decline request (permutations of missing data)
+  it("Decline friend request (missing request id? not sure how i want to do this one)", (done) => {});
+  // Decline request (permutations of bad data)
+  it("Decline friend request (request id doesn't exist? not sure how i want to do this one)", (done) => {});
+  // Remove request (with all the right data)
+  it("Remove friend request", (done) => {});
+  // Remove request (permutations of missing data)
+  it("Remove friend request (request id doesn't exist? not sure how i want to do this one)", (done) => {});
+  // Remove request (permutations of bad data)
+  it("Remove friend request (request id doesn't exist? not sure how i want to do this one)", (done) => {});
+  // Remove friend (with all the right data)
+  // Remove friend (permutations of missing data)
+  // Remove friend (permutations of bad data)
+  // Send message (with all the right data)
+  // Send message (permutations of missing data)
+  // Send message (permutations of bad data)
+  // Number of friends (with all the right data)
+  // Number of friends (permutations of missing data)
+  // Number of friends (permutations of bad data)
+  // List of friends (with all the right data)
+  // List of friends (permutations of missing data)
+  // List of friends (permutations of bad data)
+  // List of invites (with all the right data)
+  // List of invites (permutations of missing data)
+  // List of invites (permutations of bad data)
+
+  // ---Following---
+
+  // Follow (with all the right data)
+  // Follow (permutations of missing data)
+  // Follow (permutations of bad data)
+  // Unfollow (with all the right data)
+  // Unfollow (permutations of missing data)
+  // Unfollow (permutations of bad data)
+  // Number of following (with all the right data)
+  // Number of following (permutations of missing data)
+  // Number of following (permutations of bad data)
+  // List of following (with all the right data)
+  // List of following (permutations of missing data)
+  // List of following (permutations of bad data)
+  // List of posts from following (with all the right data)
+  // List of posts from following (permutations of missing data)
+  // List of posts from following (permutations of bad data)
+
+  // ---Followers---
+  
+  // Number of followers (with all the right data)
+  // Number of followers (permutations of missing data)
+  // Number of followers (permutations of bad data)
+  // List of followers (with all the right data)
+  // List of followers (permutations of missing data)
+  // List of followers (permutations of bad data)
+
 });
