@@ -9,6 +9,7 @@ export interface User {
   surname: string;
   password?: string;
   following?: [string];
+  friends?: [string];
 }
 
 const UserModel = model<User>("users", UserSchema);
