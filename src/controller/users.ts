@@ -116,6 +116,45 @@ class UserController {
   
      };
 
+     /**
+     * @openapi
+     * /users/search:
+     *   get:
+     *     description: Searches for usernames in the database and returns up to 4 results
+     *     requestBody:
+     *       required: true
+     *       content:
+     *         application/json:
+     *           schema:
+     *             type: object
+     *             properties:
+     *               query:
+     *                 type: string
+     *                 description: Partial query used to search the database for matches
+     *     responses:
+     *       200:
+     *         description: Array of users matching the search query (limit of 4)
+     *         content:
+     *           application/json:
+     *             schema:
+     *               type: array
+     *               items:
+     *                 allOf:
+     *                   - $ref: '#/components/schemas/User'
+     *                 
+     *       404:
+     *          description: User not found
+     *          content:
+     *            application/json:
+     *              schema:
+     *                type: object
+     *                properties:
+     *                  error:
+     *                    type: string
+     *                    description: Error message
+     *       500:
+     *          description: Internal server error
+     */
      public static search: RequestHandler = async (_req, res) => {
 
         const query = _req.body.query;
