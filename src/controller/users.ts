@@ -114,6 +114,44 @@ class UserController {
  
          });
   
+    };
+
+    /**
+     * @openapi
+     * /users/friends/request:
+     *   post:
+     *     description: Sends a friend request from one user to another
+     *     need body shit here
+     *     responses:
+     *       201:
+     *         description: Returns a JSON array of all the users in the database
+     *       400:
+     *         description: Request is missing one or more user
+     *       404:
+     *         description: One or more of the users in the request doesn't exist
+     *       500:
+     *          description: Internal server error
+     */
+     public static sendFriendRequest: RequestHandler = async (req, res) => {
+
+        const to: string = req.body.to;
+        const from: string = req.body.from;
+
+        if (!to)
+            return res.status(400).json({error: "To user is missing"});
+
+        if (!from)
+            return res.status(400).json({error: "From user is missing"});
+
+        
+
+        // Check to user is provided
+        // Check from user is provided
+        // Check to user exists
+        // Check from user exists
+        // Not sure if we're storing requests in their own table or as part of the user objects
+        // But store is somehow
+ 
      };
 
 }
