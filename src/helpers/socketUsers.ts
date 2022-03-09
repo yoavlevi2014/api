@@ -23,9 +23,15 @@ export function userLeave(id : string) {
   }
 }
 
+// Checks if the user is alone, if not, a user id from that room is returned
+export function checkRoomEmpty(room: string) {
+  return users.find(user => {return user.room == room})?.id;
+}
+
 // eslint-disable-next-line no-undef
 module.exports = {
   userJoin,
   getCurrentUser,
-  userLeave
+  userLeave,
+  checkRoomEmpty
 };
