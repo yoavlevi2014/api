@@ -146,7 +146,7 @@ describe("Users", () => {
 
   it("Send friend request", (done) => {
 
-    request(app).post("/users/friends/request")
+    request(app).post("/users/friends/request").set('Authorization', `Bearer ${authToken}`)
       .send(
         {
           "from": UserOne.username,
@@ -165,7 +165,7 @@ describe("Users", () => {
 
   it("Send friend request (missing from username)", (done) => {
     
-    request(app).post("/users/friends/request")
+    request(app).post("/users/friends/request").set('Authorization', `Bearer ${authToken}`)
       .send(
         {
           "to": UserTwo.username
@@ -183,7 +183,7 @@ describe("Users", () => {
 
   it("Send friend request (missing to username)", (done) => {
     
-    request(app).post("/users/friends/request")
+    request(app).post("/users/friends/request").set('Authorization', `Bearer ${authToken}`)
       .send(
         {
           "from": UserOne.username
@@ -201,7 +201,7 @@ describe("Users", () => {
 
   it("Send friend request (invalid to user)", (done) => {
     
-    request(app).post("/users/friends/request")
+    request(app).post("/users/friends/request").set('Authorization', `Bearer ${authToken}`)
       .send(
         {
           "to": "InvalidUsername",
@@ -209,7 +209,7 @@ describe("Users", () => {
         }
       ).end((error, response) => {
 
-        expect(response.status).to.eql(400);
+        expect(response.status).to.eql(404);
         // more shit here
 
         done(error);
@@ -220,7 +220,7 @@ describe("Users", () => {
 
   it("Send friend request (invalid from user)", (done) => {
     
-    request(app).post("/users/friends/request")
+    request(app).post("/users/friends/request").set('Authorization', `Bearer ${authToken}`)
       .send(
         {
           "to": UserOne.username,
@@ -228,7 +228,45 @@ describe("Users", () => {
         }
       ).end((error, response) => {
 
-        expect(response.status).to.eql(400);
+        expect(response.status).to.eql(404);
+        // more shit here
+
+        done(error);
+
+      });
+
+  });
+
+  it("Send friend request (To user is the same as from user)", (done) => {
+    
+    request(app).post("/users/friends/request").set('Authorization', `Bearer ${authToken}`)
+      .send(
+        {
+          "to": UserOne.username,
+          "from": UserOne.username
+        }
+      ).end((error, response) => {
+
+        expect(response.status).to.eql(403);
+        // more shit here
+
+        done(error);
+
+      });
+
+  });
+
+  it("Send friend request (request already exists)", (done) => {
+    
+    request(app).post("/users/friends/request").set('Authorization', `Bearer ${authToken}`)
+      .send(
+        {
+          "to": UserOne.username,
+          "from": UserTwo.username
+        }
+      ).end((error, response) => {
+
+        expect(response.status).to.eql(403);
         // more shit here
 
         done(error);
