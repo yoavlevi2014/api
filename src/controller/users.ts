@@ -1,4 +1,7 @@
+import FriendRequestModel from "@models/friend_request";
 import UserModel from "@models/user";
+import { FriendRequest } from "@models/friend_request";
+import { v4 as uuidv4 } from "uuid";
 import { RequestHandler } from "express";
 
 // All these routes could do with being a bit more typescripty
@@ -127,6 +130,9 @@ class UserController {
      *         description: Returns a JSON array of all the users in the database
      *       400:
      *         description: Request is missing one or more user
+     *       403:
+     *         description: There is an error with your request
+     *         need body shit here to explain the various options
      *       404:
      *         description: One or more of the users in the request doesn't exist
      *       500:
@@ -143,14 +149,91 @@ class UserController {
         if (!from)
             return res.status(400).json({error: "From user is missing"});
 
+        if (to === from)
+            return res.status(403).json({error: "Cannot send friend request to yourself"});
         
 
-        // Check to user is provided
-        // Check from user is provided
-        // Check to user exists
-        // Check from user exists
-        // Not sure if we're storing requests in their own table or as part of the user objects
-        // But store is somehow
+        // Check "to" user is a valid user
+        await UserModel.findOne({username: to}).then(async (user) => {
+
+            if (user == null) {
+
+                return res.status(404).json({error: "To user not found"});
+
+            } else {
+
+                // Check "from" user is a valid user
+                await UserModel.findOne({username: from}).then(async (user) => {
+
+                    if (user == null) {
+
+                        return res.status(404).json({error: "From user not found"});
+
+                    } else {
+
+                        // Still need to handle situations where both uses send a friend request to each other
+                        await FriendRequestModel.findOne({to_user: to, from_user: from}).then((async (request) => {
+
+                            if (request == null) {
+
+                                const request: FriendRequest = {
+
+                                    request_id: uuidv4(),
+                                    to_user: to,
+                                    from_user: from,
+                                    status: "pending"
+
+                                };
+
+                                await new FriendRequestModel({...request}).save().then(async () => {
+
+                                    return res.status(201).json(request);
+
+                                }).catch((e: Error) => {return res.status(500).json({error: e.name});});
+
+                            } else {
+
+                                return res.status(403).json({error: "Request already exists"});
+                                
+                            }
+
+                        })).catch((error: Error) => {throw error});
+
+                    }
+ 
+                }).catch((error: Error) => {throw error});
+
+            }
+ 
+        }).catch((error: Error) => {throw error});
+
+     };
+
+     /**
+     * @openapi
+     * /users/friends/requests:
+     *   get:
+     *     description: Retrieves all friend requests from the database
+     *     responses:
+     *       200:
+     *         description: Returns a JSON array of all the friend request in the database
+     *       500:
+     *          description: Internal server error
+     */
+    public static getAllFriendRequests: RequestHandler = async (_req, res) => {
+        
+        await FriendRequestModel.find({}).then(async (requests) => {
+ 
+             return res.json(requests).status(200);
+ 
+        }).catch((error: Error) => {
+ 
+             // TODO handle this shit
+             // maybe it handles itself idk
+             // either way this seems to throw a 500 if it breaks so thats great i guess
+             throw error;
+ 
+         });
  
      };
 

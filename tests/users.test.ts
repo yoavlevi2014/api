@@ -16,7 +16,9 @@ describe("Users", () => {
     mongoose.connection.collections.users.drop(() => {
       mongoose.connection.collections.refreshes.drop(() => {
         mongoose.connection.collections.posts.drop(() => {
-          done();
+          mongoose.connection.collections.friend_requests.drop(() => {
+            done();
+          });
         });
       });
     });
@@ -73,7 +75,7 @@ describe("Users", () => {
             surname: "Two",
             password: "password",
             username: "UserTwo"
-          }).end((error) => {
+          }).end((error, response) => {
 
             UserTwo = response.body.user;
       
@@ -155,6 +157,25 @@ describe("Users", () => {
       ).end((error, response) => {
 
         expect(response.status).to.eql(201);
+        // more shit here
+
+        done(error);
+
+      });
+
+  });
+
+  it("Send friend request (request already exists)", (done) => {
+    
+    request(app).post("/users/friends/request").set('Authorization', `Bearer ${authToken}`)
+      .send(
+        {
+          "from": UserOne.username,
+          "to": UserTwo.username
+        }
+      ).end((error, response) => {
+
+        expect(response.status).to.eql(403);
         // more shit here
 
         done(error);
@@ -256,18 +277,14 @@ describe("Users", () => {
 
   });
 
-  it("Send friend request (request already exists)", (done) => {
+  it("Get all friend requests", (done) => {
     
-    request(app).post("/users/friends/request").set('Authorization', `Bearer ${authToken}`)
-      .send(
-        {
-          "to": UserOne.username,
-          "from": UserTwo.username
-        }
-      ).end((error, response) => {
-
-        expect(response.status).to.eql(403);
-        // more shit here
+    request(app).get("/users/friends/requests").set('Authorization', `Bearer ${authToken}`)
+    .end((error, response) => {
+      
+        expect(response.status).to.eql(200);
+        expect(response.body.length).to.eql(1);
+        expect(response.body).to.be.an("array");
 
         done(error);
 

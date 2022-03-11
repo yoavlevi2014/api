@@ -60,6 +60,8 @@ const main = async () => {
   app.get("/users", UserController.getAllUsers);
   app.get("/users/id/:id", UserController.getUserByID);
   app.get("/users/name/:username", UserController.getUserByUsername);
+  app.get("/users/friends/requests", UserController.getAllFriendRequests);
+  app.post("/users/friends/request", UserController.sendFriendRequest);
 
   // Launch socket server
   createSocketServer();
