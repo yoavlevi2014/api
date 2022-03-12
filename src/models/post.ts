@@ -10,6 +10,7 @@ export interface Post {
   likes: number;
   created: number;
   users: [User];
+  size: string;
   // TODO comments
   // comments: [Comment] 
 }
