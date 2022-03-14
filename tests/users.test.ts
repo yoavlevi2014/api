@@ -190,6 +190,21 @@ describe("Users", () => {
   
   });
 
+  it("GET /users/search errors if no characters are supplied", (done) => {
+
+    request(app)
+      .get("/users/search").set('Authorization', `Bearer ${authToken}`)
+      .end((error, response) => {
+  
+        expect(response.body.error).to.eql("No characters supplied");
+        expect(response.status).to.eql(400);
+  
+        done(error);
+  
+      });
+  
+  });
+
   //TODO add test to check for no more than 4 results
 
 });
