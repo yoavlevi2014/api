@@ -148,10 +148,7 @@ describe("Users", () => {
   it("GET /users/search returns correct matches (part one)", (done) => {
 
     request(app)
-      .get("/users/search").set('Authorization', `Bearer ${authToken}`)
-      .send({
-        query: "User"
-      })
+      .get("/users/search/User").set('Authorization', `Bearer ${authToken}`)
       .end((error, response) => {
   
         expect(response.body.length).to.eql(2);
@@ -168,10 +165,7 @@ describe("Users", () => {
   it("GET /users/search returns correct matches (part two)", (done) => {
 
     request(app)
-      .get("/users/search").set('Authorization', `Bearer ${authToken}`)
-      .send({
-        query: "Adm"
-      })
+      .get("/users/search/Adm").set('Authorization', `Bearer ${authToken}`)
       .end((error, response) => {
   
         expect(response.body.length).to.eql(1);
@@ -187,14 +181,25 @@ describe("Users", () => {
   it("GET /users/search errors if too few characters are supplied", (done) => {
 
     request(app)
-      .get("/users/search").set('Authorization', `Bearer ${authToken}`)
-      .send({
-        query: "A"
-      })
+      .get("/users/search/a").set('Authorization', `Bearer ${authToken}`)
       .end((error, response) => {
   
         expect(response.body.error).to.eql("Too few characters supplied");
         expect(response.status).to.eql(400);
+  
+        done(error);
+  
+      });
+  
+  });
+
+  it("GET /users/search errors if no characters are supplied", (done) => {
+
+    request(app)
+      .get("/users/search/").set('Authorization', `Bearer ${authToken}`)
+      .end((error, response) => {
+  
+        expect(response.status).to.eql(404);
   
         done(error);
   
