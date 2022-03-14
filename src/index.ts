@@ -62,6 +62,8 @@ const main = async () => {
   app.get("/users/name/:username", UserController.getUserByUsername);
   app.get("/users/friends/requests", UserController.getAllFriendRequests);
   app.post("/users/friends/request", UserController.sendFriendRequest);
+  app.post("/users/friends/request/accept/:request_id", UserController.acceptFriendRequest);
+
 
   // Launch socket server
   createSocketServer();

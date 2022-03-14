@@ -92,9 +92,9 @@ class UserController {
      *       500:
      *          description: Internal server error
      */
-      public static getUserByUsername: RequestHandler = async (_req, res) => {
+      public static getUserByUsername: RequestHandler = async (req, res) => {
 
-        const username = _req.params.username;
+        const username = req.params.username;
         
         // validate username
 
@@ -209,17 +209,17 @@ class UserController {
 
      };
 
-     /**
-     * @openapi
-     * /users/friends/requests:
-     *   get:
-     *     description: Retrieves all friend requests from the database
-     *     responses:
-     *       200:
-     *         description: Returns a JSON array of all the friend request in the database
-     *       500:
-     *          description: Internal server error
-     */
+    /**
+    * @openapi
+    * /users/friends/requests:
+    *   get:
+    *     description: Retrieves all friend requests from the database
+    *     responses:
+    *       200:
+    *         description: Returns a JSON array of all the friend request in the database
+    *       500:
+    *          description: Internal server error
+    */
     public static getAllFriendRequests: RequestHandler = async (_req, res) => {
         
         await FriendRequestModel.find({}).then(async (requests) => {
@@ -234,6 +234,103 @@ class UserController {
              throw error;
  
          });
+ 
+     };
+
+     /**
+    * @openapi
+    * /users/friends/requests/accept:
+    *   post:
+    *     description: Accept a friend request
+    *     responses:
+    *       200:
+    *         description: 
+    *       500:
+    *          description: Internal server error
+    */
+    public static acceptFriendRequest: RequestHandler = async (req, res) => {
+        
+        // Check all parameters are there
+        // Check friend request is real
+        // Add both users to each others friend arrays
+        // Remove friend request from database
+
+        const request_id: string = req.params.request_id;
+
+        if (!request_id)
+            return res.status(400).json({error: "Request id is missing"});
+
+        await FriendRequestModel.findOne({request_id: request_id}).then(async (request) => {
+ 
+            if (request == null) {
+
+                return res.status(404).json({error: "Request not found"});
+
+            } else {
+
+                await UserModel.findOne({username: request.to_user}).then(async (to) => {
+
+                    if (to == null) {
+
+                        // This should never ever happen
+                        return res.status(404).json({error: "A user that should exist doesn't exist"});
+
+                    } else {
+
+                        await UserModel.findOne({username: request.from_user}).then(async (from) => {
+
+                            if (from == null) {
+        
+                                // This should never ever happen
+                                return res.status(404).json({error: "A user that should exist doesn't exist"});
+        
+                            } else {
+
+                                if (to.friends == null) {
+
+                                    to.friends = [from.username];
+        
+                                } else {
+        
+                                    to.friends.push(from.username);
+        
+                                }
+
+                                if (from.friends == null) {
+
+                                    from.friends = [to.username];
+        
+                                } else {
+        
+                                    from.friends.push(to.username);
+        
+                                }
+        
+                                await to.save().then(async () => {
+
+                                    await from.save().then(async () => {
+        
+                                        await request.remove().then(async () => {
+        
+                                            return res.status(200).json({message: "success"});
+                                
+                                        }).catch((e: Error) => { return res.status(500).json({error: e.name}); });
+                            
+                                    }).catch((e: Error) => { return res.status(500).json({error: e.name}); });
+                        
+                                }).catch((e: Error) => { return res.status(500).json({error: e.name}); });
+        
+                            }
+        
+                        });
+
+                    }
+
+                });
+
+            }
+
+       }).catch((error: Error) => { throw error; });
  
      };
 

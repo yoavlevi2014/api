@@ -8,6 +8,9 @@ let authToken: string;
 let UserOne: User;
 let UserTwo: User;
 
+// used for the accept friend request test
+let friend_request_id: string;
+
 describe("Users", () => {
 
   before((done) => {
@@ -159,6 +162,8 @@ describe("Users", () => {
         expect(response.status).to.eql(201);
         // more shit here
 
+        friend_request_id = response.body.request_id;
+
         done(error);
 
       });
@@ -292,8 +297,56 @@ describe("Users", () => {
 
   });
 
-  // // Accept request (with all the right data)
-  // it("Accept friend request", (done) => {});
+
+  it("Accept friend request", (done) => {
+    
+    request(app).post(`/users/friends/request/accept/${friend_request_id}`).set('Authorization', `Bearer ${authToken}`)
+    .end((error, response) => {
+    
+      expect(response.status).to.eql(200);
+    
+      request(app)
+      .get("/users/name/UserOne").set('Authorization', `Bearer ${authToken}`)
+      .end((error, response) => {
+    
+        expect(response.body.friends.length).to.eql(1);
+        expect(response.body.friends[0]).to.eql("UserTwo");
+    
+        request(app)
+        .get("/users/name/UserTwo").set('Authorization', `Bearer ${authToken}`)
+        .end((error, response) => {
+    
+          expect(response.body.friends.length).to.eql(1);
+          expect(response.body.friends[0]).to.eql("UserOne");
+    
+          request(app).get("/users/friends/requests").set('Authorization', `Bearer ${authToken}`)
+          .end((error, response) => {
+              
+            expect(response.status).to.eql(200);
+            expect(response.body.length).to.eql(0);
+            expect(response.body).to.be.an("array");
+              
+            done(error);
+    
+          });
+    
+          if (error)
+        done(error);
+    
+        });
+    
+        if (error)
+        done(error);
+    
+      });
+    
+      if (error)
+        done(error);
+
+    });
+
+  });
+
   // // Accept request (permutations of missing data)
   // it("Accept friend request (missing request id? not sure how i want to do this one)", (done) => {});
   // // Accept request (permutations of bad data)
