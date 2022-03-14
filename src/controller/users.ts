@@ -157,14 +157,9 @@ class UserController {
      */
       public static search: RequestHandler = async (req, res) => {
 
-        if (req.body.query == null) {
+        const query = req.params.query;
 
-            return res.status(400).json({error: "No characters supplied"});
-
-        }
-
-        const query = req.body.query;
-
+        // We can do .length without checking if it exists because the function doesnt run unless a query is provided
         if (query.length < 3) {
 
             return res.status(400).json({error: "Too few characters supplied"});
