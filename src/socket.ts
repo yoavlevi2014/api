@@ -3,7 +3,7 @@ import { Socket } from "socket.io";
 
 import http from 'http';
 import { Server } from 'socket.io';
-import { checkRoomEmpty, getCurrentUser, userJoin, userLeave } from "./helpers/socketUsers";
+import { checkRoomEmpty, checkUserAdmin, getCurrentUser, userJoin, userLeave } from "./helpers/socketUsers";
 import { v1 } from "uuid";
 
 export function createSocketServer() {
@@ -30,8 +30,12 @@ export function createSocketServer() {
                 io.to(fetchID).emit('requestCanvas', {id : socket.id, instance : v1()});
             }
 
-            const user = userJoin(socket.id, username, room);
+            const admin = checkUserAdmin(room);
+            const user = userJoin(socket.id, username, room, admin);
+
             socket.join(user.room);
+            
+            io.to(socket.id).emit('adminCheck', admin);
 
             const msg = `${user.username} joined the room`
             io.to(user.room).emit('addStatus', msg);
