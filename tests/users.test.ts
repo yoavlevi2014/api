@@ -361,6 +361,119 @@ describe("Users", () => {
 
   });
 
+  it("List all a user's friend requests", (done) => {
+
+    request(app).get("/users/friends/UserOne/requests").set('Authorization', `Bearer ${authToken}`)
+    .end((error, response) => {
+      
+      expect(response.status).to.eql(200);
+      expect(response.body.length).to.eql(1);
+      expect(response.body).to.be.an("array");
+
+      done(error);
+
+    });
+
+  });
+
+  it("List all a user's friend requests (user doesn't exist)", (done) => {
+
+    request(app).get("/users/friends/aaaaa/requests").set('Authorization', `Bearer ${authToken}`)
+    .end((error, response) => {
+      
+      expect(response.status).to.eql(404);
+      expect(response.body.error).to.eql("User doesn't exist");
+
+      done(error);
+
+    });
+
+  });
+
+  it("List all a user's sent friend requests", (done) => {
+
+    request(app).get("/users/friends/UserOne/requests/from").set('Authorization', `Bearer ${authToken}`)
+    .end((error, response) => {
+      
+      expect(response.status).to.eql(200);
+      expect(response.body.length).to.eql(1);
+      expect(response.body).to.be.an("array");
+
+      done(error);
+
+    });
+
+  });
+
+  it("List all a user's sent friend requests (user doesn't exist)", (done) => {
+
+    request(app).get("/users/friends/aaaa/requests/from").set('Authorization', `Bearer ${authToken}`)
+    .end((error, response) => {
+      
+      expect(response.status).to.eql(404);
+      expect(response.body.error).to.eql("User doesn't exist");
+
+      done(error);
+
+    });
+
+  });
+
+  it("List all a user's sent friend requests (no user supplied)", (done) => {
+
+    request(app).get("/users/friends/aaaa/requests/from").set('Authorization', `Bearer ${authToken}`)
+    .end((error, response) => {
+      
+      expect(response.status).to.eql(404);
+
+      done(error);
+
+    });
+
+  });
+  
+  it("List all a user's incoming friend requests", (done) => {
+
+    request(app).get("/users/friends/UserOne/requests/to").set('Authorization', `Bearer ${authToken}`)
+    .end((error, response) => {
+      
+      expect(response.status).to.eql(200);
+      expect(response.body.length).to.eql(0);
+      expect(response.body).to.be.an("array");
+
+      done(error);
+
+    });
+
+  });
+
+  it("List all a user's incoming friend requests (user doesn't exist)", (done) => {
+
+    request(app).get("/users/friends/aaaa/requests/to").set('Authorization', `Bearer ${authToken}`)
+    .end((error, response) => {
+      
+      expect(response.status).to.eql(404);
+      expect(response.body.error).to.eql("User doesn't exist");
+
+      done(error);
+
+    });
+
+  });
+
+  it("List all a user's incoming friend requests (no user supplied)", (done) => {
+
+    request(app).get("/users/friends/requests/to").set('Authorization', `Bearer ${authToken}`)
+    .end((error, response) => {
+      
+      expect(response.status).to.eql(404);
+
+      done(error);
+
+    });
+
+  });
+
 
   it("Accept friend request", (done) => {
     

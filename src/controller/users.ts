@@ -237,6 +237,135 @@ class UserController {
  
      };
 
+    /**
+    * @openapi
+    * /users/friends/:user:/requests:
+    *   get:
+    *     description: Retrieves all friend requests a user is involved with from the database
+    *     responses:
+    *       200:
+    *         description: Returns a JSON array of all the friend requests that involve a user
+    *       500:
+    *          description: Internal server error
+    */
+    public static getAllUsersFriendRequests: RequestHandler = async (req, res) => {
+
+        const username: string = req.params.user;
+
+        if (username == null) {
+
+            return res.status(400).json({error: "User missing"});
+
+        } else {
+
+            await UserModel.findOne({username: username}).then(async (user) => {
+
+                if (user == null) {
+    
+                    return res.status(404).json({error: "User doesn't exist"});
+    
+                } else {
+
+                    await FriendRequestModel.find({ $or: [{ to_user: username }, { from_user: username }] }).then(async (requests) => {
+ 
+                        return res.json(requests).status(200);
+            
+                   }).catch((error: Error) => { throw error; });
+
+                }
+
+            });
+
+        }
+ 
+    };
+
+    /**
+    * @openapi
+    * /users/friends/:user:/requests/to:
+    *   get:
+    *     description: Retrieves all friend requests sent to a user from the database
+    *     responses:
+    *       200:
+    *         description: Returns a JSON array of all the friend requests sent to a user
+    *       500:
+    *          description: Internal server error
+    */
+    public static getAllUsersToFriendRequests: RequestHandler = async (req, res) => {
+
+        const username: string = req.params.user;
+
+        if (username == null) {
+
+            return res.status(400).json({error: "User missing"});
+
+        } else {
+
+            await UserModel.findOne({username: username}).then(async (user) => {
+
+                if (user == null) {
+    
+                    return res.status(404).json({error: "User doesn't exist"});
+    
+                } else {
+
+                    await FriendRequestModel.find({ to_user: username }).then(async (requests) => {
+ 
+                        return res.json(requests).status(200);
+            
+                   }).catch((error: Error) => { throw error; });
+
+                }
+
+            });
+
+        }
+ 
+    };
+
+    /**
+    * @openapi
+    * /users/friends/:user:/requests/from:
+    *   get:
+    *     description: Retrieves all active friend requests a user has sent from the database
+    *     responses:
+    *       200:
+    *         description: Returns a JSON array of all the active friend requests sent by a user
+    *       500:
+    *          description: Internal server error
+    */
+    public static getAllUsersFromFriendRequests: RequestHandler = async (req, res) => {
+        
+        const username: string = req.params.user;
+
+        if (username == null) {
+
+            return res.status(400).json({error: "User missing"});
+
+        } else {
+
+            await UserModel.findOne({username: username}).then(async (user) => {
+
+                if (user == null) {
+    
+                    return res.status(404).json({error: "User doesn't exist"});
+    
+                } else {
+
+                    await FriendRequestModel.find({ from_user: username }).then(async (requests) => {
+ 
+                        return res.json(requests).status(200);
+            
+                   }).catch((error: Error) => { throw error; });
+
+                }
+
+            });
+
+        }
+ 
+    };
+
      /**
     * @openapi
     * /users/friends/requests/accept:

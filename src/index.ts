@@ -62,6 +62,9 @@ const main = async () => {
   app.get("/users/name/:username", UserController.getUserByUsername);
   app.get("/users/search/:query", UserController.search);
   app.get("/users/friends/requests", UserController.getAllFriendRequests);
+  app.get("/users/friends/:user/requests", UserController.getAllUsersFriendRequests);
+  app.get("/users/friends/:user/requests/to", UserController.getAllUsersToFriendRequests);
+  app.get("/users/friends/:user/requests/from", UserController.getAllUsersFromFriendRequests);
   app.post("/users/friends/request", UserController.sendFriendRequest);
   app.post("/users/friends/request/accept/:request_id", UserController.acceptFriendRequest);
 
