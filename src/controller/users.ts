@@ -155,9 +155,15 @@ class UserController {
      *       500:
      *          description: Internal server error
      */
-     public static search: RequestHandler = async (_req, res) => {
+      public static search: RequestHandler = async (req, res) => {
 
-        const query = _req.body.query;
+        if (req.body.query == null) {
+
+            return res.status(400).json({error: "No characters supplied"});
+
+        }
+
+        const query = req.body.query;
 
         if (query.length < 3) {
 
@@ -179,7 +185,7 @@ class UserController {
 
         });
   
-     };
+    };
 
 }
 
