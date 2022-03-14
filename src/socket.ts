@@ -3,7 +3,8 @@ import { Socket } from "socket.io";
 
 import http from 'http';
 import { Server } from 'socket.io';
-import { checkUserAdmin, getCurrentUser, userJoin, userLeave } from "./helpers/socketUsers";
+import { checkRoomEmpty, checkUserAdmin, getCurrentUser, userJoin, userLeave } from "./helpers/socketUsers";
+import { v1 } from "uuid";
 
 export function createSocketServer() {
     const app: Application = express();
@@ -24,8 +25,14 @@ export function createSocketServer() {
     io.on('connection', (socket: Socket) => {
 
         socket.on("joinRoom", ({ username, room }) => {
+            const fetchID = checkRoomEmpty(room);
+            if(fetchID){
+                io.to(fetchID).emit('requestCanvas', {id : socket.id, instance : v1()});
+            }
+
             const admin = checkUserAdmin(room);
             const user = userJoin(socket.id, username, room, admin);
+
             socket.join(user.room);
             
             io.to(socket.id).emit('adminCheck', admin);
@@ -40,6 +47,10 @@ export function createSocketServer() {
                 const msg = `${user.username} left the room`;
                 io.to(user.room).emit('addStatus', msg);
             }
+        });
+
+        socket.on('sendCanvas', ({data, id}) => {
+            io.to(id).emit('fillCanvas', data);     
         });
 
         socket.on('newMessage', (msg) => {
