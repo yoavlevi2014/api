@@ -61,6 +61,7 @@ const PostSchema = new Schema<Post>(
     likes: { type: Number, required: true },
     created: { type: Number, required: true, index: true },
     users: [{ type: Object, required: false }],
+    comments: [{type: Object, required: false}]
   },
   { timestamps: true }
 );

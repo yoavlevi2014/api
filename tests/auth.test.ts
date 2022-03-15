@@ -16,6 +16,19 @@ describe("Auth", async () => {
     });
   });
 
+  before((done) => {
+
+    // TODO make this better
+    mongoose.connection.collections.users.drop(() => {
+      mongoose.connection.collections.refreshes.drop(() => {
+        mongoose.connection.collections.posts.drop(() => {
+          done();
+        });
+      });
+    });
+  
+  });
+
   it("Create new user", (done) => {
     const user: User = {
       id: "undefined",
@@ -254,6 +267,7 @@ describe("Auth", async () => {
         expect(response.body.error).to.eql("Username is already taken");
 
         done(error);
+
       });
   });
 });

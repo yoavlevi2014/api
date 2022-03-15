@@ -46,6 +46,43 @@ describe("Users", () => {
       });
   
   });
+
+  // TODO merge with function above
+  before((done) => {
+
+    request(app).post(`/auth/register`)
+      .send({
+        email: "userone@test.co.uk",
+        name: "User",
+        surname: "One",
+        password: "password",
+        username: "UserOne"
+      }).end((error, response) => {
+  
+        if (response.statusCode == 201) {
+
+          request(app).post(`/auth/register`)
+          .send({
+            email: "usertwo@test.co.uk",
+            name: "User",
+            surname: "Two",
+            password: "password",
+            username: "UserTwo"
+          }).end((error) => {
+      
+            done(error);
+              
+          });
+  
+        } else {
+  
+          done(error);
+
+        }
+          
+      });
+
+  });
   
   before((done) => {
   
@@ -70,7 +107,7 @@ describe("Users", () => {
 
         expect(response.status).to.eql(200);
         expect(response.body).to.be.an('array');
-        expect(response.body.length).to.eql(1);
+        expect(response.body.length).to.eql(3);
 
         done(error);
 
@@ -95,5 +132,64 @@ describe("Users", () => {
       });
 
   });
+
+  it("GET /users/search returns correct matches (part one)", (done) => {
+
+    request(app)
+      .get("/users/search").set('Authorization', `Bearer ${authToken}`)
+      .send({
+        query: "User"
+      })
+      .end((error, response) => {
+  
+        expect(response.body.length).to.eql(2);
+        expect(response.status).to.eql(200);
+        expect(response.body[0].username).to.eql("UserOne");
+        expect(response.body[1].username).to.eql("UserTwo");
+  
+        done(error);
+  
+      });
+  
+  });
+
+  it("GET /users/search returns correct matches (part two)", (done) => {
+
+    request(app)
+      .get("/users/search").set('Authorization', `Bearer ${authToken}`)
+      .send({
+        query: "Adm"
+      })
+      .end((error, response) => {
+  
+        expect(response.body.length).to.eql(1);
+        expect(response.status).to.eql(200);
+        expect(response.body[0].username).to.eql("admin");
+  
+        done(error);
+  
+      });
+  
+  });
+
+  it("GET /users/search errors if too few characters are supplied", (done) => {
+
+    request(app)
+      .get("/users/search").set('Authorization', `Bearer ${authToken}`)
+      .send({
+        query: "A"
+      })
+      .end((error, response) => {
+  
+        expect(response.body.error).to.eql("Too few characters supplied");
+        expect(response.status).to.eql(400);
+  
+        done(error);
+  
+      });
+  
+  });
+
+  //TODO add test to check for no more than 4 results
 
 });
