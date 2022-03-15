@@ -259,16 +259,14 @@ class PostController {
      public static createPost: RequestHandler = async (req, res) => {
 
         const post: Post = {
-
             id: uuidv4(),
             author: req.body.author,
             title: req.body.title,
             content: req.body.content,
             likes: 0,
-            created: Math.floor(new Date().getTime() / 1000), // UNIX timestamp
+            created: Math.floor(new Date().getTime() / 1000),
             users: [req.body.author],
-
-
+            size: req.body.size
         }
 
         // There's probably a better way of doing this but you need to check all properties are defined
@@ -281,6 +279,8 @@ class PostController {
         if (!post.content)
             return res.status(400).json({error: "Post content is missing"});
 
+        if (!post.size)
+        return res.status(400).json({error: "Post size is missing"});
         
         await UserModel.findOne({id: post.author.id}).then(async (user) => {
 
