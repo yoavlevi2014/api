@@ -5,6 +5,7 @@ import mongoose from "mongoose";
 import { User } from "@models/user";
 
 let authToken: string;
+let admin: User;
 let UserOne: User;
 let UserTwo: User;
 
@@ -42,6 +43,7 @@ describe("Users", () => {
         if (response.statusCode == 201) {
   
           process.env.authToken = response.body.tokens.at;
+          admin = response.body.user;
   
         } else if (response.statusCode == 200) {
   
@@ -474,7 +476,6 @@ describe("Users", () => {
 
   });
 
-
   it("Accept friend request", (done) => {
     
     request(app).post(`/users/friends/request/accept/${friend_request_id}`).set('Authorization', `Bearer ${authToken}`)
@@ -508,12 +509,12 @@ describe("Users", () => {
           });
     
           if (error)
-        done(error);
+            done(error);
     
         });
     
         if (error)
-        done(error);
+          done(error);
     
       });
     
@@ -524,10 +525,52 @@ describe("Users", () => {
 
   });
 
-  // // Accept request (permutations of missing data)
-  // it("Accept friend request (missing request id? not sure how i want to do this one)", (done) => {});
-  // // Accept request (permutations of bad data)
-  // it("Accept friend request (request id doesn't exist? not sure how i want to do this one)", (done) => {});
+  it("Send friend request (Users are already friends)", (done) => {
+
+    request(app).post("/users/friends/request").set('Authorization', `Bearer ${authToken}`)
+      .send(
+        {
+          "from": UserOne.username,
+          "to": UserTwo.username
+        }
+      ).end((error, response) => {
+
+        expect(response.status).to.eql(400);
+        expect(response.body.error).to.eql("Users are already friends");
+
+        done(error);
+
+      });
+
+  });
+
+  it("Cancel friend request", (done) => {
+
+    request(app).post("/users/friends/request").set('Authorization', `Bearer ${authToken}`)
+      .send(
+        {
+          "from": admin.username,
+          "to": UserTwo.username
+        }
+      ).end((error, response) => {
+
+        request(app).post(`/users/friends/request/cancel/${response.body.request_id}`).set('Authorization', `Bearer ${authToken}`)
+        .end((error, response) => {
+
+          expect(response.status).to.eql(200);
+
+          done(error);
+
+        });
+
+        if (error)
+          done(error);
+
+      });
+
+  });
+  // .....
+
   // // Decline request (with all the right data)
   // it("Decline friend request", (done) => {});
   // // Decline request (permutations of missing data)

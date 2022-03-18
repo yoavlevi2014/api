@@ -154,50 +154,59 @@ class UserController {
         
 
         // Check "to" user is a valid user
-        await UserModel.findOne({username: to}).then(async (user) => {
+        await UserModel.findOne({username: to}).then(async (toUser) => {
 
-            if (user == null) {
+            if (toUser == null) {
 
                 return res.status(404).json({error: "To user not found"});
 
             } else {
 
                 // Check "from" user is a valid user
-                await UserModel.findOne({username: from}).then(async (user) => {
+                await UserModel.findOne({username: from}).then(async (fromUser) => {
 
-                    if (user == null) {
+                    if (fromUser == null) {
 
                         return res.status(404).json({error: "From user not found"});
 
                     } else {
 
-                        // Still need to handle situations where both uses send a friend request to each other
-                        await FriendRequestModel.findOne({to_user: to, from_user: from}).then((async (request) => {
+                        // Not sure if i can check an optional property like this lol
+                        if (toUser.friends?.includes(fromUser.username)) {
 
-                            if (request == null) {
+                            return res.status(400).json({error: "Users are already friends"});
 
-                                const request: FriendRequest = {
+                        } else {
 
-                                    request_id: uuidv4(),
-                                    to_user: to,
-                                    from_user: from,
-                                    status: "pending"
+                            // Still need to handle situations where both uses send a friend request to each other
+                            await FriendRequestModel.findOne({to_user: to, from_user: from}).then((async (request) => {
 
-                                };
+                                if (request == null) {
 
-                                await new FriendRequestModel({...request}).save().then(async () => {
+                                    const request: FriendRequest = {
 
-                                    return res.status(201).json(request);
+                                        request_id: uuidv4(),
+                                        to_user: to,
+                                        from_user: from,
+                                        status: "pending"
 
-                                }).catch((e: Error) => {return res.status(500).json({error: e.name});});
+                                    };
 
-                            } else {
+                                    await new FriendRequestModel({...request}).save().then(async () => {
 
-                                return res.status(403).json({error: "Request already exists"});
-                                
-                            }
+                                        return res.status(201).json(request);
 
-                        })).catch((error: Error) => {throw error});
+                                    }).catch((e: Error) => {return res.status(500).json({error: e.name});});
+
+                                } else {
+
+                                    return res.status(403).json({error: "Request already exists"});
+                                    
+                                }
+
+                            })).catch((error: Error) => {throw error});
+
+                        }
 
                     }
  
@@ -366,7 +375,7 @@ class UserController {
  
     };
 
-     /**
+    /**
     * @openapi
     * /users/friends/requests/accept:
     *   post:
@@ -461,7 +470,53 @@ class UserController {
 
        }).catch((error: Error) => { throw error; });
  
-     };
+    }
+
+     /**
+    * @openapi
+    * /users/friends/requests/cancel:
+    *   post:
+    *     description: Cancel a friend request
+    *     responses:
+    *       200:
+    *         description: Friend request successfully cancelled
+    *       400:
+    *         description: Request id missing
+    *       404:
+    *         description: Request not found
+    *       500:
+    *         description: Internal server error
+    */
+      public static cancelFriendRequest: RequestHandler = async (req, res) => {
+
+        // Check all parameters are there
+        // Check friend request is real
+        // Remove friend request from database
+
+        const request_id: string = req.params.request_id;
+
+        if (!request_id)
+            return res.status(400).json({error: "Request id is missing"});
+
+        await FriendRequestModel.findOne({request_id: request_id}).then(async (request) => {
+ 
+            if (request == null) {
+
+                return res.status(404).json({error: "Request not found"});
+
+            } else {
+
+                await request.remove().then(async () => {
+        
+                    return res.status(200).json({message: "success"});
+        
+                }).catch((e: Error) => { return res.status(500).json({error: e.name}); });
+
+            }
+
+        }).catch((error: Error) => { throw error; });
+  
+    }
 
      /**
      * @openapi
@@ -538,12 +593,17 @@ class UserController {
 // -GET-
 // Number of friends
 // List of friends
-// List of invites
+// List of invites - DONE
+// List of friend requests - DONE
+// List of friend requests involving user - DONE
+// List of friend requests sent by user - DONE
+// List of friend requests sent to user - DONE
+
 
 
 // -POST-
-// Send request
-// Accept request
+// Send request - DONE
+// Accept request - DONE
 // Decline request
 // Remove request
 // Remove friend
