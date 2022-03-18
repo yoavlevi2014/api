@@ -69,7 +69,7 @@ const main = async () => {
   app.post("/users/friends/request/accept/:request_id", UserController.acceptFriendRequest);
   app.post("/users/friends/request/cancel/:request_id", UserController.cancelFriendRequest);
 
-
+  
   // Launch socket server
   createSocketServer();
 
