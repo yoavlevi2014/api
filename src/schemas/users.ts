@@ -71,6 +71,7 @@ const UserSchema = new Schema<User>(
     password: { type: String, required: true },
     username: { type: String, required: true, unique: true, index: true },
     following: [{ type: String, required: false }],
+    friends: [{ type: String, required: false }],
   },
   { timestamps: true }
 );
