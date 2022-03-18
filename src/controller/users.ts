@@ -155,10 +155,11 @@ class UserController {
      *       500:
      *          description: Internal server error
      */
-     public static search: RequestHandler = async (_req, res) => {
+      public static search: RequestHandler = async (req, res) => {
 
-        const query = _req.body.query;
+        const query = req.params.query;
 
+        // We can do .length without checking if it exists because the function doesnt run unless a query is provided
         if (query.length < 3) {
 
             return res.status(400).json({error: "Too few characters supplied"});
@@ -179,7 +180,7 @@ class UserController {
 
         });
   
-     };
+    };
 
 }
 
