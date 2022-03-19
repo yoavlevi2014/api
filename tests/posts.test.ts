@@ -798,34 +798,6 @@ describe("Posts", () => {
 
   });
 
-  it("Don't like if user has already liked", (done) => {
-    request(app).get(`/posts`).set('Authorization', `Bearer ${authTokenOne}`)
-      .end((error, response) => {
-
-        if (error)
-          done(error);
-
-        // We have to get the second post because of the default sorting order of GET /posts
-        const post: Post = response.body[1] as Post;
-        const user = userOne;
-
-        request(app).post(`/posts/like`).set('Authorization', `Bearer ${authTokenOne}`)
-          .send({
-            user: user,
-            post_id: post.id
-          }).end((error, response) => {
-
-            expect(response.status).to.eql(400);
-            expect(response.body.error).to.eql("User has already liked this post");
-
-            done(error);
-
-          });
-
-      });
-
-  });
-
   it("Don't like if post ID is missing", (done) => {
     request(app).get(`/posts`).set('Authorization', `Bearer ${authTokenOne}`)
       .end((error) => {
@@ -889,7 +861,7 @@ describe("Posts", () => {
         
         expect(post.likes?.includes(user.username)).to.be.eql(true);
 
-        request(app).post(`/posts/unlike`).set('Authorization', `Bearer ${authTokenOne}`)
+        request(app).post(`/posts/like`).set('Authorization', `Bearer ${authTokenOne}`)
           .send({
             user: user,
             post_id: post.id
@@ -898,84 +870,6 @@ describe("Posts", () => {
             expect(response.status).to.eql(201);
             expect(response.body.likes).to.be.an('array');
             expect(response.body.likes[0]).to.not.eql(user.username);
-
-            done(error);
-
-          });
-
-      });
-
-  });
-
-  it("Don't unlike if user hasn't already liked", (done) => {
-    request(app).get(`/posts`).set('Authorization', `Bearer ${authTokenOne}`)
-      .end((error, response) => {
-
-        if (error)
-          done(error);
-
-        // We have to get the second post because of the default sorting order of GET /posts
-        const post: Post = response.body[1] as Post;
-        const user = userTwo;
-
-        request(app).post(`/posts/unlike`).set('Authorization', `Bearer ${authTokenOne}`)
-          .send({
-            user: user,
-            post_id: post.id
-          }).end((error, response) => {
-
-            expect(response.status).to.eql(400);
-            expect(response.body.error).to.eql("User has not liked this post");
-
-            done(error);
-
-          });
-
-      });
-
-  });
-
-  it("Don't unlike if post ID is missing", (done) => {
-    request(app).get(`/posts`).set('Authorization', `Bearer ${authTokenOne}`)
-      .end((error) => {
-
-        if (error)
-          done(error);
-
-        const user = userTwo;
-
-        request(app).post(`/posts/unlike`).set('Authorization', `Bearer ${authTokenOne}`)
-          .send({
-            user: user,
-          }).end((error, response) => {
-
-            expect(response.status).to.eql(400);
-            expect(response.body.error).to.eql("Post ID is missing");
-
-            done(error);
-
-          });
-
-      });
-
-  });
-
-  it("Don't unlike if user is missing", (done) => {
-    request(app).get(`/posts`).set('Authorization', `Bearer ${authTokenOne}`)
-      .end((error, response) => {
-
-        if (error)
-          done(error);
-
-        const post: Post = response.body[1] as Post;
-
-        request(app).post(`/posts/unlike`).set('Authorization', `Bearer ${authTokenOne}`)
-          .send({
-            post_id: post.id
-          }).end((error, response) => {
-
-            expect(response.status).to.eql(400);
-            expect(response.body.error).to.eql("User is missing");
 
             done(error);
 

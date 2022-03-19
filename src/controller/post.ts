@@ -433,72 +433,17 @@ class PostController {
 
                     } else {
 
-                        if (post.likes != null && post.likes.includes(user.username)) {
-                            return res.status(400).json({ error: "User has already liked this post" });
-                        }
-
                         if (post.likes == null) {
                             post.likes = [user.username];
                         } else {
+                            
+                            if(post.likes.includes(user.username)){
+                                const index = post.likes.findIndex((element) => {return element == user.username});
+                                post.likes.splice(index);
+                            } else {
+                                post.likes.push(user.username);
+                            }
 
-                            post.likes.push(user.username);
-
-                        }
-
-                        await post.save().then(async () => {
-
-                            // Return the post object
-                            return res.status(201).json(post);
-
-                        }).catch((e: Error) => {
-
-                            return res.status(500).json({ error: e.name });
-
-                        });
-                    }
-                }).catch((err) => {
-                    throw err;
-                })
-            }
-        }).catch((err) => {
-            throw err;
-        })
-    }
-
-    public static removeLike: RequestHandler = async (req, res) => {
-        const user = req.body.user as unknown as User;
-        const post_id = req.body.post_id;
-
-        if (!user) {
-            return res.status(400).json({ error: "User is missing" });
-        }
-
-        if (!post_id){
-            return res.status(400).json({ error: "Post ID is missing" });
-        }
-            
-        await UserModel.findOne({ id: user.id }).then(async (user) => {
-
-            if (!user) {
-
-                return res.status(400).json({ error: "Invalid user" })
-
-            } else {
-
-                await PostModel.findOne({ id: post_id }).then(async (post) => {
-
-                    if (post == null) {
-
-                        return res.status(400).json({ error: "Invalid post ID" });
-
-                    } else {
-
-                        if (post.likes == null || !post.likes.includes(user.username)) {
-                            return res.status(400).json({ error: "User has not liked this post" });
-                        } else {
-
-                            const index = post.likes.findIndex((element) => { return element == user.username });
-                            post.likes.splice(index);
                         }
 
                         await post.save().then(async () => {
