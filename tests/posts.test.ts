@@ -807,7 +807,7 @@ describe("Posts", () => {
 
         // We have to get the second post because of the default sorting order of GET /posts
         const post: Post = response.body[1] as Post;
-        const user = userTwo;
+        const user = userOne;
 
         request(app).post(`/posts/like`).set('Authorization', `Bearer ${authTokenOne}`)
           .send({
@@ -853,16 +853,16 @@ describe("Posts", () => {
 
   it("Don't like if user is missing", (done) => {
     request(app).get(`/posts`).set('Authorization', `Bearer ${authTokenOne}`)
-      .end((error) => {
+      .end((error, response) => {
 
         if (error)
           done(error);
 
-        const user = userTwo;
+        const post: Post = response.body[1] as Post;
 
         request(app).post(`/posts/like`).set('Authorization', `Bearer ${authTokenOne}`)
           .send({
-            user: user,
+            post_id: post.id
           }).end((error, response) => {
 
             expect(response.status).to.eql(400);
@@ -962,16 +962,16 @@ describe("Posts", () => {
 
   it("Don't unlike if user is missing", (done) => {
     request(app).get(`/posts`).set('Authorization', `Bearer ${authTokenOne}`)
-      .end((error) => {
+      .end((error, response) => {
 
         if (error)
           done(error);
 
-        const user = userTwo;
+        const post: Post = response.body[1] as Post;
 
         request(app).post(`/posts/unlike`).set('Authorization', `Bearer ${authTokenOne}`)
           .send({
-            user: user,
+            post_id: post.id
           }).end((error, response) => {
 
             expect(response.status).to.eql(400);
