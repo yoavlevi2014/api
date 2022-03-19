@@ -53,39 +53,39 @@ class PostController {
         // Theres a bit of duplication here but its readable so probably not worth fixing
         if (sortingOrder == "new") {
 
-            await PostModel.find({}).sort({'created': -1}).then(async (posts) => {
- 
+            await PostModel.find({}).sort({ 'created': -1 }).then(async (posts) => {
+
                 return res.status(200).json(posts);
-     
+
             }).catch((error: Error) => {
-     
+
                 // TODO handle this shit
                 // maybe it handles itself idk
                 // either way this seems to throw a 500 if it breaks so thats great i guess
                 throw error;
-     
+
             });
 
         } else {
 
-            await PostModel.find({}).sort({'likes': -1}).then(async (posts) => {
- 
+            await PostModel.find({}).sort({ 'likes': -1 }).then(async (posts) => {
+
                 return res.status(200).json(posts);
-     
+
             }).catch((error: Error) => {
-     
+
                 // TODO handle this shit
                 // maybe it handles itself idk
                 // either way this seems to throw a 500 if it breaks so thats great i guess
                 throw error;
-     
+
             });
 
         }
-         
+
     };
- 
- 
+
+
     /**
      * @openapi
      * /posts/user:
@@ -109,37 +109,37 @@ class PostController {
      *          description: Internal server error
      */
     public static getPostsByUser: RequestHandler = async (req, res) => {
-         
+
         // not sure this is type safe (it defo isn't)
         // but it will do for the demo
         //TODO make this type safe
         const user: User = req.body.user as unknown as User;
-         
+
         // validate id
- 
-        await PostModel.find({"author.id": user.id}).then(async (posts) => {
- 
+
+        await PostModel.find({ "author.id": user.id }).then(async (posts) => {
+
 
             // Might need to check for an empty array if the user hasn't made any posts
             if (posts == null) {
- 
-                return res.status(404).json({error: "No posts returned"});
- 
+
+                return res.status(404).json({ error: "No posts returned" });
+
             } else {
- 
+
                 return res.status(200).json(posts);
- 
+
             }
-  
+
         }).catch((error: Error) => {
-  
+
             // TODO handle this shit
             throw error;
-  
+
         });
-   
+
     };
- 
+
     // /**
     //  * // TODO THIS NEEDS DOING PROPERLY
     // * @openapi
@@ -155,16 +155,16 @@ class PostController {
     // *          description: Internal server error
     // */
     // public static getPostsByUsername: RequestHandler = async (_req, res) => {
- 
+
     //     const username: string = _req.params.username;
     //     let user_id: string;
-         
+
     //     // validate username
 
     //     await UserModel.findOne({username: username}).then(async (user) => {
 
     //         if (user == null) {
- 
+
     //             return res.status(404).json({error: "User not found"});
 
     //         } else {
@@ -172,35 +172,35 @@ class PostController {
     //             user_id = user.id;
 
     //             await PostModel.find({user_id: user_id}).then(async (posts) => {
- 
+
     //                 // Might need to check for an empty array if the user hasn't made any posts
     //                 if (posts == null) {
-         
+
     //                     // Don't like this
     //                     return res.status(404).json({error: "No posts"});
-         
+
     //                 } else {
-         
+
     //                     return res.status(200).json(posts);
-         
+
     //                 }
-          
+
     //             }).catch((error: Error) => {
-          
+
     //                 // TODO handle this shit
     //                 throw error;
-          
+
     //             });
 
     //         }
 
     //     }).catch((error: Error) => {
-  
+
     //         // TODO handle this shit
     //         throw error;
 
     //     });
-   
+
     // };
 
     //TODO Get all posts by friends of a user
@@ -256,14 +256,13 @@ class PostController {
      *       500:
      *          description: Internal server error
      */
-     public static createPost: RequestHandler = async (req, res) => {
+    public static createPost: RequestHandler = async (req, res) => {
 
         const post: Post = {
             id: uuidv4(),
             author: req.body.author,
             title: req.body.title,
             content: req.body.content,
-            likes: 0,
             created: Math.floor(new Date().getTime() / 1000),
             users: [req.body.author],
             size: req.body.size
@@ -271,46 +270,46 @@ class PostController {
 
         // There's probably a better way of doing this but you need to check all properties are defined
         if (!post.author)
-            return res.status(400).json({error: "Author is missing"});
+            return res.status(400).json({ error: "Author is missing" });
 
         if (!post.title)
-            return res.status(400).json({error: "Post title is missing"});
+            return res.status(400).json({ error: "Post title is missing" });
 
         if (!post.content)
-            return res.status(400).json({error: "Post content is missing"});
+            return res.status(400).json({ error: "Post content is missing" });
 
         if (!post.size)
-        return res.status(400).json({error: "Post size is missing"});
-        
-        await UserModel.findOne({id: post.author.id}).then(async (user) => {
+            return res.status(400).json({ error: "Post size is missing" });
+
+        await UserModel.findOne({ id: post.author.id }).then(async (user) => {
 
             if (user == null) {
-    
-                return res.status(400).json({error: "Invalid user"});
-    
+
+                return res.status(400).json({ error: "Invalid user" });
+
             } else {
-    
-                await new PostModel({...post}).save().then(async () => {
+
+                await new PostModel({ ...post }).save().then(async () => {
 
                     // Return the post object
-                    return res.status(201).json(post);  
-        
+                    return res.status(201).json(post);
+
                 }).catch((e: Error) => {
-        
-                    return res.status(500).json({error: e.name});
-        
-        
+
+                    return res.status(500).json({ error: e.name });
+
+
                 });
-    
+
             }
-     
+
         }).catch((error: Error) => {
-     
+
             // TODO handle this shit
             throw error;
-     
+
         });
- 
+
     };
 
     //TODO Update post
@@ -332,30 +331,30 @@ class PostController {
 
         // There's probably a better way of doing this but you need to check all properties are defined
         if (!comment.author)
-            return res.status(400).json({error: "Author is missing"});
+            return res.status(400).json({ error: "Author is missing" });
 
         if (!comment.content)
-            return res.status(400).json({error: "Comment is missing"});
+            return res.status(400).json({ error: "Comment is missing" });
 
         if (!comment.post_id)
-            return res.status(400).json({error: "Post id is missing"});
+            return res.status(400).json({ error: "Post id is missing" });
 
-        await UserModel.findOne({id: comment.author.id}).then(async (user) => {
+        await UserModel.findOne({ id: comment.author.id }).then(async (user) => {
 
             if (user == null) {
-        
-                return res.status(400).json({error: "Invalid user"});
-        
+
+                return res.status(400).json({ error: "Invalid user" });
+
             } else {
 
-                await PostModel.findOne({id: comment.post_id}).then(async (post) => {
+                await PostModel.findOne({ id: comment.post_id }).then(async (post) => {
 
                     if (post == null) {
-                
-                        return res.status(400).json({error: "Invalid post"});
-                
+
+                        return res.status(400).json({ error: "Invalid post" });
+
                     } else {
-                
+
                         // User is commenting on their own post
                         if (comment.author.id == post.author.id) {
 
@@ -377,33 +376,145 @@ class PostController {
                         await post.save().then(async () => {
 
                             // Return the post object
-                            return res.status(201).json(post);  
-                
+                            return res.status(201).json(post);
+
                         }).catch((e: Error) => {
-                
-                            return res.status(500).json({error: e.name});
-                
-                
+
+                            return res.status(500).json({ error: e.name });
+
+
                         });
-                
+
                     }
-                 
+
                 }).catch((error: Error) => {
-                 
+
                     // TODO handle this shit
                     throw error;
-                 
+
                 });
-                
+
             }
-         
+
         }).catch((error: Error) => {
-         
+
             // TODO handle this shit
             throw error;
-         
+
         });
 
+    }
+
+    public static addLike: RequestHandler = async (req, res) => {
+        const user = req.body.user as unknown as User;
+        const post_id = req.body.user_id;
+
+        if (!user)
+            return res.status(400).json({ error: "User is missing" });
+
+        if (!post_id)
+            return res.status(400).json({ error: "Post ID is missing" });
+
+        await UserModel.findOne({ id: user.id }).then(async (user) => {
+
+            if (!user) {
+
+                return res.status(400).json({ error: "Invalid user" })
+
+            } else {
+
+                await PostModel.findOne({ id: post_id }).then(async (post) => {
+
+                    if (!post) {
+
+                        return res.status(400).json({ error: "Invalid post ID" });
+
+                    } else {
+
+                        if (post.likes == null) {
+                            post.likes = [user.username];
+                        }
+
+                        if (post.likes.includes(user.username)) {
+                            return res.status(400).json({ error: "User has already liked this post" });
+                        } else {
+
+                            post.likes.push(user.username);
+
+                        }
+
+                        await post.save().then(async () => {
+
+                            // Return the post object
+                            return res.status(201).json(post);
+
+                        }).catch((e: Error) => {
+
+                            return res.status(500).json({ error: e.name });
+
+                        });
+                    }
+                }).catch((err) => {
+                    throw err;
+                })
+            }
+        }).catch((err) => {
+            throw err;
+        })
+    }
+
+    public static removeLike: RequestHandler = async (req, res) => {
+        const user = req.body.user as unknown as User;
+        const post_id = req.body.user_id;
+
+        if (!user)
+            return res.status(400).json({ error: "User is missing" });
+
+        if (!post_id)
+            return res.status(400).json({ error: "Post ID is missing" });
+
+        await UserModel.findOne({ id: user.id }).then(async (user) => {
+
+            if (!user) {
+
+                return res.status(400).json({ error: "Invalid user" })
+
+            } else {
+
+                await PostModel.findOne({ id: post_id }).then(async (post) => {
+
+                    if (!post) {
+
+                        return res.status(400).json({ error: "Invalid post ID" });
+
+                    } else {
+
+                        if (post.likes == null || !post.likes.includes(user.username)) {
+                            return res.status(400).json({ error: "User has not liked this post" });
+                        } else {
+
+                            const index = post.likes.findIndex((element) => {return element == user.username});
+                            post.likes.splice(index);
+                        }
+
+                        await post.save().then(async () => {
+
+                            // Return the post object
+                            return res.status(201).json(post);
+
+                        }).catch((e: Error) => {
+
+                            return res.status(500).json({ error: e.name });
+
+                        });
+                    }
+                }).catch((err) => {
+                    throw err;
+                })
+            }
+        }).catch((err) => {
+            throw err;
+        })
     }
 
 }

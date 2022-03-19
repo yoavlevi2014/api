@@ -8,7 +8,7 @@ export interface Post {
   author: User;
   title: string;
   content: string;
-  likes: number;
+  likes?: [string];
   created: number;
   users: [User];
   size: string;
