@@ -409,11 +409,13 @@ class PostController {
         const user = req.body.user as unknown as User;
         const post_id = req.body.post_id;
 
-        if (!user)
+        if (!user) {
             return res.status(400).json({ error: "User is missing" });
+        }
 
-        if (!post_id)
+        if (!post_id) {
             return res.status(400).json({ error: "Post ID is missing" });
+        }
 
         await UserModel.findOne({ id: user.id }).then(async (user) => {
 
@@ -425,7 +427,7 @@ class PostController {
 
                 await PostModel.findOne({ id: post_id }).then(async (post) => {
 
-                    if (!post) {
+                    if (post == null) {
 
                         return res.status(400).json({ error: "Invalid post ID" });
 
@@ -467,12 +469,14 @@ class PostController {
         const user = req.body.user as unknown as User;
         const post_id = req.body.post_id;
 
-        if (!user)
+        if (!user) {
             return res.status(400).json({ error: "User is missing" });
+        }
 
-        if (!post_id)
+        if (!post_id){
             return res.status(400).json({ error: "Post ID is missing" });
-
+        }
+            
         await UserModel.findOne({ id: user.id }).then(async (user) => {
 
             if (!user) {
@@ -483,7 +487,7 @@ class PostController {
 
                 await PostModel.findOne({ id: post_id }).then(async (post) => {
 
-                    if (!post) {
+                    if (post == null) {
 
                         return res.status(400).json({ error: "Invalid post ID" });
 
@@ -493,7 +497,7 @@ class PostController {
                             return res.status(400).json({ error: "User has not liked this post" });
                         } else {
 
-                            const index = post.likes.findIndex((element) => {return element == user.username});
+                            const index = post.likes.findIndex((element) => { return element == user.username });
                             post.likes.splice(index);
                         }
 
