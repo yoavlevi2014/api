@@ -407,7 +407,7 @@ class PostController {
 
     public static addLike: RequestHandler = async (req, res) => {
         const user = req.body.user as unknown as User;
-        const post_id = req.body.user_id;
+        const post_id = req.body.post_id;
 
         if (!user)
             return res.status(400).json({ error: "User is missing" });
@@ -465,7 +465,7 @@ class PostController {
 
     public static removeLike: RequestHandler = async (req, res) => {
         const user = req.body.user as unknown as User;
-        const post_id = req.body.user_id;
+        const post_id = req.body.post_id;
 
         if (!user)
             return res.status(400).json({ error: "User is missing" });

@@ -759,7 +759,6 @@ describe("Posts", () => {
 
             expect(response.status).to.eql(201);
             expect(response.body.likes).to.be.an('array');
-            expect(response.body.comments.length).to.eql(1);
             expect(response.body.likes[0]).to.eql(user.username);
 
             done(error);
@@ -788,7 +787,6 @@ describe("Posts", () => {
           }).end((error, response) => {
 
             expect(response.status).to.eql(201);
-            expect(response.body.comments.length).to.eql(2);
             expect(response.body.likes[0]).to.eql(userOne.username);
             expect(response.body.likes[1]).to.eql(user.username);
 
