@@ -245,7 +245,6 @@ describe("Posts", () => {
         expect(response.body.author).to.be.eql(post.author);
         expect(response.body.title).to.be.eql(post.title);
         expect(response.body.content).to.be.eql(post.content);
-        expect(response.body.likes).to.be.eql(0);
         expect(response.body.users).to.be.eql([userOne]);
 
         done(error);
@@ -752,8 +751,6 @@ describe("Posts", () => {
         const post: Post = response.body[1] as Post;
         const user = userOne;
 
-        expect(post.likes).to.eql(null);
-
         request(app).post(`/posts/like`).set('Authorization', `Bearer ${authTokenOne}`)
           .send({
             user: user,
@@ -783,9 +780,6 @@ describe("Posts", () => {
         // We have to get the second post because of the default sorting order of GET /posts
         const post: Post = response.body[1] as Post;
         const user = userTwo;
-
-        expect(post.likes?.length).to.eql(1);
-        expect(response.body.likes[0]).to.eql(userOne.username);
 
         request(app).post(`/posts/like`).set('Authorization', `Bearer ${authTokenTwo}`)
           .send({
