@@ -433,12 +433,12 @@ class PostController {
 
                     } else {
 
-                        if (post.likes == null) {
-                            post.likes = [user.username];
+                        if (post.likes != null && post.likes.includes(user.username)) {
+                            return res.status(400).json({ error: "User has already liked this post" });
                         }
 
-                        if (post.likes.includes(user.username)) {
-                            return res.status(400).json({ error: "User has already liked this post" });
+                        if (post.likes == null) {
+                            post.likes = [user.username];
                         } else {
 
                             post.likes.push(user.username);
