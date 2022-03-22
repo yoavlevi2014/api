@@ -580,10 +580,8 @@ describe("Users", () => {
         }
       ).end((error, response) => {
 
-        const user: User = response.body.user;
-        
         expect(response.status).to.eql(201);
-        expect(user.bio).to.eql("Example bio");
+        expect(response.body.bio).to.eql("Example bio");
 
         done(error);
 
@@ -600,11 +598,9 @@ describe("Users", () => {
           user_id: UserOne.id
         }
       ).end((error, response) => {
-
-        const user: User = response.body.user;
         
         expect(response.status).to.eql(201);
-        expect(user.bio).to.eql("Changed bio");
+        expect(response.body.bio).to.eql("Changed bio");
 
         done(error);
 
