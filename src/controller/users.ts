@@ -22,11 +22,11 @@ class UserController {
      */
     public static getAllUsers: RequestHandler = async (_req, res) => {
 
-       await UserModel.find({}).then(async (users) => {
+        await UserModel.find({}).then(async (users) => {
 
             return res.json(users).status(200);
 
-       }).catch((error: Error) => {
+        }).catch((error: Error) => {
 
             // TODO handle this shit
             // maybe it handles itself idk
@@ -51,72 +51,72 @@ class UserController {
      *       500:
      *          description: Internal server error
      */
-     public static getUserByID: RequestHandler = async (_req, res) => {
-        
+    public static getUserByID: RequestHandler = async (_req, res) => {
+
         const id = _req.params.id;
-        
+
         // validate id
 
         // TODO investigate if this needs to be id not _id 
-        await UserModel.findOne({_id: id}).then(async (user) => {
+        await UserModel.findOne({ _id: id }).then(async (user) => {
 
             if (user == null) {
 
-                return res.status(404).json({error: "User not found"});
+                return res.status(404).json({ error: "User not found" });
 
             } else {
 
                 return res.status(200).json(user);
 
             }
- 
-        }).catch((error: Error) => {
- 
-             // TODO handle this shit
-             throw error;
- 
-         });
-  
-     };
 
-     /**
-     * @openapi
-     * /users/name/:username:
-     *   get:
-     *     description: Retrieves a single user account based on a supplied user id
-     *     responses:
-     *       200:
-     *         description: Returns a user from the database
-     *       404:
-     *          description: User not found
-     *       500:
-     *          description: Internal server error
-     */
-      public static getUserByUsername: RequestHandler = async (req, res) => {
+        }).catch((error: Error) => {
+
+            // TODO handle this shit
+            throw error;
+
+        });
+
+    };
+
+    /**
+    * @openapi
+    * /users/name/:username:
+    *   get:
+    *     description: Retrieves a single user account based on a supplied user id
+    *     responses:
+    *       200:
+    *         description: Returns a user from the database
+    *       404:
+    *          description: User not found
+    *       500:
+    *          description: Internal server error
+    */
+    public static getUserByUsername: RequestHandler = async (req, res) => {
 
         const username = req.params.username;
-        
+
         // validate username
 
-        await UserModel.findOne({username: username}).then(async (user) => {
+        await UserModel.findOne({ username: username }).then(async (user) => {
 
             if (user == null) {
 
-                return res.status(404).json({error: "User not found"});
+                return res.status(404).json({ error: "User not found" });
 
             } else {
 
                 return res.status(200).json(user);
 
             }
- 
+
         }).catch((error: Error) => {
- 
-             // TODO handle this shit
-             throw error;
- 
-         });
-  
+
+            // TODO handle this shit
+            throw error;
+
+        });
+
     };
 
     /**
@@ -138,48 +138,48 @@ class UserController {
      *       500:
      *          description: Internal server error
      */
-     public static sendFriendRequest: RequestHandler = async (req, res) => {
+    public static sendFriendRequest: RequestHandler = async (req, res) => {
 
         const to: string = req.body.to;
         const from: string = req.body.from;
 
         if (!to)
-            return res.status(400).json({error: "To user is missing"});
+            return res.status(400).json({ error: "To user is missing" });
 
         if (!from)
-            return res.status(400).json({error: "From user is missing"});
+            return res.status(400).json({ error: "From user is missing" });
 
         if (to === from)
-            return res.status(403).json({error: "Cannot send friend request to yourself"});
-        
+            return res.status(403).json({ error: "Cannot send friend request to yourself" });
+
 
         // Check "to" user is a valid user
-        await UserModel.findOne({username: to}).then(async (toUser) => {
+        await UserModel.findOne({ username: to }).then(async (toUser) => {
 
             if (toUser == null) {
 
-                return res.status(404).json({error: "To user not found"});
+                return res.status(404).json({ error: "To user not found" });
 
             } else {
 
                 // Check "from" user is a valid user
-                await UserModel.findOne({username: from}).then(async (fromUser) => {
+                await UserModel.findOne({ username: from }).then(async (fromUser) => {
 
                     if (fromUser == null) {
 
-                        return res.status(404).json({error: "From user not found"});
+                        return res.status(404).json({ error: "From user not found" });
 
                     } else {
 
                         // Not sure if i can check an optional property like this lol
                         if (toUser.friends?.includes(fromUser.username)) {
 
-                            return res.status(400).json({error: "Users are already friends"});
+                            return res.status(400).json({ error: "Users are already friends" });
 
                         } else {
 
                             // Still need to handle situations where both uses send a friend request to each other
-                            await FriendRequestModel.findOne({to_user: to, from_user: from}).then((async (request) => {
+                            await FriendRequestModel.findOne({ to_user: to, from_user: from }).then((async (request) => {
 
                                 if (request == null) {
 
@@ -192,31 +192,31 @@ class UserController {
 
                                     };
 
-                                    await new FriendRequestModel({...request}).save().then(async () => {
+                                    await new FriendRequestModel({ ...request }).save().then(async () => {
 
                                         return res.status(201).json(request);
 
-                                    }).catch((e: Error) => {return res.status(500).json({error: e.name});});
+                                    }).catch((e: Error) => { return res.status(500).json({ error: e.name }); });
 
                                 } else {
 
-                                    return res.status(403).json({error: "Request already exists"});
-                                    
+                                    return res.status(403).json({ error: "Request already exists" });
+
                                 }
 
-                            })).catch((error: Error) => {throw error});
+                            })).catch((error: Error) => { throw error });
 
                         }
 
                     }
- 
-                }).catch((error: Error) => {throw error});
+
+                }).catch((error: Error) => { throw error });
 
             }
- 
-        }).catch((error: Error) => {throw error});
 
-     };
+        }).catch((error: Error) => { throw error });
+
+    };
 
     /**
     * @openapi
@@ -230,21 +230,21 @@ class UserController {
     *          description: Internal server error
     */
     public static getAllFriendRequests: RequestHandler = async (_req, res) => {
-        
+
         await FriendRequestModel.find({}).then(async (requests) => {
- 
-             return res.json(requests).status(200);
- 
+
+            return res.json(requests).status(200);
+
         }).catch((error: Error) => {
- 
-             // TODO handle this shit
-             // maybe it handles itself idk
-             // either way this seems to throw a 500 if it breaks so thats great i guess
-             throw error;
- 
-         });
- 
-     };
+
+            // TODO handle this shit
+            // maybe it handles itself idk
+            // either way this seems to throw a 500 if it breaks so thats great i guess
+            throw error;
+
+        });
+
+    };
 
     /**
     * @openapi
@@ -263,30 +263,30 @@ class UserController {
 
         if (username == null) {
 
-            return res.status(400).json({error: "User missing"});
+            return res.status(400).json({ error: "User missing" });
 
         } else {
 
-            await UserModel.findOne({username: username}).then(async (user) => {
+            await UserModel.findOne({ username: username }).then(async (user) => {
 
                 if (user == null) {
-    
-                    return res.status(404).json({error: "User doesn't exist"});
-    
+
+                    return res.status(404).json({ error: "User doesn't exist" });
+
                 } else {
 
                     await FriendRequestModel.find({ $or: [{ to_user: username }, { from_user: username }] }).then(async (requests) => {
- 
+
                         return res.json(requests).status(200);
-            
-                   }).catch((error: Error) => { throw error; });
+
+                    }).catch((error: Error) => { throw error; });
 
                 }
 
             });
 
         }
- 
+
     };
 
     /**
@@ -306,30 +306,30 @@ class UserController {
 
         if (username == null) {
 
-            return res.status(400).json({error: "User missing"});
+            return res.status(400).json({ error: "User missing" });
 
         } else {
 
-            await UserModel.findOne({username: username}).then(async (user) => {
+            await UserModel.findOne({ username: username }).then(async (user) => {
 
                 if (user == null) {
-    
-                    return res.status(404).json({error: "User doesn't exist"});
-    
+
+                    return res.status(404).json({ error: "User doesn't exist" });
+
                 } else {
 
                     await FriendRequestModel.find({ to_user: username }).then(async (requests) => {
- 
+
                         return res.json(requests).status(200);
-            
-                   }).catch((error: Error) => { throw error; });
+
+                    }).catch((error: Error) => { throw error; });
 
                 }
 
             });
 
         }
- 
+
     };
 
     /**
@@ -344,35 +344,35 @@ class UserController {
     *          description: Internal server error
     */
     public static getAllUsersFromFriendRequests: RequestHandler = async (req, res) => {
-        
+
         const username: string = req.params.user;
 
         if (username == null) {
 
-            return res.status(400).json({error: "User missing"});
+            return res.status(400).json({ error: "User missing" });
 
         } else {
 
-            await UserModel.findOne({username: username}).then(async (user) => {
+            await UserModel.findOne({ username: username }).then(async (user) => {
 
                 if (user == null) {
-    
-                    return res.status(404).json({error: "User doesn't exist"});
-    
+
+                    return res.status(404).json({ error: "User doesn't exist" });
+
                 } else {
 
                     await FriendRequestModel.find({ from_user: username }).then(async (requests) => {
- 
+
                         return res.json(requests).status(200);
-            
-                   }).catch((error: Error) => { throw error; });
+
+                    }).catch((error: Error) => { throw error; });
 
                 }
 
             });
 
         }
- 
+
     };
 
     /**
@@ -387,7 +387,7 @@ class UserController {
     *          description: Internal server error
     */
     public static acceptFriendRequest: RequestHandler = async (req, res) => {
-        
+
         // Check all parameters are there
         // Check friend request is real
         // Add both users to each others friend arrays
@@ -396,70 +396,70 @@ class UserController {
         const request_id: string = req.params.request_id;
 
         if (!request_id)
-            return res.status(400).json({error: "Request id is missing"});
+            return res.status(400).json({ error: "Request id is missing" });
 
-        await FriendRequestModel.findOne({request_id: request_id}).then(async (request) => {
- 
+        await FriendRequestModel.findOne({ request_id: request_id }).then(async (request) => {
+
             if (request == null) {
 
-                return res.status(404).json({error: "Request not found"});
+                return res.status(404).json({ error: "Request not found" });
 
             } else {
 
-                await UserModel.findOne({username: request.to_user}).then(async (to) => {
+                await UserModel.findOne({ username: request.to_user }).then(async (to) => {
 
                     if (to == null) {
 
                         // This should never ever happen
-                        return res.status(404).json({error: "A user that should exist doesn't exist"});
+                        return res.status(404).json({ error: "A user that should exist doesn't exist" });
 
                     } else {
 
-                        await UserModel.findOne({username: request.from_user}).then(async (from) => {
+                        await UserModel.findOne({ username: request.from_user }).then(async (from) => {
 
                             if (from == null) {
-        
+
                                 // This should never ever happen
-                                return res.status(404).json({error: "A user that should exist doesn't exist"});
-        
+                                return res.status(404).json({ error: "A user that should exist doesn't exist" });
+
                             } else {
 
                                 if (to.friends == null) {
 
                                     to.friends = [from.username];
-        
+
                                 } else {
-        
+
                                     to.friends.push(from.username);
-        
+
                                 }
 
                                 if (from.friends == null) {
 
                                     from.friends = [to.username];
-        
+
                                 } else {
-        
+
                                     from.friends.push(to.username);
-        
+
                                 }
-        
+
                                 await to.save().then(async () => {
 
                                     await from.save().then(async () => {
-        
+
                                         await request.remove().then(async () => {
-        
-                                            return res.status(200).json({message: "success"});
-                                
-                                        }).catch((e: Error) => { return res.status(500).json({error: e.name}); });
-                            
-                                    }).catch((e: Error) => { return res.status(500).json({error: e.name}); });
-                        
-                                }).catch((e: Error) => { return res.status(500).json({error: e.name}); });
-        
+
+                                            return res.status(200).json({ message: "success" });
+
+                                        }).catch((e: Error) => { return res.status(500).json({ error: e.name }); });
+
+                                    }).catch((e: Error) => { return res.status(500).json({ error: e.name }); });
+
+                                }).catch((e: Error) => { return res.status(500).json({ error: e.name }); });
+
                             }
-        
+
                         });
 
                     }
@@ -468,26 +468,26 @@ class UserController {
 
             }
 
-       }).catch((error: Error) => { throw error; });
- 
+        }).catch((error: Error) => { throw error; });
+
     }
 
-     /**
-    * @openapi
-    * /users/friends/requests/cancel:
-    *   post:
-    *     description: Cancel a friend request
-    *     responses:
-    *       200:
-    *         description: Friend request successfully cancelled
-    *       400:
-    *         description: Request id missing
-    *       404:
-    *         description: Request not found
-    *       500:
-    *         description: Internal server error
-    */
-      public static cancelFriendRequest: RequestHandler = async (req, res) => {
+    /**
+   * @openapi
+   * /users/friends/requests/cancel:
+   *   post:
+   *     description: Cancel a friend request
+   *     responses:
+   *       200:
+   *         description: Friend request successfully cancelled
+   *       400:
+   *         description: Request id missing
+   *       404:
+   *         description: Request not found
+   *       500:
+   *         description: Internal server error
+   */
+    public static cancelFriendRequest: RequestHandler = async (req, res) => {
 
         // Check all parameters are there
         // Check friend request is real
@@ -496,75 +496,75 @@ class UserController {
         const request_id: string = req.params.request_id;
 
         if (!request_id)
-            return res.status(400).json({error: "Request id is missing"});
+            return res.status(400).json({ error: "Request id is missing" });
 
-        await FriendRequestModel.findOne({request_id: request_id}).then(async (request) => {
- 
+        await FriendRequestModel.findOne({ request_id: request_id }).then(async (request) => {
+
             if (request == null) {
 
-                return res.status(404).json({error: "Request not found"});
+                return res.status(404).json({ error: "Request not found" });
 
             } else {
 
                 await request.remove().then(async () => {
-        
-                    return res.status(200).json({message: "success"});
-        
-                }).catch((e: Error) => { return res.status(500).json({error: e.name}); });
+
+                    return res.status(200).json({ message: "success" });
+
+                }).catch((e: Error) => { return res.status(500).json({ error: e.name }); });
 
             }
 
         }).catch((error: Error) => { throw error; });
-  
+
     }
 
-     /**
-     * @openapi
-     * /users/search:
-     *   get:
-     *     description: Searches for usernames in the database and returns up to 4 results
-     *     requestBody:
-     *       required: true
-     *       content:
-     *         application/json:
-     *           schema:
-     *             type: object
-     *             properties:
-     *               query:
-     *                 type: string
-     *                 description: Partial query used to search the database for matches
-     *     responses:
-     *       200:
-     *         description: Array of users matching the search query (limit of 4)
-     *         content:
-     *           application/json:
-     *             schema:
-     *               type: array
-     *               items:
-     *                 allOf:
-     *                   - $ref: '#/components/schemas/User'
-     *                 
-     *       404:
-     *          description: User not found
-     *          content:
-     *            application/json:
-     *              schema:
-     *                type: object
-     *                properties:
-     *                  error:
-     *                    type: string
-     *                    description: Error message
-     *       500:
-     *          description: Internal server error
-     */
-      public static search: RequestHandler = async (req, res) => {
+    /**
+    * @openapi
+    * /users/search:
+    *   get:
+    *     description: Searches for usernames in the database and returns up to 4 results
+    *     requestBody:
+    *       required: true
+    *       content:
+    *         application/json:
+    *           schema:
+    *             type: object
+    *             properties:
+    *               query:
+    *                 type: string
+    *                 description: Partial query used to search the database for matches
+    *     responses:
+    *       200:
+    *         description: Array of users matching the search query (limit of 4)
+    *         content:
+    *           application/json:
+    *             schema:
+    *               type: array
+    *               items:
+    *                 allOf:
+    *                   - $ref: '#/components/schemas/User'
+    *                 
+    *       404:
+    *          description: User not found
+    *          content:
+    *            application/json:
+    *              schema:
+    *                type: object
+    *                properties:
+    *                  error:
+    *                    type: string
+    *                    description: Error message
+    *       500:
+    *          description: Internal server error
+    */
+    public static search: RequestHandler = async (req, res) => {
 
         const query = req.params.query;
 
         // We can do .length without checking if it exists because the function doesnt run unless a query is provided
         if (query.length < 3) {
 
-            return res.status(400).json({error: "Too few characters supplied"});
+            return res.status(400).json({ error: "Too few characters supplied" });
 
         }
 
@@ -574,14 +574,38 @@ class UserController {
 
             // Only return best 4 matches
             return res.status(200).json(users.slice(0, 3));
-        
+
         }).catch((error: Error) => {
- 
+
             // TODO handle this shit
             throw error;
 
         });
-  
+
+    };
+
+    public static editBio: RequestHandler = async (req, res) => {
+        const bio = req.body.bio;
+        const user_id = req.body.user_id;
+
+        if (!user_id) {
+            return res.status(400).json({ error: "User ID is missing" });
+        }
+
+        await UserModel.findOne({ id: user_id }).then(async (user) => {
+            if (!user) {
+                return res.status(400).json({ error: "No user found" });
+            } else {
+                user.bio = bio;
+
+                await user.save().then(async () => {
+                    return res.status(201).json(user);
+                })
+                    .catch((e: Error) => {
+                        return res.status(500).json({ error: e.name });
+                    });
+            }
+        })
     };
 
 }
