@@ -625,6 +625,24 @@ describe("Users", () => {
       });
 
   });
+
+  it("Remove bio when no bio is provided", (done) => {
+
+    request(app).post("/users/bio").set('Authorization', `Bearer ${authToken}`)
+      .send(
+        {
+          user_id: UserOne.id
+        }
+      ).end((error, response) => {
+        
+        expect(response.status).to.eql(201);
+        expect(response.body.bio).to.eql("");
+
+        done(error);
+
+      });
+
+  });
   // .....
 
   // // Decline request (with all the right data)

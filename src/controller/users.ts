@@ -596,7 +596,7 @@ class UserController {
             if (!user) {
                 return res.status(400).json({ error: "No user found" });
             } else {
-                user.bio = bio;
+                user.bio = bio ?? "";
 
                 await user.save().then(async () => {
                     return res.status(201).json(user);
