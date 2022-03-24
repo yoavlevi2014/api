@@ -154,13 +154,13 @@ export const register: RequestHandler = async (req, res) => {
         } else {
           user.password = bcrypt.hashSync(user.password as string, 10);
 
-          await UserModel.find({ profileID : { $regex: `${user.name}.${user.surname}`, $options: "i" } }).then(async (users) => {
+          await UserModel.find({ profileID : { $regex: `${user.name.toLocaleLowerCase()}.${user.surname.toLocaleLowerCase()}`, $options: "i" } }).then(async (users) => {
 
-            user.profileID = `${user.name}.${user.surname}.${users.length + 1}`;
+            user.profileID = `${user.name.toLocaleLowerCase()}.${user.surname.toLocaleLowerCase()}.${users.length + 1}`;
 
           }).catch(() => {
 
-            user.profileID = `${user.name}.${user.surname}.0`;
+            user.profileID = `${user.name.toLocaleLowerCase()}.${user.surname.toLocaleLowerCase()}.0`;
 
           })
 

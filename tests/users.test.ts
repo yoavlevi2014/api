@@ -81,26 +81,41 @@ describe("Users", () => {
               surname: "Two",
               password: "password",
               username: "UserTwo"
-            }).end((_error, response) => {
+            }).end((error, response) => {
 
               UserTwo = response.body.user;
 
-              request(app).post(`/auth/register`)
-                .send({
-                  email: "useronedupe@test.co.uk",
-                  name: "User",
-                  surname: "One",
-                  password: "password",
-                  username: "UserOneDupe"
-                }).end((error, response) => {
-
-                  UserOneDupe = response.body.user;
-
-                  done(error);
-
-                });
+              done(error);
 
             });
+
+        } else {
+
+          done(error);
+
+        }
+
+      });
+
+  });
+
+  // apologies, above function was messing with other tests when I edited that one
+  before((done) => {
+
+    request(app).post(`/auth/register`)
+      .send({
+        email: "useronedupe@test.co.uk",
+        name: "User",
+        surname: "One",
+        password: "password",
+        username: "UserOneDupe"
+      }).end((error, response) => {
+
+        if (response.statusCode == 201) {
+
+          UserOneDupe = response.body.user;
+
+          done(error)
 
         } else {
 
