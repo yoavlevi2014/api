@@ -602,9 +602,9 @@ describe("Users", () => {
 
   it("Validate user profile ID's", (done) => {
 
-    expect(UserOne.profileID).to.eql("User.One.0");
-    expect(UserTwo.profileID).to.eql("User.Two.0");
-    expect(UserOneDupe.profileID).to.eql("User.One.1");
+    expect(UserOne.profileID).to.eql("user.one.1");
+    expect(UserTwo.profileID).to.eql("user.two.1");
+    expect(UserOneDupe.profileID).to.eql("user.one.2");
     done();
 
   });

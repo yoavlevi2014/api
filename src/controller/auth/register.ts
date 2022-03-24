@@ -158,9 +158,9 @@ export const register: RequestHandler = async (req, res) => {
 
             user.profileID = `${user.name.toLocaleLowerCase()}.${user.surname.toLocaleLowerCase()}.${users.length + 1}`;
 
-          }).catch(() => {
+          }).catch((error) => {
 
-            user.profileID = `${user.name.toLocaleLowerCase()}.${user.surname.toLocaleLowerCase()}.0`;
+            throw(error);
 
           })
 
