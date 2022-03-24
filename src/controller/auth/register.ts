@@ -115,6 +115,7 @@ export const register: RequestHandler = async (req, res) => {
     name: req.body.name,
     surname: req.body.surname,
     password: req.body.password,
+    profileID: ""
   };
 
   // There's probably a better way of doing this but you need to check all properties are defined
@@ -152,6 +153,16 @@ export const register: RequestHandler = async (req, res) => {
           return res.status(200).json({ error: "Email is already taken" });
         } else {
           user.password = bcrypt.hashSync(user.password as string, 10);
+
+          await UserModel.find({ profileID : { $regex: `${user.name}.${user.surname}`, $options: "i" } }).then(async (users) => {
+
+            user.profileID = `${user.name}.${user.surname}.${users.length + 1}`;
+
+          }).catch(() => {
+
+            user.profileID = `${user.name}.${user.surname}.0`;
+
+          })
 
           await new UserModel({ ...user })
             .save()
