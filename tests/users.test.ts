@@ -81,7 +81,7 @@ describe("Users", () => {
               surname: "Two",
               password: "password",
               username: "UserTwo"
-            }).end((response) => {
+            }).end((_error, response) => {
 
               UserTwo = response.body.user;
 
@@ -98,7 +98,7 @@ describe("Users", () => {
 
                   done(error);
 
-                })
+                });
 
             });
 
@@ -585,7 +585,7 @@ describe("Users", () => {
 
   });
 
-  it("Cancel friend request", (done) => {
+  it("Validate user profile ID's", (done) => {
 
     expect(UserOne.profileID).to.eql("User.One.0");
     expect(UserTwo.profileID).to.eql("User.Two.0");
