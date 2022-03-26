@@ -13,6 +13,8 @@ let UserOneDupe: User;
 // used for the accept friend request test
 let friend_request_id: string;
 
+let canvas_request_id: string;
+
 describe("Users", () => {
 
   before((done) => {
@@ -677,6 +679,189 @@ describe("Users", () => {
     expect(UserTwo.profileID).to.eql("user.two.1");
     expect(UserOneDupe.profileID).to.eql("user.one.2");
     done();
+
+  });
+
+  it("Send canvas request", (done) => {
+
+    request(app).post("/users/canvas/request").set('Authorization', `Bearer ${authToken}`)
+      .send(
+        {
+          "from": UserOne.username,
+          "to": UserTwo.username,
+          "size": "Square",
+          "roomID": "example"
+        }
+      ).end((error, response) => {
+
+        expect(response.status).to.eql(201);
+        expect(response.body.size).to.eql("Square");
+        expect(response.body.roomID).to.eql("example");
+
+        canvas_request_id = response.body.request_id;
+
+        done(error);
+
+      });
+
+  });
+
+  it("Send duplicate canvas request", (done) => {
+
+    request(app).post("/users/canvas/request").set('Authorization', `Bearer ${authToken}`)
+      .send(
+        {
+          "from": UserOne.username,
+          "to": UserTwo.username,
+          "size": "Square",
+          "roomID": "example"
+        }
+      ).end((error, response) => {
+
+        expect(response.status).to.eql(403);
+        expect(response.body.error).to.eql("Request already exists"); 
+
+        done(error);
+
+      });
+
+  });
+
+  it("Don't send canvas request when from is undefined", (done) => {
+
+    request(app).post("/users/canvas/request").set('Authorization', `Bearer ${authToken}`)
+      .send(
+        {
+          "to": UserTwo.username,
+          "size": "Square",
+          "roomID": "example"
+        }
+      ).end((error, response) => {
+
+        expect(response.status).to.eql(400);
+        expect(response.body.error).to.eql("From user is missing"); 
+
+        done(error);
+
+      });
+
+  });
+
+  it("Don't send canvas request when to is undefined", (done) => {
+
+    request(app).post("/users/canvas/request").set('Authorization', `Bearer ${authToken}`)
+      .send(
+        {
+          "from": UserOne.username,
+          "size": "Square",
+          "roomID": "example"
+        }
+      ).end((error, response) => {
+
+        expect(response.status).to.eql(400);
+        expect(response.body.error).to.eql("To user is missing"); 
+
+        done(error);
+
+      });
+
+  });
+
+  it("Don't send canvas request when size is undefined", (done) => {
+
+    request(app).post("/users/canvas/request").set('Authorization', `Bearer ${authToken}`)
+      .send(
+        {
+          "from": UserOne.username,
+          "to": UserTwo.username,
+          "roomID": "example"
+        }
+      ).end((error, response) => {
+
+        expect(response.status).to.eql(400);
+        expect(response.body.error).to.eql("canvas size is missing"); 
+
+        done(error);
+
+      });
+
+  });
+
+  it("Don't send canvas request when room ID is undefined", (done) => {
+
+    request(app).post("/users/canvas/request").set('Authorization', `Bearer ${authToken}`)
+      .send(
+        {
+          "from": UserOne.username,
+          "to": UserTwo.username,
+          "size": "Square",
+        }
+      ).end((error, response) => {
+
+        expect(response.status).to.eql(400);
+        expect(response.body.error).to.eql("room ID is missing"); 
+
+        done(error);
+
+      });
+
+  });
+
+  it("Correct number of canvas requests is returned", (done) => {
+
+    request(app).get(`/users/canvas/${UserTwo.username}/request/to`).set('Authorization', `Bearer ${authToken}`)
+      .end((error, response) => {
+
+        expect(response.status).to.eql(200);
+        expect(response.body.length).to.eql(1);
+        expect(response.body).to.be.an("array");
+
+        done(error);
+
+      });
+
+  });
+
+  it("Accept canvas request", (done) => {
+
+    request(app).post(`/users/canvas/request/accept/${canvas_request_id}`).set('Authorization', `Bearer ${authToken}`)
+      .end((error, response) => {
+
+        expect(response.status).to.eql(200);
+        expect(response.body.request_id).to.eql(canvas_request_id);
+
+        if (error)
+          done(error);
+
+      });
+
+  });
+
+  it("Cancel friend request", (done) => {
+
+    request(app).post("/users/canvas/request").set('Authorization', `Bearer ${authToken}`)
+      .send(
+        {
+          "from": admin.username,
+          "to": UserTwo.username,
+          "size": "Square",
+          "roomID": "example"
+        }
+      ).end((error, response) => {
+
+        request(app).post(`/users/cancel/request/cancel/${response.body.request_id}`).set('Authorization', `Bearer ${authToken}`)
+          .end((error, response) => {
+
+            expect(response.status).to.eql(200);
+
+            done(error);
+
+          });
+
+        if (error)
+          done(error);
+
+      });
 
   });
   // .....
