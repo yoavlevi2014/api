@@ -373,7 +373,8 @@ describe("Posts", () => {
       name: "Test",
       surname: "User",
       password: "password",
-      username: "test"
+      username: "test",
+      profileID: ""
     }
 
     const post: Post = {
@@ -592,7 +593,8 @@ describe("Posts", () => {
           name: "Test",
           surname: "User",
           password: "password",
-          username: "test"
+          username: "test",
+          profileID: ""
         }
 
         // Mocking up properties that will normally be set on the server

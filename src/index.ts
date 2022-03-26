@@ -31,7 +31,7 @@ const main = async () => {
   app.use(express.json());
   app.use(morgan("tiny"));
   app.use(express.urlencoded({ extended: true }));
-  app.use(function(_req, res, next) {
+  app.use(function (_req, res, next) {
     res.setHeader('Access-Control-Allow-Origin', '*');
     res.setHeader('Access-Control-Allow-Methods', 'GET, POST, OPTIONS, PUT, PATCH, DELETE');
     res.setHeader('Access-Control-Allow-Headers', 'X-Requested-With,content-type, Authorization');
@@ -69,10 +69,6 @@ const main = async () => {
   app.post("/users/friends/request/accept/:request_id", UserController.acceptFriendRequest);
   app.post("/users/friends/request/cancel/:request_id", UserController.cancelFriendRequest);
 
-  
-  // Launch socket server
-  createSocketServer();
-
   // Post routes
   app.get("/posts", PostController.getAllPosts);
   app.get("/posts/user", PostController.getPostsByUser);
@@ -80,9 +76,13 @@ const main = async () => {
   app.post("/posts/comment", PostController.addComment);
   app.post("/posts/like", PostController.addLike);
 
-  app.listen(port, () => {
+  const server = app.listen(port, () => {
     console.log(`listening on port ${port}`);
   });
+
+  // Launch socket server
+  createSocketServer(server);
+  
 };
 
 main();
