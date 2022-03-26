@@ -75,6 +75,7 @@ const main = async () => {
   app.get("/posts/user", PostController.getPostsByUser);
   app.post("/posts", PostController.createPost);
   app.post("/posts/comment", PostController.addComment);
+  app.post("/posts/like", PostController.addLike);
 
   const server = app.listen(port, () => {
     console.log(`listening on port ${port}`);
