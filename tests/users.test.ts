@@ -101,7 +101,6 @@ describe("Users", () => {
 
   // apologies, above function was messing with other tests when I edited that one
   before((done) => {
-
     request(app).post(`/auth/register`)
       .send({
         email: "useronedupe@test.co.uk",
@@ -446,7 +445,6 @@ describe("Users", () => {
         expect(response.body.error).to.eql("User doesn't exist");
 
         done(error);
-
       });
 
   });
@@ -598,6 +596,79 @@ describe("Users", () => {
 
       });
 
+  });
+
+  it("Add initial bio", (done) => {
+
+    request(app).post("/users/bio").set('Authorization', `Bearer ${authToken}`)
+      .send(
+        {
+          bio: "Example bio",
+          user_id: UserOne.id
+        }
+      ).end((error, response) => {
+
+        expect(response.status).to.eql(201);
+        expect(response.body.bio).to.eql("Example bio");
+
+        done(error);
+
+      });
+
+  });
+
+  it("Edit bio", (done) => {
+
+    request(app).post("/users/bio").set('Authorization', `Bearer ${authToken}`)
+      .send(
+        {
+          bio: "Changed bio",
+          user_id: UserOne.id
+        }
+      ).end((error, response) => {
+        
+        expect(response.status).to.eql(201);
+        expect(response.body.bio).to.eql("Changed bio");
+
+        done(error);
+
+      });
+
+  });
+
+  it("Return error when no user_id is provided", (done) => {
+
+    request(app).post("/users/bio").set('Authorization', `Bearer ${authToken}`)
+      .send(
+        {
+          bio: "Changed bio",
+        }
+      ).end((error, response) => {
+        
+        expect(response.status).to.eql(400);
+        expect(response.body.error).to.eql("User ID is missing");
+
+        done(error);
+
+      });
+
+  });
+
+  it("Remove bio when no bio is provided", (done) => {
+
+    request(app).post("/users/bio").set('Authorization', `Bearer ${authToken}`)
+      .send(
+        {
+          user_id: UserOne.id
+        }
+      ).end((error, response) => {
+        
+        expect(response.status).to.eql(201);
+        expect(response.body.bio).to.eql("");
+
+        done(error);
+
+      });
   });
 
   it("Validate user profile ID's", (done) => {

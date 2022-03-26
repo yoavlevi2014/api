@@ -72,6 +72,7 @@ const UserSchema = new Schema<User>(
     username: { type: String, required: true, unique: true, index: true },
     following: [{ type: String, required: false }],
     friends: [{ type: String, required: false }],
+    bio: { type: String, required: false },
     profileID: { type: String, required: true },
   },
   { timestamps: true }

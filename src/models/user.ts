@@ -10,6 +10,7 @@ export interface User {
   password?: string;
   following?: [string];
   friends?: [string];
+  bio?: string;
   profileID: string;
 }
 
