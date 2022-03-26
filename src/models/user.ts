@@ -11,6 +11,7 @@ export interface User {
   following?: [string];
   friends?: [string];
   bio?: string;
+  profileID: string;
 }
 
 const UserModel = model<User>("users", UserSchema);

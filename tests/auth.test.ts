@@ -37,6 +37,7 @@ describe("Auth", async () => {
       surname: "User",
       password: "password",
       username: "test",
+      profileID: ""
     };
 
     request(app)
@@ -67,6 +68,7 @@ describe("Auth", async () => {
       surname: "User",
       password: "password",
       username: "test",
+      profileID: ""
     };
 
     request(app)
@@ -94,6 +96,7 @@ describe("Auth", async () => {
       surname: "User",
       password: "password",
       username: "test",
+      profileID: ""
     };
 
     request(app)
@@ -120,6 +123,7 @@ describe("Auth", async () => {
       surname: "User",
       password: "password",
       username: "test",
+      profileID: ""
     };
 
     request(app)
@@ -146,6 +150,7 @@ describe("Auth", async () => {
       surname: "undefined",
       password: "password",
       username: "test",
+      profileID: ""
     };
 
     request(app)
@@ -172,6 +177,7 @@ describe("Auth", async () => {
       surname: "User",
       password: "undefined",
       username: "test",
+      profileID: ""
     };
 
     request(app)
@@ -198,6 +204,7 @@ describe("Auth", async () => {
       surname: "User",
       password: "password",
       username: "undefined",
+      profileID: ""
     };
 
     request(app)
@@ -224,6 +231,7 @@ describe("Auth", async () => {
       surname: "User",
       password: "password",
       username: "new username",
+      profileID: ""
     };
 
     request(app)
@@ -251,6 +259,7 @@ describe("Auth", async () => {
       surname: "User",
       password: "password",
       username: "test",
+      profileID: ""
     };
 
     request(app)

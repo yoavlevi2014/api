@@ -8,6 +8,7 @@ let authToken: string;
 let admin: User;
 let UserOne: User;
 let UserTwo: User;
+let UserOneDupe: User;
 
 // used for the accept friend request test
 let friend_request_id: string;
@@ -98,6 +99,34 @@ describe("Users", () => {
 
   });
 
+  // apologies, above function was messing with other tests when I edited that one
+  before((done) => {
+    request(app).post(`/auth/register`)
+      .send({
+        email: "useronedupe@test.co.uk",
+        name: "User",
+        surname: "One",
+        password: "password",
+        username: "UserOneDupe"
+      }).end((error, response) => {
+
+        if (response.statusCode == 201) {
+
+          UserOneDupe = response.body.user;
+
+          done(error)
+
+        } else {
+
+          done(error);
+
+        }
+
+      });
+
+  });
+
+
   before((done) => {
 
     if (process.env.authToken !== undefined) {
@@ -121,7 +150,7 @@ describe("Users", () => {
 
         expect(response.status).to.eql(200);
         expect(response.body).to.be.an('array');
-        expect(response.body.length).to.eql(3);
+        expect(response.body.length).to.eql(4);
 
         done(error);
 
@@ -153,7 +182,7 @@ describe("Users", () => {
       .get("/users/search/User").set('Authorization', `Bearer ${authToken}`)
       .end((error, response) => {
 
-        expect(response.body.length).to.eql(2);
+        expect(response.body.length).to.eql(3);
         expect(response.status).to.eql(200);
         expect(response.body[0].username).to.eql("UserOne");
         expect(response.body[1].username).to.eql("UserTwo");
@@ -416,7 +445,6 @@ describe("Users", () => {
         expect(response.body.error).to.eql("User doesn't exist");
 
         done(error);
-
       });
 
   });
@@ -641,6 +669,14 @@ describe("Users", () => {
         done(error);
 
       });
+  });
+
+  it("Validate user profile ID's", (done) => {
+
+    expect(UserOne.profileID).to.eql("user.one.1");
+    expect(UserTwo.profileID).to.eql("user.two.1");
+    expect(UserOneDupe.profileID).to.eql("user.one.2");
+    done();
 
   });
   // .....
