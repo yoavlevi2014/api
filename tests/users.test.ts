@@ -830,8 +830,7 @@ describe("Users", () => {
         expect(response.status).to.eql(200);
         expect(response.body.request_id).to.eql(canvas_request_id);
 
-        if (error)
-          done(error);
+        done(error);
 
       });
 
@@ -849,7 +848,7 @@ describe("Users", () => {
         }
       ).end((error, response) => {
 
-        request(app).post(`/users/cancel/request/cancel/${response.body.request_id}`).set('Authorization', `Bearer ${authToken}`)
+        request(app).post(`/users/canvas/request/cancel/${response.body.request_id}`).set('Authorization', `Bearer ${authToken}`)
           .end((error, response) => {
 
             expect(response.status).to.eql(200);
