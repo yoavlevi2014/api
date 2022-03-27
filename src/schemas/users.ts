@@ -65,6 +65,7 @@ import { User } from "@models/user";
 const UserSchema = new Schema<User>(
   {
     id: { type: String, required: true, unique: true, index: true },
+    admin: { type: Boolean, required: false },
     email: { type: String, required: true, unique: true, index: true },
     name: { type: String, required: true },
     surname: { type: String, required: true },

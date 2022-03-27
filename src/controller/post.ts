@@ -436,9 +436,9 @@ class PostController {
                         if (post.likes == null) {
                             post.likes = [user.username];
                         } else {
-                            
-                            if(post.likes.includes(user.username)){
-                                const index = post.likes.findIndex((element) => {return element == user.username});
+
+                            if (post.likes.includes(user.username)) {
+                                const index = post.likes.findIndex((element) => { return element == user.username });
                                 post.likes.splice(index);
                             } else {
                                 post.likes.push(user.username);
@@ -468,19 +468,32 @@ class PostController {
 
     public static removePost: RequestHandler = async (req, res) => {
         const post_id = req.body.post_id;
+        const admin_ID = req.body.admin;
 
-        if(!post_id){
-            return res.status(400).json({ error: "Post ID is missing"});
+        if (!post_id) {
+            return res.status(400).json({ error: "Post ID is missing" });
         }
 
-        await PostModel.findOne({ id: post_id}).then(async (post) => {
-            if(!post){
-                return res.status(400).json({ error: "Post not found"});
-            }
+        if (!admin_ID) {
+            return res.status(400).json({ error: "Admin account missing" });
+        }
 
-            await post.remove().then(async () => {
-                return res.status(200).json({ message: "Success removing post"});
-            }).catch((e: Error) => { return res.status(500).json({ error: e.name }); })
+        await UserModel.findOne({ id: admin_ID }).then(async (user) => {
+            if (!user || !user.admin) {
+                return res.status(400).json({ error: "Invalid user" });
+            } else {
+                await PostModel.findOne({ id: post_id }).then(async (post) => {
+                    if (!post) {
+                        return res.status(400).json({ error: "Post not found" });
+                    }
+
+                    await post.remove().then(async () => {
+
+                        return res.status(200).json({ message: "Success removing post" });
+
+                    }).catch((e: Error) => { return res.status(500).json({ error: e.name }); })
+                }).catch((e: Error) => { return res.status(500).json({ error: e.name }); })
+            }
         }).catch((e: Error) => { return res.status(500).json({ error: e.name }); })
     }
 }

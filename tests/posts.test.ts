@@ -11,6 +11,19 @@ let authTokenTwo: string;
 let userOne: User;
 let userTwo: User;
 
+const newAdmin: User = {
+  id: "admin1",
+  admin: true,
+  username: "admin1",
+  email: "admin1@test.com",
+  password: "admin1",
+  name: "admin1",
+  surname: "admin1",
+  profileID: ""
+}
+
+let post_id_one: string;
+
 describe("Posts", () => {
 
   // Wipe database before running any tests
@@ -29,6 +42,8 @@ describe("Posts", () => {
 
   // Create two users so we can test accessing posts for specific users
   before((done) => {
+
+    mongoose.connection.collections.users.insertOne(newAdmin);
 
     request(app).post(`/auth/register`)
       .send({
@@ -84,6 +99,8 @@ describe("Posts", () => {
         content: `<?xml version="1.0" encoding="utf-8"?><!DOCTYPE svg PUBLIC "-//W3C//DTD SVG 1.1//EN" "http://www.w3.org/Graphics/SVG/1.1/DTD/svg11.dtd"><svg version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" x="0px" y="0px" viewBox="0 0 1000 1000" enable-background="new 0 0 1000 1000" xml:space="preserve"><g><path d="M881.1,132.5H118.9C59,132.5,10,181.5,10,241.4v517.3c0,59.9,49,108.9,108.9,108.9h762.2c59.9,0,108.9-49,108.9-108.9V241.4C990,181.5,941,132.5,881.1,132.5z M949.2,747.3c0,54.9-24.5,79.4-79.4,79.4H130.3c-54.9,0-79.4-24.5-79.4-79.4V252.7c0-54.9,24.5-79.4,79.4-79.4h739.5c54.9,0,79.4,24.5,79.4,79.4V747.3z M316.3,418.3L418.3,500l265.4-224.6l204.2,183.8v306.3H112.1V581.7L316.3,418.3z M193.8,234.6c-45.1,0-81.7,36.6-81.7,81.7s36.6,81.7,81.7,81.7s81.7-36.6,81.7-81.7S238.9,234.6,193.8,234.6z"/></g></svg>`,
         size: "square"
       }).end((error, response) => {
+
+        post_id_one = response.body.id;
 
         // Adds a tiny delay here otherwise they have the same timestamp and sorting doesn't work
         setTimeout(() => {
@@ -860,7 +877,7 @@ describe("Posts", () => {
         // We have to get the second post because of the default sorting order of GET /posts
         const post: Post = response.body[1] as Post;
         const user = userOne;
-        
+
         expect(post.likes?.includes(user.username)).to.be.eql(true);
 
         request(app).post(`/posts/like`).set('Authorization', `Bearer ${authTokenOne}`)
@@ -879,6 +896,20 @@ describe("Posts", () => {
 
       });
 
+  });
+
+  it("Remove a post", (done) => {
+    request(app).post("/posts/remove").set('Authorization', `Bearer ${authTokenOne}`)
+      .send({
+        post_id: post_id_one,
+        admin: newAdmin.id
+      }).end((error, response) => {
+
+        expect(response.status).to.eql(200);
+
+        done(error);
+
+      })
   });
 
 });
