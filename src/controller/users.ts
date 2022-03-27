@@ -3,6 +3,8 @@ import UserModel from "@models/user";
 import { FriendRequest } from "@models/friend_request";
 import { v4 as uuidv4 } from "uuid";
 import { RequestHandler } from "express";
+import PostModel from "@models/post";
+import { Profile } from "@models/profile";
 
 // All these routes could do with being a bit more typescripty
 class UserController {
@@ -107,6 +109,74 @@ class UserController {
             } else {
 
                 return res.status(200).json(user);
+
+            }
+ 
+        }).catch((error: Error) => {
+ 
+             // TODO handle this shit
+             throw error;
+ 
+         });
+  
+    };
+
+    /**
+     * @openapi
+     * /users/pprofile/:username:
+     *   get:
+     *     description: Retrieves a single user account based on a supplied user id
+     *     responses:
+     *       200:
+     *         description: Returns a user from the database
+     *       404:
+     *          description: User not found
+     *       500:
+     *          description: Internal server error
+    */
+    public static getProfile: RequestHandler = async (req, res) => {
+
+        const username = req.params.username;
+
+        if (!username)
+            return res.status(400).json({error: "Username parameter is missing"});
+
+        // Check username parameter exists
+
+        await UserModel.findOne({username: username}).then(async (user) => {
+
+            if (user == null) {
+
+                return res.status(404).json({error: "User not found"});
+
+            } else {
+
+                // Strip password
+                const profile: Profile = {
+                    user: user
+                };
+
+                await PostModel.find({"author.id": user.id}).then(async ([posts]) => {
+
+                    if (posts) {
+
+                        profile.posts = [posts];
+
+                    }
+
+                    await PostModel.find({"comments.author.id": user.id}).then(async ([comments]) => {
+
+                        if (comments) {
+    
+                            profile.comments = [comments];
+    
+                        }
+
+                        return res.status(200).json(profile);
+     
+                    }).catch((error: Error) => { throw error; });
+ 
+                }).catch((error: Error) => { throw error; });
 
             }
  

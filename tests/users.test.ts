@@ -3,6 +3,8 @@ import app from "@index";
 import { expect } from "chai";
 import mongoose from "mongoose";
 import { User } from "@models/user";
+import { Post } from "@models/post";
+import { Comment } from "@models/comment";
 
 let authToken: string;
 let admin: User;
@@ -570,6 +572,98 @@ describe("Users", () => {
 
   });
   // .....
+
+  it("TESSTTTT", (done) => {
+
+
+    // Very long test but basically create two posts, one where our user is the author and one where our user is commenting
+
+    request(app).post(`/posts`).set('Authorization', `Bearer ${authToken}`)
+      .send({
+        author: UserOne,
+        title: "Post one",
+        content: `<?xml version="1.0" encoding="utf-8"?><!DOCTYPE svg PUBLIC "-//W3C//DTD SVG 1.1//EN" "http://www.w3.org/Graphics/SVG/1.1/DTD/svg11.dtd"><svg version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" x="0px" y="0px" viewBox="0 0 1000 1000" enable-background="new 0 0 1000 1000" xml:space="preserve"><g><path d="M881.1,132.5H118.9C59,132.5,10,181.5,10,241.4v517.3c0,59.9,49,108.9,108.9,108.9h762.2c59.9,0,108.9-49,108.9-108.9V241.4C990,181.5,941,132.5,881.1,132.5z M949.2,747.3c0,54.9-24.5,79.4-79.4,79.4H130.3c-54.9,0-79.4-24.5-79.4-79.4V252.7c0-54.9,24.5-79.4,79.4-79.4h739.5c54.9,0,79.4,24.5,79.4,79.4V747.3z M316.3,418.3L418.3,500l265.4-224.6l204.2,183.8v306.3H112.1V581.7L316.3,418.3z M193.8,234.6c-45.1,0-81.7,36.6-81.7,81.7s36.6,81.7,81.7,81.7s81.7-36.6,81.7-81.7S238.9,234.6,193.8,234.6z"/></g></svg>`,
+        size: "square"
+      }).end((error, response) => {
+
+        // Adds a tiny delay here otherwise they have the same timestamp and sorting doesn't work
+        setTimeout(() => {
+
+          if (response.status == 201) {
+
+            request(app).post(`/posts`).set('Authorization', `Bearer ${authToken}`)
+            .send({
+              author: UserTwo,
+              title: "Post two",
+              content: `<?xml version="1.0" encoding="utf-8"?><!DOCTYPE svg PUBLIC "-//W3C//DTD SVG 1.1//EN" "http://www.w3.org/Graphics/SVG/1.1/DTD/svg11.dtd"><svg version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" x="0px" y="0px" viewBox="0 0 1000 1000" enable-background="new 0 0 1000 1000" xml:space="preserve"><g><path d="M881.1,132.5H118.9C59,132.5,10,181.5,10,241.4v517.3c0,59.9,49,108.9,108.9,108.9h762.2c59.9,0,108.9-49,108.9-108.9V241.4C990,181.5,941,132.5,881.1,132.5z M949.2,747.3c0,54.9-24.5,79.4-79.4,79.4H130.3c-54.9,0-79.4-24.5-79.4-79.4V252.7c0-54.9,24.5-79.4,79.4-79.4h739.5c54.9,0,79.4,24.5,79.4,79.4V747.3z M316.3,418.3L418.3,500l265.4-224.6l204.2,183.8v306.3H112.1V581.7L316.3,418.3z M193.8,234.6c-45.1,0-81.7,36.6-81.7,81.7s36.6,81.7,81.7,81.7s81.7-36.6,81.7-81.7S238.9,234.6,193.8,234.6z"/></g></svg>`,
+              size: "square"
+            }).end((error, response) => {
+        
+              if (response.status == 201) {
+  
+                request(app).get(`/posts`).set('Authorization', `Bearer ${authToken}`)
+                .end((error, response) => {
+
+                  if (error)
+                    done(error);
+                      
+                  // We have to get the second post because of the default sorting order of GET /posts
+                  const post: Post = response.body[1] as Post;
+
+                  // Mocking up properties that will normally be set on the server
+                  const comment: Comment = {
+
+                    id: "",
+                    author: UserOne,
+                    content: "Comment one",
+                    likes: 0,
+                    created: 0,
+                    isOnOwnPost: true,
+                    post_id: post.id
+
+                  };
+
+                  request(app).post(`/posts/comment`).set('Authorization', `Bearer ${authToken}`)
+                  .send({
+                    author: comment.author,
+                    content: comment.content,
+                    post_id: comment.post_id
+                  }).end((error) => {
+
+                    request(app).get(`/users/profile/${UserOne.username}`).set('Authorization', `Bearer ${authToken}`)
+                    .end((error, response) => {
+
+                      expect(response.status).to.eql(200);
+                      console.log(response.body);
+
+                      done(error);
+
+                    });
+
+                    if (error)
+                      done(error);
+
+                  });
+
+                });
+
+              }
+
+              if (error)
+                done(error);
+                
+            });
+
+          }
+
+        }, 1000);
+
+        if (error)
+          done(error);
+
+      });
+
+  });
 
   // // Decline request (with all the right data)
   // it("Decline friend request", (done) => {});
