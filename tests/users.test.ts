@@ -13,17 +13,6 @@ let UserOneDupe: User;
 // used for the accept friend request test
 let friend_request_id: string;
 
-const newAdmin: User = {
-  id: "admin1",
-  admin: true,
-  username: "admin1",
-  email: "admin1@test.com",
-  password: "admin1",
-  name: "admin1",
-  surname: "admin1",
-  profileID: ""
-}
-
 describe("Users", () => {
 
   before((done) => {
@@ -42,8 +31,6 @@ describe("Users", () => {
   });
 
   before((done) => {
-
-    mongoose.connection.collections.users.insertOne(newAdmin);
 
     request(app).post(`/auth/register`)
       .send({
@@ -68,6 +55,8 @@ describe("Users", () => {
         done(error);
 
       });
+
+      mongoose.connection.collections.user.updateOne({id: admin.id}, {admin: true});
 
   });
 
@@ -697,8 +686,7 @@ describe("Users", () => {
     request(app).post("/users/remove").set('Authorization', `Bearer ${authToken}`)
     .send(
       {
-        user_id: UserOneDupe.id,
-        admin: newAdmin.id
+        user_id: UserOneDupe.id
       }
     ).end((error, response) => {
 

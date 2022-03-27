@@ -4,6 +4,7 @@ import { FriendRequest } from "@models/friend_request";
 import { v4 as uuidv4 } from "uuid";
 import { RequestHandler } from "express";
 import PostModel from "@models/post";
+import jwt from "jsonwebtoken";
 
 // All these routes could do with being a bit more typescripty
 class UserController {
@@ -612,69 +613,79 @@ class UserController {
     public static removeUser: RequestHandler = async (req, res) => {
         const user_id = req.body.user_id;
         const username = req.body.username;
-        const admin_ID = req.body.admin;
 
         // user can add either user ID or username as the body, if both are empty, throw error
         if (!user_id && !username) {
             return res.status(400).json({ error: "User ID or Username is missing" });
         }
 
-        if (!admin_ID) {
-            return res.status(400).json({ error: "Admin account missing" });
-        }
+        const at = req.headers.authorization?.split(' ')[1];
 
-        await UserModel.findOne({ id: admin_ID }).then(async (user) => {
-            if (!user || !user.admin) {
-                return res.status(400).json({ error: "Invalid user" });
-            } else {
-                // route defaults to using user_id if both params are present
-                if (user_id) {
+        if (at) {
+            await jwt.verify(
+                at,
+                process.env.SEED as string,
+                async (err, token) => {
+                    if (err || !token) {
+                        return res.status(400).json({ error: "Error verifying token" });
+                    }
 
-                    await UserModel.findOne({ id: user_id }).then(async (user) => {
-                        if (!user) {
-                            return res.status(400).json({ error: "No user found" });
+                    await UserModel.findOne({ id: token.sub }).then(async (user) => {
+                        if (!user || !user.admin) {
+                            return res.status(400).json({ error: "Invalid user" });
                         } else {
-                            // find posts made by this user and remove them
-                            await PostModel.find({ author: user }).then(async (posts) => {
-                                posts.map(async (post) => {
-                                    await post.remove()
-                                        .catch((e: Error) => { return res.status(500).json({ error: e.name }); })
+
+                            // route defaults to using user_id if both params are present
+                            if (user_id) {
+
+                                await UserModel.findOne({ id: user_id }).then(async (user) => {
+                                    if (!user) {
+                                        return res.status(400).json({ error: "No user found" });
+                                    } else {
+                                        // find posts made by this user and remove them
+                                        await PostModel.find({ author: user }).then(async (posts) => {
+                                            posts.map(async (post) => {
+                                                await post.remove()
+                                                    .catch((e: Error) => { return res.status(500).json({ error: e.name }); })
+                                            })
+                                        }).catch((e: Error) => { return res.status(500).json({ error: e.name }); })
+
+                                        // remove user
+                                        await user.remove().then(async () => {
+                                            return res.status(200).json({ message: "Success removing user" });
+                                        }).catch((e: Error) => { return res.status(500).json({ error: e.name }); });
+                                    }
                                 })
-                            }).catch((e: Error) => { return res.status(500).json({ error: e.name }); })
 
-                            // remove user
-                            await user.remove().then(async () => {
-                                return res.status(200).json({ message: "Success removing user" });
-                            }).catch((e: Error) => { return res.status(500).json({ error: e.name }); });
-                        }
-                    })
+                            } else {
+                                await UserModel.findOne({ username: username }).then(async (user) => {
+                                    if (!user) {
+                                        return res.status(400).json({ error: "No user found" });
+                                    } else {
+                                        // find posts made by this user and remove them
+                                        await PostModel.find({ author: user }).then(async (posts) => {
+                                            posts.map(async (post) => {
+                                                await post.remove()
+                                                    .catch((e: Error) => { return res.status(500).json({ error: e.name }); })
+                                            })
+                                        }).catch((e: Error) => { return res.status(500).json({ error: e.name }); })
 
-                } else {
-                    await UserModel.findOne({ username: username }).then(async (user) => {
-                        if (!user) {
-                            return res.status(400).json({ error: "No user found" });
-                        } else {
-                            // find posts made by this user and remove them
-                            await PostModel.find({ author: user }).then(async (posts) => {
-                                posts.map(async (post) => {
-                                    await post.remove()
-                                        .catch((e: Error) => { return res.status(500).json({ error: e.name }); })
+                                        // remove user
+                                        await user.remove().then(async () => {
+                                            return res.status(200).json({ message: "Success removing user" });
+                                        }).catch((e: Error) => { return res.status(500).json({ error: e.name }); });
+                                    }
                                 })
-                            }).catch((e: Error) => { return res.status(500).json({ error: e.name }); })
+                            }
 
-                            // remove user
-                            await user.remove().then(async () => {
-                                return res.status(200).json({ message: "Success removing user" });
-                            }).catch((e: Error) => { return res.status(500).json({ error: e.name }); });
                         }
                     })
                 }
-            }
-        }).catch((e: Error) => { return res.status(500).json({ error: e.name }); });
+            )
+        }
     };
 
 }
-
 
 
 // Friends and shit

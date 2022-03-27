@@ -3,6 +3,7 @@ import PostModel, { Post } from "@models/post";
 import UserModel, { User } from "@models/user";
 import { RequestHandler } from "express";
 import { v4 as uuidv4 } from "uuid";
+import jwt from "jsonwebtoken";
 
 class PostController {
 
@@ -468,33 +469,42 @@ class PostController {
 
     public static removePost: RequestHandler = async (req, res) => {
         const post_id = req.body.post_id;
-        const admin_ID = req.body.admin;
 
         if (!post_id) {
             return res.status(400).json({ error: "Post ID is missing" });
         }
 
-        if (!admin_ID) {
-            return res.status(400).json({ error: "Admin account missing" });
-        }
+        const at = req.headers.authorization?.split(' ')[1];
 
-        await UserModel.findOne({ id: admin_ID }).then(async (user) => {
-            if (!user || !user.admin) {
-                return res.status(400).json({ error: "Invalid user" });
-            } else {
-                await PostModel.findOne({ id: post_id }).then(async (post) => {
-                    if (!post) {
-                        return res.status(400).json({ error: "Post not found" });
+        if (at) {
+            await jwt.verify(
+                at,
+                process.env.SEED as string,
+                async (err, token) => {
+                    if (err || !token) {
+                        return res.status(400).json({ error: "Error verifying token" });
                     }
 
-                    await post.remove().then(async () => {
+                    await UserModel.findOne({ id: token.sub }).then(async (user) => {
+                        if (!user || !user.admin) {
+                            return res.status(400).json({ error: "Invalid user" });
+                        } else {
+                            await PostModel.findOne({ id: post_id }).then(async (post) => {
+                                if (!post) {
+                                    return res.status(400).json({ error: "Post not found" });
+                                }
 
-                        return res.status(200).json({ message: "Success removing post" });
+                                await post.remove().then(async () => {
 
-                    }).catch((e: Error) => { return res.status(500).json({ error: e.name }); })
-                }).catch((e: Error) => { return res.status(500).json({ error: e.name }); })
-            }
-        }).catch((e: Error) => { return res.status(500).json({ error: e.name }); })
+                                    return res.status(200).json({ message: "Success removing post" });
+
+                                }).catch((e: Error) => { return res.status(500).json({ error: e.name }); })
+                            }).catch((e: Error) => { return res.status(500).json({ error: e.name }); })
+                        }
+                    })
+                }
+            )
+        }
     }
 }
 

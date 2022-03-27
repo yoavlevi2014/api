@@ -6,21 +6,12 @@ import { User } from "@models/user";
 import { Post } from "@models/post";
 import { Comment } from "@models/comment";
 
+let authToken: string;
 let authTokenOne: string;
 let authTokenTwo: string;
+let admin: User;
 let userOne: User;
 let userTwo: User;
-
-const newAdmin: User = {
-  id: "admin1",
-  admin: true,
-  username: "admin1",
-  email: "admin1@test.com",
-  password: "admin1",
-  name: "admin1",
-  surname: "admin1",
-  profileID: ""
-}
 
 let post_id_one: string;
 
@@ -40,10 +31,53 @@ describe("Posts", () => {
 
   });
 
-  // Create two users so we can test accessing posts for specific users
   before((done) => {
 
-    mongoose.connection.collections.users.insertOne(newAdmin);
+    request(app).post(`/auth/register`)
+      .send({
+        email: "admin@test.co.uk",
+        name: "Admin",
+        surname: "User",
+        password: "password",
+        username: "admin"
+      }).end((error, response) => {
+
+        if (response.statusCode == 201) {
+
+          process.env.authToken = response.body.tokens.at;
+          admin = response.body.user;
+
+        } else if (response.statusCode == 200) {
+
+          console.log(response.body);
+
+        }
+
+        done(error);
+
+      });
+
+      mongoose.connection.collections.user.updateOne({id: admin.id}, {admin: true});
+
+  });
+
+  before((done) => {
+
+    if (process.env.authToken !== undefined) {
+
+      authToken = process.env.authToken;
+      done();
+
+    } else {
+
+      throw new Error("Auth token isn't set, exiting");
+
+    }
+
+  });
+
+  // Create two users so we can test accessing posts for specific users
+  before((done) => {
 
     request(app).post(`/auth/register`)
       .send({
@@ -899,10 +933,9 @@ describe("Posts", () => {
   });
 
   it("Remove a post", (done) => {
-    request(app).post("/posts/remove").set('Authorization', `Bearer ${authTokenOne}`)
+    request(app).post("/posts/remove").set('Authorization', `Bearer ${authToken}`)
       .send({
         post_id: post_id_one,
-        admin: newAdmin.id
       }).end((error, response) => {
 
         expect(response.status).to.eql(200);
