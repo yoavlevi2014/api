@@ -932,6 +932,7 @@ describe("Posts", () => {
 
   });
 
+
 //   it("Remove a post", (done) => {
 //     request(app).post("/posts/remove").set('Authorization', `Bearer ${authToken}`)
 //       .send({
@@ -946,3 +947,4 @@ describe("Posts", () => {
 //   });
 
 // });
+
