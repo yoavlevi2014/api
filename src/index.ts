@@ -70,6 +70,7 @@ const main = async () => {
   app.post("/users/friends/request/cancel/:request_id", UserController.cancelFriendRequest);
   app.post("/users/bio", UserController.editBio);
   app.post("/users/remove", UserController.removeUser);
+  app.get("/users/profile/:profile_id", UserController.getProfile);
 
   // Post routes
   app.get("/posts", PostController.getAllPosts);

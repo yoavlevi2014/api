@@ -1,9 +1,9 @@
 import FriendRequestModel from "@models/friend_request";
-import UserModel from "@models/user";
+import UserModel, { User } from "@models/user";
 import { FriendRequest } from "@models/friend_request";
 import { v4 as uuidv4 } from "uuid";
 import { RequestHandler } from "express";
-import PostModel from "@models/post";
+import PostModel, { Post } from "@models/post";
 import jwt from "jsonwebtoken";
 
 // All these routes could do with being a bit more typescripty
@@ -684,6 +684,45 @@ class UserController {
             )
         }
     };
+
+    public static getProfile: RequestHandler = async (req, res) => {
+        const profileID = req.params.profile_id;
+        let body : {user: User, posts: Array<Post>};
+
+        if(!profileID){
+            return res.status(400).json({ error: "missing profile ID"});
+        }
+
+        await UserModel.findOne({ profileID: profileID}).then(async (user) => {
+
+            if(!user){
+                return res.status(400).json({ error: "User not found"});
+            } else {
+                
+                await PostModel.find({ id: user.id}).then(async (posts) => {
+                    if(!posts){
+                        body = {
+                            user: user,
+                            posts: []
+                        };
+
+                        return res.status(200).json(body);
+                    } else {
+
+                        body = {
+                            user: user,
+                            posts: posts
+                        }
+
+                        return res.status(200).json(body);
+
+                    }
+                })
+
+            }
+
+        })
+    }
 
 }
 
