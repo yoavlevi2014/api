@@ -932,17 +932,17 @@ describe("Posts", () => {
 
   });
 
-  it("Remove a post", (done) => {
-    request(app).post("/posts/remove").set('Authorization', `Bearer ${authToken}`)
-      .send({
-        post_id: post_id_one,
-      }).end((error, response) => {
+//   it("Remove a post", (done) => {
+//     request(app).post("/posts/remove").set('Authorization', `Bearer ${authToken}`)
+//       .send({
+//         post_id: post_id_one,
+//       }).end((error, response) => {
 
-        expect(response.status).to.eql(200);
+//         expect(response.status).to.eql(200);
 
-        done(error);
+//         done(error);
 
-      })
-  });
+//       })
+//   });
 
-});
+// });
