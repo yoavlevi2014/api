@@ -69,6 +69,10 @@ const main = async () => {
   app.post("/users/friends/request/accept/:request_id", UserController.acceptFriendRequest);
   app.post("/users/friends/request/cancel/:request_id", UserController.cancelFriendRequest);
   app.post("/users/bio", UserController.editBio);
+  app.post("/users/canvas/request", UserController.sendCanvasRequest);
+  app.post("/users/canvas/request/accept/:request_id", UserController.acceptCanvasRequest);
+  app.post("/users/canvas/request/cancel/:request_id", UserController.cancelCanvasRequest);
+  app.get("/users/canvas/:user/request/to", UserController.getAllUsersToCanvasRequests);
   app.post("/users/remove", UserController.removeUser);
 
   // Post routes
