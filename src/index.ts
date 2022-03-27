@@ -11,7 +11,7 @@ import doc from "@doc";
 
 import index from "@controller";
 
-import { login, register } from "@auth";
+import { login, register, verifyToken } from "@auth";
 
 import UserController from "@controller/users";
 import PostController from "@controller/post";
@@ -32,9 +32,15 @@ const main = async () => {
   app.use(morgan("tiny"));
   app.use(express.urlencoded({ extended: true }));
   app.use(function (_req, res, next) {
-    res.setHeader('Access-Control-Allow-Origin', '*');
-    res.setHeader('Access-Control-Allow-Methods', 'GET, POST, OPTIONS, PUT, PATCH, DELETE');
-    res.setHeader('Access-Control-Allow-Headers', 'X-Requested-With,content-type, Authorization');
+    res.setHeader("Access-Control-Allow-Origin", "*");
+    res.setHeader(
+      "Access-Control-Allow-Methods",
+      "GET, POST, OPTIONS, PUT, PATCH, DELETE"
+    );
+    res.setHeader(
+      "Access-Control-Allow-Headers",
+      "X-Requested-With,content-type, Authorization"
+    );
     next();
   });
 
@@ -55,6 +61,7 @@ const main = async () => {
   // Auth routes
   app.post("/auth/login", login);
   app.post("/auth/register", register);
+  app.get("/auth/verify", verifyToken);
 
   // User routes
   app.get("/users", UserController.getAllUsers);
@@ -62,12 +69,27 @@ const main = async () => {
   app.get("/users/name/:username", UserController.getUserByUsername);
   app.get("/users/search/:query", UserController.search);
   app.get("/users/friends/requests", UserController.getAllFriendRequests);
-  app.get("/users/friends/:user/requests", UserController.getAllUsersFriendRequests);
-  app.get("/users/friends/:user/requests/to", UserController.getAllUsersToFriendRequests);
-  app.get("/users/friends/:user/requests/from", UserController.getAllUsersFromFriendRequests);
+  app.get(
+    "/users/friends/:user/requests",
+    UserController.getAllUsersFriendRequests
+  );
+  app.get(
+    "/users/friends/:user/requests/to",
+    UserController.getAllUsersToFriendRequests
+  );
+  app.get(
+    "/users/friends/:user/requests/from",
+    UserController.getAllUsersFromFriendRequests
+  );
   app.post("/users/friends/request", UserController.sendFriendRequest);
-  app.post("/users/friends/request/accept/:request_id", UserController.acceptFriendRequest);
-  app.post("/users/friends/request/cancel/:request_id", UserController.cancelFriendRequest);
+  app.post(
+    "/users/friends/request/accept/:request_id",
+    UserController.acceptFriendRequest
+  );
+  app.post(
+    "/users/friends/request/cancel/:request_id",
+    UserController.cancelFriendRequest
+  );
   app.post("/users/bio", UserController.editBio);
   app.post("/users/remove", UserController.removeUser);
 
@@ -85,7 +107,6 @@ const main = async () => {
 
   // Launch socket server
   createSocketServer(server);
-  
 };
 
 main();

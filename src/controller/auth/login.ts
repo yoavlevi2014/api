@@ -76,7 +76,7 @@ export const login: RequestHandler = async (req, res) => {
           //   arrappend("tokens", ".", [JSON.stringify(rt)]).catch(async (err) => {
           //     throw err;
           //   });
-          delete user.password;
+          delete user["password"];
           return res.json({ user: user, tokens: { at: at, rt: rt } });
         } else {
           return res.json({ error: "Oops, you typed something incorrectly!" });
