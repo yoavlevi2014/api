@@ -627,12 +627,12 @@ class UserController {
                 process.env.SEED as string,
                 async (err, token) => {
                     if (err || !token) {
-                        return res.status(400).json({ error: "Error verifying token" });
+                        return res.status(403).json({ error: "Error verifying token" });
                     }
 
                     await UserModel.findOne({ id: token.sub }).then(async (user) => {
                         if (!user || !user.admin) {
-                            return res.status(400).json({ error: "Invalid user" });
+                            return res.status(403).json({ error: "Invalid user" });
                         } else {
 
                             // route defaults to using user_id if both params are present

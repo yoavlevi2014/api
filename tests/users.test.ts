@@ -152,7 +152,7 @@ describe("Users", () => {
 
         expect(response.status).to.eql(200);
         expect(response.body).to.be.an('array');
-        expect(response.body.length).to.eql(5);
+        expect(response.body.length).to.eql(4);
 
         done(error);
 
@@ -201,7 +201,7 @@ describe("Users", () => {
       .get("/users/search/Adm").set('Authorization', `Bearer ${authToken}`)
       .end((error, response) => {
 
-        expect(response.body.length).to.eql(2);
+        expect(response.body.length).to.eql(1);
         expect(response.status).to.eql(200);
         expect(response.body[1].username).to.eql("admin");
 
