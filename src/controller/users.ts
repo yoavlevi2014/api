@@ -687,7 +687,7 @@ class UserController {
 
     public static getProfile: RequestHandler = async (req, res) => {
         const profileID = req.params.profile_id;
-        let body : {user: User, posts: Array<Post>};
+        let body : {user: User, posts?: [Post]};
 
         if(!profileID){
             return res.status(400).json({ error: "missing profile ID"});
@@ -700,18 +700,17 @@ class UserController {
             } else {
                 
                 await PostModel.find({ id: user.id}).then(async (posts) => {
-                    if(!posts){
+                    if(posts === null){
                         body = {
                             user: user,
-                            posts: []
                         };
 
                         return res.status(200).json(body);
-                    } else {
+                    } else if(posts.length >= 1){
 
                         body = {
                             user: user,
-                            posts: posts
+                            posts: posts as unknown as [Post]
                         }
 
                         return res.status(200).json(body);
