@@ -56,8 +56,6 @@ describe("Users", () => {
 
       });
 
-      mongoose.connection.collections.users.updateOne({id: admin.id}, { $set : {admin: true}});
-
   });
 
   // TODO merge with function above
@@ -141,6 +139,8 @@ describe("Users", () => {
       throw new Error("Auth token isn't set, exiting");
 
     }
+
+    mongoose.connection.collections.users.findOneAndUpdate({ id: admin.id}, { admin: true});
 
   });
 

@@ -57,8 +57,6 @@ describe("Posts", () => {
 
       });
 
-      mongoose.connection.collections.users.updateOne({id: admin.id}, { $set : {admin: true}});
-
   });
 
   before((done) => {
@@ -73,6 +71,8 @@ describe("Posts", () => {
       throw new Error("Auth token isn't set, exiting");
 
     }
+
+    mongoose.connection.collections.users.findOneAndUpdate({ id: admin.id}, { admin: true});
 
   });
 
