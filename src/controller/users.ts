@@ -3,6 +3,7 @@ import UserModel from "@models/user";
 import { FriendRequest } from "@models/friend_request";
 import { v4 as uuidv4 } from "uuid";
 import { RequestHandler } from "express";
+import CanvasRequestModel, { CanvasRequest } from "@models/canvas_request";
 import PostModel from "@models/post";
 import jwt from "jsonwebtoken";
 
@@ -610,6 +611,256 @@ class UserController {
         })
     };
 
+    /**
+     * @openapi
+     * /users/canvas/request:
+     *   post:
+     *     description: Sends a canvas request from one user to another
+     *     body:
+     *       to: username of recipient
+     *       from: username of sender
+     *       size: size of canvas
+     *       roomID: id of socket io room
+     *     responses:
+     *       201:
+     *         description: Returns canvas request object
+     *       400:
+     *         description: Request is missing one or more user
+     *       403:
+     *         description: There is an error with your request
+     *       404:
+     *         description: One or more of the users in the request doesn't exist
+     *       500:
+     *          description: Internal server error
+     */
+    public static sendCanvasRequest: RequestHandler = async (req, res) => {
+
+        const to: string = req.body.to;
+        const from: string = req.body.from;
+        const size: string = req.body.size;
+        const roomID: string = req.body.roomID;
+
+        if (!to)
+            return res.status(400).json({ error: "To user is missing" });
+
+        if (!from)
+            return res.status(400).json({ error: "From user is missing" });
+
+        if (to === from)
+            return res.status(403).json({ error: "Cannot send canvas request to yourself" });
+
+        if (!size)
+            return res.status(400).json({ error: "canvas size is missing" });
+
+        if (!roomID)
+            return res.status(400).json({ error: "room ID is missing" });
+
+
+        // Check "to" user is a valid user
+        await UserModel.findOne({ username: to }).then(async (toUser) => {
+
+            if (toUser == null) {
+
+                return res.status(404).json({ error: "To user not found" });
+
+            } else {
+
+                // Check "from" user is a valid user
+                await UserModel.findOne({ username: from }).then(async (fromUser) => {
+
+                    if (fromUser == null) {
+
+                        return res.status(404).json({ error: "From user not found" });
+
+                    } else {
+
+                        await CanvasRequestModel.findOne({ to_user: to, from_user: from }).then((async (request) => {
+
+                            if (request == null) {
+
+                                const request: CanvasRequest = {
+                                    request_id: uuidv4(),
+                                    to_user: to,
+                                    from_user: from,
+                                    status: "pending",
+                                    size: size,
+                                    roomID: roomID
+                                };
+
+                                await new CanvasRequestModel({ ...request }).save().then(async () => {
+
+                                    return res.status(201).json(request);
+
+                                }).catch((e: Error) => { return res.status(500).json({ error: e.name }); });
+
+                            } else {
+
+                                return res.status(403).json({ error: "Request already exists" });
+
+                            }
+
+                        })).catch((error: Error) => { throw error });
+
+                    }
+
+                }).catch((error: Error) => { throw error });
+
+            }
+
+        }).catch((error: Error) => { throw error });
+
+    };
+
+    /**
+    * @openapi
+    * /users/canvas/request/accept:
+    *   post:
+    *     description: Accept a canvas request
+    *     responses:
+    *       200:
+    *         description: request is returned
+    *       404: 
+    *         description: request not found
+    *       500:
+    *         description: Internal server error
+    */
+    public static acceptCanvasRequest: RequestHandler = async (req, res) => {
+
+        const request_id: string = req.params.request_id;
+
+        if (!request_id)
+            return res.status(400).json({ error: "Request id is missing" });
+
+        await CanvasRequestModel.findOne({ request_id: request_id }).then(async (request) => {
+
+            if (request == null) {
+
+                return res.status(404).json({ error: "Request not found" });
+
+            } else {
+
+                await UserModel.findOne({ username: request.to_user }).then(async (to) => {
+
+                    if (to == null) {
+
+                        // This should never ever happen
+                        return res.status(404).json({ error: "A user that should exist doesn't exist" });
+
+                    } else {
+
+                        await UserModel.findOne({ username: request.from_user }).then(async (from) => {
+
+                            if (from == null) {
+
+                                // This should never ever happen
+                                return res.status(404).json({ error: "A user that should exist doesn't exist" });
+
+                            } else {
+
+                                await request.remove().then(async () => {
+
+                                    return res.status(200).json(request);
+
+                                }).catch((e: Error) => { return res.status(500).json({ error: e.name }); });
+
+                            }
+
+                        });
+
+                    }
+
+                });
+
+            }
+
+        }).catch((error: Error) => { throw error; });
+
+    }
+
+    /**
+    * @openapi
+    *   /users/canvas/request/cancel:
+    *   post:
+    *     description: Cancel a canvas request
+    *     responses:
+    *       200:
+    *         description: Canvas request successfully cancelled
+    *       400:
+    *         description: Request id missing
+    *       404:
+    *         description: Request not found
+    *       500:
+    *         description: Internal server error
+    */
+    public static cancelCanvasRequest: RequestHandler = async (req, res) => {
+
+        const request_id: string = req.params.request_id;
+
+        if (!request_id)
+            return res.status(400).json({ error: "Request id is missing" });
+
+        await CanvasRequestModel.findOne({ request_id: request_id }).then(async (request) => {
+
+            if (request == null) {
+
+                return res.status(404).json({ error: "Request not found" });
+
+            } else {
+
+                await request.remove().then(async () => {
+
+                    return res.status(200).json({ message: "success" });
+
+                }).catch((e: Error) => { return res.status(500).json({ error: e.name }); });
+
+            }
+
+        }).catch((error: Error) => { throw error; });
+
+    }
+
+    /**
+    * @openapi
+    * /users/canvas/:user:/request/to:
+    *   get:
+    *     description: Retrieves all canvas requests sent to a user from the database
+    *     responses:
+    *       200:
+    *         description: Returns a JSON array of all the canvas requests sent to a user
+    *       500:
+    *          description: Internal server error
+    */
+    public static getAllUsersToCanvasRequests: RequestHandler = async (req, res) => {
+
+        const username: string = req.params.user;
+
+        if (username == null) {
+
+            return res.status(400).json({ error: "User missing" });
+
+        } else {
+
+            await UserModel.findOne({ username: username }).then(async (user) => {
+
+                if (user == null) {
+
+                    return res.status(404).json({ error: "User doesn't exist" });
+
+                } else {
+
+                    await CanvasRequestModel.find({ to_user: username }).then(async (requests) => {
+
+                        return res.json(requests).status(200);
+
+                    }).catch((error: Error) => { throw error; });
+
+                }
+
+            });
+
+        }
+    }
+
     public static removeUser: RequestHandler = async (req, res) => {
         const user_id = req.body.user_id;
         const username = req.body.username;
@@ -684,7 +935,6 @@ class UserController {
             )
         }
     };
-
 }
 
 
