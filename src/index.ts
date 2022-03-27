@@ -69,6 +69,7 @@ const main = async () => {
   app.post("/users/friends/request/accept/:request_id", UserController.acceptFriendRequest);
   app.post("/users/friends/request/cancel/:request_id", UserController.cancelFriendRequest);
   app.post("/users/bio", UserController.editBio);
+  app.post("/users/remove", UserController.removeUser);
 
   // Post routes
   app.get("/posts", PostController.getAllPosts);
@@ -76,6 +77,7 @@ const main = async () => {
   app.post("/posts", PostController.createPost);
   app.post("/posts/comment", PostController.addComment);
   app.post("/posts/like", PostController.addLike);
+  app.post("/posts/remove", PostController.removePost);
 
   const server = app.listen(port, () => {
     console.log(`listening on port ${port}`);

@@ -140,6 +140,8 @@ describe("Users", () => {
 
     }
 
+    mongoose.connection.collections.users.findOneAndUpdate({ id: admin.id}, { admin: true});
+
   });
 
   it("GET /users/ returns an array of correct size", (done) => {
@@ -679,6 +681,20 @@ describe("Users", () => {
     done();
 
   });
+
+  it("removing user with user ID", (done) => {
+    request(app).post("/users/remove").set('Authorization', `Bearer ${authToken}`)
+    .send(
+      {
+        user_id: UserOneDupe.id
+      }
+    ).end((error, response) => {
+
+      expect(response.status).to.eql(200);
+
+      done(error);
+    })
+  })
   // .....
 
   // // Decline request (with all the right data)
