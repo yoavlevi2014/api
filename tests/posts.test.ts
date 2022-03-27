@@ -6,14 +6,11 @@ import { User } from "@models/user";
 import { Post } from "@models/post";
 import { Comment } from "@models/comment";
 
-let authToken: string;
 let authTokenOne: string;
 let authTokenTwo: string;
 let admin: User;
 let userOne: User;
 let userTwo: User;
-
-let post_id_one: string;
 
 describe("Posts", () => {
   // Wipe database before running any tests
@@ -52,7 +49,6 @@ describe("Posts", () => {
 
   before((done) => {
     if (process.env.authToken !== undefined) {
-      authToken = process.env.authToken;
       done();
     } else {
       throw new Error("Auth token isn't set, exiting");
@@ -115,7 +111,6 @@ describe("Posts", () => {
         size: "square",
       })
       .end((error, response) => {
-        post_id_one = response.body.id;
 
         // Adds a tiny delay here otherwise they have the same timestamp and sorting doesn't work
         setTimeout(() => {
