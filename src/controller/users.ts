@@ -687,36 +687,45 @@ class UserController {
 
     public static getProfile: RequestHandler = async (req, res) => {
         const profileID = req.params.profile_id;
-        let body : {user: User, posts?: Array<Post>};
+        let body: { user: User, posts?: Array<Post> };
 
-        if(!profileID){
-            return res.status(400).json({ error: "missing profile ID"});
+        if (!profileID) {
+            return res.status(400).json({ error: "missing profile ID" });
         }
 
-        await UserModel.findOne({ profileID: profileID}).then(async (user) => {
+        await UserModel.findOne({ profileID: profileID }).then(async (user) => {
 
-            if(!user){
-                return res.status(400).json({ error: "User not found"});
+            if (!user) {
+                return res.status(400).json({ error: "User not found" });
             } else {
-                
-                await PostModel.find({ "author.id": user.id}).then(async (posts) => {
-                    if(posts === null){
+
+                await PostModel.find({ "author.id": user.id }).then(async (posts) => {
+                    console.log(posts);
+
+                    // Might need to check for an empty array if the user hasn't made any posts
+                    if (posts == null) {
+
                         body = {
                             user: user,
                         };
 
                         return res.status(200).json(body);
+
                     } else {
 
                         body = {
                             user: user,
                             posts: posts
                         }
-
                         return res.status(200).json(body);
 
                     }
-                })
+
+                }).catch((error: Error) => {
+
+                    throw error;
+
+                });
 
             }
 

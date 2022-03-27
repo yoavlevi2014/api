@@ -637,7 +637,7 @@ describe("Users", () => {
         
         expect(response.status).to.eql(200);
         expect(response.body.user.username).to.eql("UserOne");
-        expect(response.body.posts.length).to.eql(2);
+        expect(response.body.posts).to.be.an("array");
         done(error);
 
       })
@@ -649,7 +649,6 @@ describe("Users", () => {
         
         expect(response.status).to.eql(200);
         expect(response.body.user.username).to.eql("UserTwo");
-        expect(response.body.length).to.eql(1);
         done(error);
 
       })
