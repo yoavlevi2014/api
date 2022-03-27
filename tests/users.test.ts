@@ -203,7 +203,7 @@ describe("Users", () => {
 
         expect(response.body.length).to.eql(1);
         expect(response.status).to.eql(200);
-        expect(response.body[1].username).to.eql("admin");
+        expect(response.body[0].username).to.eql("admin");
 
         done(error);
 
