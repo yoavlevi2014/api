@@ -466,6 +466,23 @@ class PostController {
         })
     }
 
+    public static removePost: RequestHandler = async (req, res) => {
+        const post_id = req.body.post_id;
+
+        if(!post_id){
+            return res.status(400).json({ error: "Post ID is missing"});
+        }
+
+        await PostModel.findOne({ id: post_id}).then(async (post) => {
+            if(!post){
+                return res.status(400).json({ error: "Post not found"});
+            }
+
+            await post.remove().then(async () => {
+                return res.status(200).json({ message: "Success removing post"});
+            }).catch((e: Error) => { return res.status(500).json({ error: e.name }); })
+        }).catch((e: Error) => { return res.status(500).json({ error: e.name }); })
+    }
 }
 
 export default PostController;

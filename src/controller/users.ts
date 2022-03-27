@@ -3,6 +3,7 @@ import UserModel from "@models/user";
 import { FriendRequest } from "@models/friend_request";
 import { v4 as uuidv4 } from "uuid";
 import { RequestHandler } from "express";
+import PostModel from "@models/post";
 
 // All these routes could do with being a bit more typescripty
 class UserController {
@@ -58,7 +59,7 @@ class UserController {
         // validate id
 
         // TODO investigate if this needs to be id not _id 
-        await UserModel.findOne({ _id: id }).then(async (user) => {
+        await UserModel.findOne({ id: id }).then(async (user) => {
 
             if (user == null) {
 
@@ -607,6 +608,60 @@ class UserController {
             }
         })
     };
+
+    public static removeUser: RequestHandler = async (req, res) => {
+        const user_id = req.body.user_id;
+        const username = req.body.username;
+
+        // user can add either user ID or username as the body, if both are empty, throw error
+        if (!user_id && !username) {
+            return res.status(400).json({ error: "User ID or Username is missing" });
+        }
+
+        // route defaults to using user_id if both params are present
+        if (user_id) {
+
+            await UserModel.findOne({ id: user_id }).then(async (user) => {
+                if (!user) {
+                    return res.status(400).json({ error: "No user found" });
+                } else {
+                    // find posts made by this user and remove them
+                    await PostModel.find({ author: user }).then(async (posts) => {
+                        posts.map(async (post) => {
+                            await post.remove()
+                                .catch((e: Error) => { return res.status(500).json({ error: e.name }); })
+                        })
+                    }).catch((e: Error) => { return res.status(500).json({ error: e.name }); })
+
+                    // remove user
+                    await user.remove().then(async () => {
+                        return res.status(200).json({ message: "Success removing user" });
+                    }).catch((e: Error) => { return res.status(500).json({ error: e.name }); });
+                }
+            })
+
+        } else {
+            await UserModel.findOne({ username: username }).then(async (user) => {
+                if (!user) {
+                    return res.status(400).json({ error: "No user found" });
+                } else {
+                    // find posts made by this user and remove them
+                    await PostModel.find({ author: user }).then(async (posts) => {
+                        posts.map(async (post) => {
+                            await post.remove()
+                                .catch((e: Error) => { return res.status(500).json({ error: e.name }); })
+                        })
+                    }).catch((e: Error) => { return res.status(500).json({ error: e.name }); })
+
+                    // remove user
+                    await user.remove().then(async () => {
+                        return res.status(200).json({ message: "Success removing user" });
+                    }).catch((e: Error) => { return res.status(500).json({ error: e.name }); });
+                }
+            })
+
+        }
+    }
 
 }
 
