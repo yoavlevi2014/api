@@ -113,11 +113,7 @@ describe("Users", () => {
     } else {
       throw new Error("Auth token isn't set, exiting");
     }
-
-    mongoose.connection.collections.users.findOneAndUpdate(
-      { id: admin.id },
-      { admin: true }
-    );
+    mongoose.connection.collections.users.findOneAndUpdate({ id: admin.id}, { admin: true});
   });
 
   it("GET /users/ returns an array of correct size", (done) => {
