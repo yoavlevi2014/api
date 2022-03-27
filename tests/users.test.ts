@@ -56,7 +56,7 @@ describe("Users", () => {
 
       });
 
-      mongoose.connection.collections.users.updateOne({id: admin.id}, {admin: true});
+      mongoose.connection.collections.users.updateOne({id: admin.id}, { $set : {admin: true}});
 
   });
 
