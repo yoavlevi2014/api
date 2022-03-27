@@ -3,6 +3,7 @@ import UserSchema from "@schemas/users";
 
 export interface User {
   id: string;
+  admin?: boolean;
   username: string;
   email: string;
   name: string;
