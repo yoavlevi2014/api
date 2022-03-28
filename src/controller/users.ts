@@ -1051,8 +1051,12 @@ class UserController {
             
             
                                 await u.save().then(async (u) => {
-            
-                                    return res.json(u).status(200);
+
+                                    // ugly but near deadline :)
+                                    const test = u.toJSON();
+                                    delete test.password;
+
+                                    return res.json(test).status(200);
             
                                 }).catch((error: Error) => { throw error; });
             
