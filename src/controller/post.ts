@@ -447,7 +447,7 @@ class PostController {
 
                             if (post.likes.includes(user.username)) {
                                 const index = post.likes.findIndex((element) => { return element == user.username });
-                                post.likes.splice(index);
+                                post.likes.splice(index, 1);
                             } else {
                                 post.likes.push(user.username);
                             }
