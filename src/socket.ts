@@ -1,20 +1,12 @@
-import express, { Application } from "express";
 import { Socket } from "socket.io";
 
-import http from 'http';
 import { Server } from 'socket.io';
+import { Server as httpServer } from "http";
 import { checkRoomEmpty, checkUserAdmin, getCurrentUser, userJoin, userLeave } from "./helpers/socketUsers";
 import { v1 } from "uuid";
 
-export function createSocketServer() {
-    const app: Application = express();
-    const server = http.createServer(app);
-    app.use(function (_req, res, next) {
-        res.setHeader('Access-Control-Allow-Origin', '*');
-        res.setHeader('Access-Control-Allow-Methods', 'GET, POST, OPTIONS, PUT, PATCH, DELETE');
-        res.setHeader('Access-Control-Allow-Headers', 'X-Requested-With,content-type');
-        next();
-    });
+export function createSocketServer(server: httpServer) {
+    
     const io = new Server(server, {
         cors: {
             origin: "*",
@@ -74,8 +66,4 @@ export function createSocketServer() {
         });
     });
 
-    server.listen(8081, () => {
-        // eslint-disable-next-line no-console
-        console.log('socket IO server listening on *:8081');
-    });
 }

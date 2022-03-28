@@ -65,12 +65,16 @@ import { User } from "@models/user";
 const UserSchema = new Schema<User>(
   {
     id: { type: String, required: true, unique: true, index: true },
+    admin: { type: Boolean, required: false },
     email: { type: String, required: true, unique: true, index: true },
     name: { type: String, required: true },
     surname: { type: String, required: true },
     password: { type: String, required: true },
     username: { type: String, required: true, unique: true, index: true },
     following: [{ type: String, required: false }],
+    friends: [{ type: String, required: false }],
+    bio: { type: String, required: false },
+    profileID: { type: String, required: true },
   },
   { timestamps: true }
 );

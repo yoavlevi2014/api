@@ -31,7 +31,7 @@ const main = async () => {
   app.use(express.json());
   app.use(morgan("tiny"));
   app.use(express.urlencoded({ extended: true }));
-  app.use(function(_req, res, next) {
+  app.use(function (_req, res, next) {
     res.setHeader('Access-Control-Allow-Origin', '*');
     res.setHeader('Access-Control-Allow-Methods', 'GET, POST, OPTIONS, PUT, PATCH, DELETE');
     res.setHeader('Access-Control-Allow-Headers', 'X-Requested-With,content-type, Authorization');
@@ -61,19 +61,36 @@ const main = async () => {
   app.get("/users/id/:id", UserController.getUserByID);
   app.get("/users/name/:username", UserController.getUserByUsername);
   app.get("/users/search/:query", UserController.search);
-
-  // Launch socket server
-  createSocketServer();
+  app.get("/users/friends/requests", UserController.getAllFriendRequests);
+  app.get("/users/friends/:user/requests", UserController.getAllUsersFriendRequests);
+  app.get("/users/friends/:user/requests/to", UserController.getAllUsersToFriendRequests);
+  app.get("/users/friends/:user/requests/from", UserController.getAllUsersFromFriendRequests);
+  app.post("/users/friends/request", UserController.sendFriendRequest);
+  app.post("/users/friends/request/accept/:request_id", UserController.acceptFriendRequest);
+  app.post("/users/friends/request/cancel/:request_id", UserController.cancelFriendRequest);
+  app.post("/users/bio", UserController.editBio);
+  app.post("/users/canvas/request", UserController.sendCanvasRequest);
+  app.post("/users/canvas/request/accept/:request_id", UserController.acceptCanvasRequest);
+  app.post("/users/canvas/request/cancel/:request_id", UserController.cancelCanvasRequest);
+  app.get("/users/canvas/:user/request/to", UserController.getAllUsersToCanvasRequests);
+  app.post("/users/remove", UserController.removeUser);
+  app.get("/users/profile/:profile_id", UserController.getProfile);
 
   // Post routes
   app.get("/posts", PostController.getAllPosts);
   app.get("/posts/user", PostController.getPostsByUser);
   app.post("/posts", PostController.createPost);
   app.post("/posts/comment", PostController.addComment);
+  app.post("/posts/like", PostController.addLike);
+  app.post("/posts/remove", PostController.removePost);
 
-  app.listen(port, () => {
+  const server = app.listen(port, () => {
     console.log(`listening on port ${port}`);
   });
+
+  // Launch socket server
+  createSocketServer(server);
+  
 };
 
 main();
