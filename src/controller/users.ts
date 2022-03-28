@@ -6,6 +6,8 @@ import { RequestHandler } from "express";
 import PostModel, { Post } from "@models/post";
 import CanvasRequestModel, { CanvasRequest } from "@models/canvas_request";
 import jwt from "jsonwebtoken";
+import { logEvent } from "@helpers/eventLogger";
+import EventModel from "@models/event";
 
 // All these routes could do with being a bit more typescripty
 class UserController {
@@ -196,6 +198,8 @@ class UserController {
                                     };
 
                                     await new FriendRequestModel({ ...request }).save().then(async () => {
+
+                                        logEvent(fromUser, `${from} just sent a friend request to ${to}`);
 
                                         return res.status(201).json(request);
 
@@ -453,6 +457,8 @@ class UserController {
 
                                         await request.remove().then(async () => {
 
+                                            logEvent(to, `${to.username} just became friends with ${from.username}`);
+
                                             return res.status(200).json({ message: "success" });
 
                                         }).catch((e: Error) => { return res.status(500).json({ error: e.name }); });
@@ -602,6 +608,9 @@ class UserController {
                 user.bio = bio ?? "";
 
                 await user.save().then(async () => {
+
+                    logEvent(user, `${user.username} just updated their bio`);
+
                     return res.status(201).json(user);
                 })
                     .catch((e: Error) => {
@@ -689,6 +698,8 @@ class UserController {
 
                                 await new CanvasRequestModel({ ...request }).save().then(async () => {
 
+                                    logEvent(fromUser, `${fromUser.username} just sent a canvas request to ${toUser.username} `);
+
                                     return res.status(201).json(request);
 
                                 }).catch((e: Error) => { return res.status(500).json({ error: e.name }); });
@@ -758,6 +769,8 @@ class UserController {
                             } else {
 
                                 await request.remove().then(async () => {
+
+                                    logEvent(to, `${to.username} just accepted a canvas request from ${from.username}`);
 
                                     return res.status(200).json(request);
 
@@ -981,6 +994,38 @@ class UserController {
             }
 
         })
+    }
+
+    public static fetchNewEvents: RequestHandler = async (req, res) => {
+        const at = req.headers.authorization?.split(' ')[1];
+
+        if (at) {
+            await jwt.verify(
+                at,
+                process.env.SEED as string,
+                async (err, token) => {
+                    if (err || !token) {
+                        return res.status(403).json({ error: "Error verifying token" });
+                    }
+
+                    await UserModel.findOne({ id: token.sub }).then(async (user) => {
+                        if (!user || !user.admin) {
+                            return res.status(403).json({ error: "Invalid user" });
+                        } else {
+                            await EventModel.find({}).sort({ 'created': -1 }).then(async (events) => {
+
+                                return res.status(200).json(events);
+                
+                            }).catch((error: Error) => {
+                
+                                throw error;
+                
+                            });
+                        }
+                    })
+                }
+            )
+        }
     }
 }
 
