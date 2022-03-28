@@ -108,6 +108,8 @@ const main = async () => {
   app.post("/posts/remove", PostController.removePost);
   app.put("/posts/edit/:post", PostController.editPost);
 
+  app.get("/events", UserController.fetchNewEvents);
+
   const server = app.listen(port, () => {
     console.log(`listening on port ${port}`);
   });

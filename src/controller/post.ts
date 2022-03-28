@@ -4,6 +4,7 @@ import UserModel, { User } from "@models/user";
 import { RequestHandler } from "express";
 import { v4 as uuidv4 } from "uuid";
 import jwt from "jsonwebtoken";
+import { logEvent } from "@helpers/eventLogger";
 
 class PostController {
 
@@ -127,6 +128,8 @@ class PostController {
                 return res.status(404).json({ error: "No posts returned" });
 
             } else {
+
+                logEvent(user, `${user.username} fetched posts`);
 
                 return res.status(200).json(posts);
 
@@ -292,6 +295,8 @@ class PostController {
 
                 await new PostModel({ ...post }).save().then(async () => {
 
+                    logEvent(user, `${user.username} created a new post`);
+
                     // Return the post object
                     return res.status(201).json(post);
 
@@ -376,6 +381,8 @@ class PostController {
 
                         await post.save().then(async () => {
 
+                            logEvent(user, `${user.username} posted a new comment`);
+
                             // Return the post object
                             return res.status(201).json(post);
 
@@ -448,6 +455,8 @@ class PostController {
                         }
 
                         await post.save().then(async () => {
+
+                            logEvent(user, `${user.username} liked a new post`);
 
                             // Return the post object
                             return res.status(201).json(post);

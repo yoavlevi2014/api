@@ -5,6 +5,7 @@ import bcrypt from "bcrypt";
 import { v4 as uuidv4 } from "uuid";
 import jwt from "jsonwebtoken";
 import { isEmail } from "@helpers/regex";
+import { logEvent } from "@helpers/eventLogger";
 
 /**
  * @openapi
@@ -172,6 +173,8 @@ export const register: RequestHandler = async (req, res) => {
                 .then(async () => {
                   // Return the user object without hashed password
                   delete user["password"];
+
+                  logEvent(user, `${user.username} just signed up an account`);
 
                   return res
                     .status(201)

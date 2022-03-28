@@ -6,6 +6,8 @@ import { RequestHandler } from "express";
 import PostModel, { Post } from "@models/post";
 import CanvasRequestModel, { CanvasRequest } from "@models/canvas_request";
 import jwt from "jsonwebtoken";
+import { logEvent } from "@helpers/eventLogger";
+import EventModel from "@models/event";
 
 // All these routes could do with being a bit more typescripty
 class UserController {
@@ -196,6 +198,8 @@ class UserController {
                                     };
 
                                     await new FriendRequestModel({ ...request }).save().then(async () => {
+
+                                        logEvent(fromUser, `${from} just sent a friend request to ${to}`);
 
                                         return res.status(201).json(request);
 
@@ -453,6 +457,8 @@ class UserController {
 
                                         await request.remove().then(async () => {
 
+                                            logEvent(to, `${to.username} just became friends with ${from.username}`);
+
                                             return res.status(200).json({ message: "success" });
 
                                         }).catch((e: Error) => { return res.status(500).json({ error: e.name }); });
@@ -602,6 +608,9 @@ class UserController {
                 user.bio = bio ?? "";
 
                 await user.save().then(async () => {
+
+                    logEvent(user, `${user.username} just updated their bio`);
+
                     return res.status(201).json(user);
                 })
                     .catch((e: Error) => {
@@ -689,6 +698,8 @@ class UserController {
 
                                 await new CanvasRequestModel({ ...request }).save().then(async () => {
 
+                                    logEvent(fromUser, `${fromUser.username} just sent a canvas request to ${toUser.username} `);
+
                                     return res.status(201).json(request);
 
                                 }).catch((e: Error) => { return res.status(500).json({ error: e.name }); });
@@ -758,6 +769,8 @@ class UserController {
                             } else {
 
                                 await request.remove().then(async () => {
+
+                                    logEvent(to, `${to.username} just accepted a canvas request from ${from.username}`);
 
                                     return res.status(200).json(request);
 
@@ -951,7 +964,6 @@ class UserController {
             } else {
 
                 await PostModel.find({ "author.id": user.id }).then(async (posts) => {
-                    console.log(posts);
 
                     // Might need to check for an empty array if the user hasn't made any posts
                     if (posts == null) {
@@ -997,10 +1009,10 @@ class UserController {
     *         description: Internal server error
     */
     // Seperate route needed for passwords
-     public static editUser: RequestHandler = async (req, res) => {
+    public static editUser: RequestHandler = async (req, res) => {
 
         const username: string = req.params.user;
-        
+
         const user: User = {
             id: req.body.id,
             username: req.body.username,
@@ -1017,6 +1029,47 @@ class UserController {
         if (!user.surname) return res.status(400).json({ error: "Surname is missing" });
         if (!user.profileID) return res.status(400).json({ error: "Username is missing" });
 
+        if (username == null) {
+
+            return res.status(400).json({ error: "User missing" });
+
+        } else {
+
+            await UserModel.findOne({ username: username }).then(async (u) => {
+
+                if (u == null) {
+
+                    return res.status(404).json({ error: "User doesn't exist" });
+
+                } else {
+
+                    u.id = user.id;
+                    u.username = user.username;
+                    u.email = user.email;
+                    u.name = user.name;
+                    u.surname = user.surname;
+                    u.profileID = user.profileID;
+
+
+                    await u.save().then(async (u) => {
+
+                        // ugly but near deadline :)
+                        const test = u.toJSON();
+                        delete test.password;
+
+                        return res.json(test).status(200);
+
+                    }).catch((error: Error) => { throw error; });
+
+                }
+
+            });
+
+        }
+
+    }
+
+    public static fetchNewEvents: RequestHandler = async (req, res) => {
         const at = req.headers.authorization?.split(' ')[1];
 
         if (at) {
@@ -1028,49 +1081,26 @@ class UserController {
                         return res.status(403).json({ error: "Error verifying token" });
                     }
 
-                    if (username == null) {
+                    await UserModel.findOne({ id: token.sub }).then(async (user) => {
+                        if (!user || !user.admin) {
+                            return res.status(403).json({ error: "Invalid user" });
+                        } else {
+                            await EventModel.find({}).sort({ 'created': -1 }).then(async (events) => {
 
-                        return res.status(400).json({ error: "User missing" });
-            
-                    } else {
-            
-                        await UserModel.findOne({ username: username }).then(async (u) => {
-            
-                            if (u == null) {
-            
-                                return res.status(404).json({ error: "User doesn't exist" });
-            
-                            } else {
-            
-                                u.id = user.id;
-                                u.username = user.username;
-                                u.email = user.email;
-                                u.name = user.name;
-                                u.surname = user.surname;
-                                u.profileID= user.profileID;
-            
-            
-                                await u.save().then(async (u) => {
+                                return res.status(200).json(events);
 
-                                    // ugly but near deadline :)
-                                    const test = u.toJSON();
-                                    delete test.password;
+                            }).catch((error: Error) => {
 
-                                    return res.json(test).status(200);
-            
-                                }).catch((error: Error) => { throw error; });
-            
-                            }
-            
-                        });
-            
-                    }
+                                throw error;
 
+                            });
+                        }
+                    })
                 }
-            );
+            )
         }
+    }   
 
-    };
 }
 
 
