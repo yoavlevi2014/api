@@ -1,11 +1,13 @@
 import FriendRequestModel from "@models/friend_request";
-import UserModel from "@models/user";
+import UserModel, { User } from "@models/user";
 import { FriendRequest } from "@models/friend_request";
 import { v4 as uuidv4 } from "uuid";
 import { RequestHandler } from "express";
+import PostModel, { Post } from "@models/post";
 import CanvasRequestModel, { CanvasRequest } from "@models/canvas_request";
-import PostModel from "@models/post";
 import jwt from "jsonwebtoken";
+import { logEvent } from "@helpers/eventLogger";
+import EventModel from "@models/event";
 
 // All these routes could do with being a bit more typescripty
 class UserController {
@@ -31,7 +33,7 @@ class UserController {
 
         }).catch((error: Error) => {
 
-            // TODO handle this shit
+            // TODO handle this stuff
             // maybe it handles itself idk
             // either way this seems to throw a 500 if it breaks so thats great i guess
             throw error;
@@ -75,7 +77,7 @@ class UserController {
 
         }).catch((error: Error) => {
 
-            // TODO handle this shit
+            // TODO handle this stuff
             throw error;
 
         });
@@ -115,7 +117,7 @@ class UserController {
 
         }).catch((error: Error) => {
 
-            // TODO handle this shit
+            // TODO handle this stuff
             throw error;
 
         });
@@ -127,7 +129,7 @@ class UserController {
      * /users/friends/request:
      *   post:
      *     description: Sends a friend request from one user to another
-     *     need body shit here
+     *     need body stuff here
      *     responses:
      *       201:
      *         description: Returns a JSON array of all the users in the database
@@ -135,7 +137,7 @@ class UserController {
      *         description: Request is missing one or more user
      *       403:
      *         description: There is an error with your request
-     *         need body shit here to explain the various options
+     *         need body stuff here to explain the various options
      *       404:
      *         description: One or more of the users in the request doesn't exist
      *       500:
@@ -197,6 +199,8 @@ class UserController {
 
                                     await new FriendRequestModel({ ...request }).save().then(async () => {
 
+                                        logEvent(fromUser, `${from} just sent a friend request to ${to}`);
+
                                         return res.status(201).json(request);
 
                                     }).catch((e: Error) => { return res.status(500).json({ error: e.name }); });
@@ -240,7 +244,7 @@ class UserController {
 
         }).catch((error: Error) => {
 
-            // TODO handle this shit
+            // TODO handle this stuff
             // maybe it handles itself idk
             // either way this seems to throw a 500 if it breaks so thats great i guess
             throw error;
@@ -453,6 +457,8 @@ class UserController {
 
                                         await request.remove().then(async () => {
 
+                                            logEvent(to, `${to.username} just became friends with ${from.username}`);
+
                                             return res.status(200).json({ message: "success" });
 
                                         }).catch((e: Error) => { return res.status(500).json({ error: e.name }); });
@@ -580,7 +586,7 @@ class UserController {
 
         }).catch((error: Error) => {
 
-            // TODO handle this shit
+            // TODO handle this stuff
             throw error;
 
         });
@@ -602,6 +608,9 @@ class UserController {
                 user.bio = bio ?? "";
 
                 await user.save().then(async () => {
+
+                    logEvent(user, `${user.username} just updated their bio`);
+
                     return res.status(201).json(user);
                 })
                     .catch((e: Error) => {
@@ -689,6 +698,8 @@ class UserController {
 
                                 await new CanvasRequestModel({ ...request }).save().then(async () => {
 
+                                    logEvent(fromUser, `${fromUser.username} just sent a canvas request to ${toUser.username} `);
+
                                     return res.status(201).json(request);
 
                                 }).catch((e: Error) => { return res.status(500).json({ error: e.name }); });
@@ -758,6 +769,8 @@ class UserController {
                             } else {
 
                                 await request.remove().then(async () => {
+
+                                    logEvent(to, `${to.username} just accepted a canvas request from ${from.username}`);
 
                                     return res.status(200).json(request);
 
@@ -935,10 +948,163 @@ class UserController {
             )
         }
     };
+
+    public static getProfile: RequestHandler = async (req, res) => {
+        const profileID = req.params.profile_id;
+        let body: { user: User, posts?: Array<Post> };
+
+        if (!profileID) {
+            return res.status(400).json({ error: "missing profile ID" });
+        }
+
+        await UserModel.findOne({ profileID: profileID }).then(async (user) => {
+
+            if (!user) {
+                return res.status(400).json({ error: "User not found" });
+            } else {
+
+                await PostModel.find({ "author.id": user.id }).then(async (posts) => {
+
+                    // Might need to check for an empty array if the user hasn't made any posts
+                    if (posts == null) {
+
+                        body = {
+                            user: user,
+                        };
+
+                        return res.status(200).json(body);
+
+                    } else {
+
+                        body = {
+                            user: user,
+                            posts: posts
+                        }
+                        return res.status(200).json(body);
+
+                    }
+
+                }).catch((error: Error) => {
+
+                    throw error;
+
+                });
+
+            }
+
+        })
+    }
+
+    /**
+    * @openapi
+    * /users/edit/:user:/:
+    *   get:
+    *     description: Edit a users details
+    *     responses:
+    *       200:
+    *         description: Successfully edited user details
+    *       400:
+    *         description: Properties missing
+    *       500:
+    *         description: Internal server error
+    */
+    // Seperate route needed for passwords
+    public static editUser: RequestHandler = async (req, res) => {
+
+        const username: string = req.params.user;
+
+        const user: User = {
+            id: req.body.id,
+            username: req.body.username,
+            email: req.body.email,
+            name: req.body.name,
+            surname: req.body.surname,
+            profileID: req.body.profileID
+        };
+
+        if (!user.id) return res.status(400).json({ error: "Username is missing" });
+        if (!user.username) return res.status(400).json({ error: "Username is missing" });
+        if (!user.email) return res.status(400).json({ error: "Email is missing" });
+        if (!user.name) return res.status(400).json({ error: "Name is missing" });
+        if (!user.surname) return res.status(400).json({ error: "Surname is missing" });
+        if (!user.profileID) return res.status(400).json({ error: "Username is missing" });
+
+        if (username == null) {
+
+            return res.status(400).json({ error: "User missing" });
+
+        } else {
+
+            await UserModel.findOne({ username: username }).then(async (u) => {
+
+                if (u == null) {
+
+                    return res.status(404).json({ error: "User doesn't exist" });
+
+                } else {
+
+                    u.id = user.id;
+                    u.username = user.username;
+                    u.email = user.email;
+                    u.name = user.name;
+                    u.surname = user.surname;
+                    u.profileID = user.profileID;
+
+
+                    await u.save().then(async (u) => {
+
+                        // ugly but near deadline :)
+                        const test = u.toJSON();
+                        delete test.password;
+
+                        return res.json(test).status(200);
+
+                    }).catch((error: Error) => { throw error; });
+
+                }
+
+            });
+
+        }
+
+    }
+
+    public static fetchNewEvents: RequestHandler = async (req, res) => {
+        const at = req.headers.authorization?.split(' ')[1];
+
+        if (at) {
+            await jwt.verify(
+                at,
+                process.env.SEED as string,
+                async (err, token) => {
+                    if (err || !token) {
+                        return res.status(403).json({ error: "Error verifying token" });
+                    }
+
+                    await UserModel.findOne({ id: token.sub }).then(async (user) => {
+                        if (!user || !user.admin) {
+                            return res.status(403).json({ error: "Invalid user" });
+                        } else {
+                            await EventModel.find({}).sort({ 'created': -1 }).then(async (events) => {
+
+                                return res.status(200).json(events);
+
+                            }).catch((error: Error) => {
+
+                                throw error;
+
+                            });
+                        }
+                    })
+                }
+            )
+        }
+    }   
+
 }
 
 
-// Friends and shit
+// Friends and stuff
 
 // ---Friends---
 
