@@ -31,7 +31,7 @@ class UserController {
 
         }).catch((error: Error) => {
 
-            // TODO handle this shit
+            // TODO handle this stuff
             // maybe it handles itself idk
             // either way this seems to throw a 500 if it breaks so thats great i guess
             throw error;
@@ -75,7 +75,7 @@ class UserController {
 
         }).catch((error: Error) => {
 
-            // TODO handle this shit
+            // TODO handle this stuff
             throw error;
 
         });
@@ -115,7 +115,7 @@ class UserController {
 
         }).catch((error: Error) => {
 
-            // TODO handle this shit
+            // TODO handle this stuff
             throw error;
 
         });
@@ -127,7 +127,7 @@ class UserController {
      * /users/friends/request:
      *   post:
      *     description: Sends a friend request from one user to another
-     *     need body shit here
+     *     need body stuff here
      *     responses:
      *       201:
      *         description: Returns a JSON array of all the users in the database
@@ -135,7 +135,7 @@ class UserController {
      *         description: Request is missing one or more user
      *       403:
      *         description: There is an error with your request
-     *         need body shit here to explain the various options
+     *         need body stuff here to explain the various options
      *       404:
      *         description: One or more of the users in the request doesn't exist
      *       500:
@@ -240,7 +240,7 @@ class UserController {
 
         }).catch((error: Error) => {
 
-            // TODO handle this shit
+            // TODO handle this stuff
             // maybe it handles itself idk
             // either way this seems to throw a 500 if it breaks so thats great i guess
             throw error;
@@ -580,7 +580,7 @@ class UserController {
 
         }).catch((error: Error) => {
 
-            // TODO handle this shit
+            // TODO handle this stuff
             throw error;
 
         });
@@ -1074,7 +1074,7 @@ class UserController {
 }
 
 
-// Friends and shit
+// Friends and stuff
 
 // ---Friends---
 

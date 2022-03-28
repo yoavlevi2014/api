@@ -244,7 +244,7 @@ describe("Users", () => {
 
   //TODO add test to check for no more than 4 results
 
-  // Friends and shit
+  // Friends and stuff
 
   // ---Friends---
 
@@ -258,7 +258,7 @@ describe("Users", () => {
       })
       .end((error, response) => {
         expect(response.status).to.eql(201);
-        // more shit here
+        // more stuff here
 
         friend_request_id = response.body.request_id;
 
@@ -276,7 +276,7 @@ describe("Users", () => {
       })
       .end((error, response) => {
         expect(response.status).to.eql(403);
-        // more shit here
+        // more stuff here
 
         done(error);
       });
@@ -291,7 +291,7 @@ describe("Users", () => {
       })
       .end((error, response) => {
         expect(response.status).to.eql(400);
-        // more shit here
+        // more stuff here
 
         done(error);
       });
@@ -306,7 +306,7 @@ describe("Users", () => {
       })
       .end((error, response) => {
         expect(response.status).to.eql(400);
-        // more shit here
+        // more stuff here
 
         done(error);
       });
@@ -322,7 +322,7 @@ describe("Users", () => {
       })
       .end((error, response) => {
         expect(response.status).to.eql(404);
-        // more shit here
+        // more stuff here
 
         done(error);
       });
@@ -338,7 +338,7 @@ describe("Users", () => {
       })
       .end((error, response) => {
         expect(response.status).to.eql(404);
-        // more shit here
+        // more stuff here
 
         done(error);
       });
@@ -354,7 +354,7 @@ describe("Users", () => {
       })
       .end((error, response) => {
         expect(response.status).to.eql(403);
-        // more shit here
+        // more stuff here
 
         done(error);
       });

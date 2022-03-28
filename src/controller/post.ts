@@ -60,7 +60,7 @@ class PostController {
 
             }).catch((error: Error) => {
 
-                // TODO handle this shit
+                // TODO handle this stuff
                 // maybe it handles itself idk
                 // either way this seems to throw a 500 if it breaks so thats great i guess
                 throw error;
@@ -75,7 +75,7 @@ class PostController {
 
             }).catch((error: Error) => {
 
-                // TODO handle this shit
+                // TODO handle this stuff
                 // maybe it handles itself idk
                 // either way this seems to throw a 500 if it breaks so thats great i guess
                 throw error;
@@ -134,7 +134,7 @@ class PostController {
 
         }).catch((error: Error) => {
 
-            // TODO handle this shit
+            // TODO handle this stuff
             throw error;
 
         });
@@ -188,7 +188,7 @@ class PostController {
 
     //             }).catch((error: Error) => {
 
-    //                 // TODO handle this shit
+    //                 // TODO handle this stuff
     //                 throw error;
 
     //             });
@@ -197,7 +197,7 @@ class PostController {
 
     //     }).catch((error: Error) => {
 
-    //         // TODO handle this shit
+    //         // TODO handle this stuff
     //         throw error;
 
     //     });
@@ -306,7 +306,7 @@ class PostController {
 
         }).catch((error: Error) => {
 
-            // TODO handle this shit
+            // TODO handle this stuff
             throw error;
 
         });
@@ -315,7 +315,7 @@ class PostController {
 
     //TODO Update post
 
-    //TODO docs and shit
+    //TODO docs and stuff
     public static addComment: RequestHandler = async (req, res) => {
 
         const comment: Comment = {
@@ -390,7 +390,7 @@ class PostController {
 
                 }).catch((error: Error) => {
 
-                    // TODO handle this shit
+                    // TODO handle this stuff
                     throw error;
 
                 });
@@ -399,7 +399,7 @@ class PostController {
 
         }).catch((error: Error) => {
 
-            // TODO handle this shit
+            // TODO handle this stuff
             throw error;
 
         });
