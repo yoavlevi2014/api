@@ -84,6 +84,7 @@ const main = async () => {
   app.post("/posts/comment", PostController.addComment);
   app.post("/posts/like", PostController.addLike);
   app.post("/posts/remove", PostController.removePost);
+  app.put("/posts/edit/:post", PostController.editPost);
 
   const server = app.listen(port, () => {
     console.log(`listening on port ${port}`);
