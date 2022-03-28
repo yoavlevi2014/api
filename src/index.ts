@@ -74,6 +74,7 @@ const main = async () => {
   app.post("/users/canvas/request/cancel/:request_id", UserController.cancelCanvasRequest);
   app.get("/users/canvas/:user/request/to", UserController.getAllUsersToCanvasRequests);
   app.post("/users/remove", UserController.removeUser);
+  app.get("/users/profile/:profile_id", UserController.getProfile);
 
   // Post routes
   app.get("/posts", PostController.getAllPosts);
