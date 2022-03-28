@@ -75,6 +75,7 @@ const main = async () => {
   app.get("/users/canvas/:user/request/to", UserController.getAllUsersToCanvasRequests);
   app.post("/users/remove", UserController.removeUser);
   app.get("/users/profile/:profile_id", UserController.getProfile);
+  app.put("/users/edit/:user", UserController.editUser);
 
   // Post routes
   app.get("/posts", PostController.getAllPosts);

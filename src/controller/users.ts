@@ -982,6 +982,91 @@ class UserController {
 
         })
     }
+
+    /**
+    * @openapi
+    * /users/edit/:user:/:
+    *   get:
+    *     description: Edit a users details
+    *     responses:
+    *       200:
+    *         description: Successfully edited user details
+    *       400:
+    *         description: Properties missing
+    *       500:
+    *         description: Internal server error
+    */
+    // Seperate route needed for passwords
+     public static editUser: RequestHandler = async (req, res) => {
+
+        const username: string = req.params.user;
+        
+        const user: User = {
+            id: req.body.id,
+            username: req.body.username,
+            email: req.body.email,
+            name: req.body.name,
+            surname: req.body.surname,
+            profileID: req.body.profileID
+        };
+
+        if (!user.id) return res.status(400).json({ error: "Username is missing" });
+        if (!user.username) return res.status(400).json({ error: "Username is missing" });
+        if (!user.email) return res.status(400).json({ error: "Email is missing" });
+        if (!user.name) return res.status(400).json({ error: "Name is missing" });
+        if (!user.surname) return res.status(400).json({ error: "Surname is missing" });
+        if (!user.profileID) return res.status(400).json({ error: "Username is missing" });
+
+        const at = req.headers.authorization?.split(' ')[1];
+
+        if (at) {
+            await jwt.verify(
+                at,
+                process.env.SEED as string,
+                async (err, token) => {
+                    if (err || !token) {
+                        return res.status(403).json({ error: "Error verifying token" });
+                    }
+
+                    if (username == null) {
+
+                        return res.status(400).json({ error: "User missing" });
+            
+                    } else {
+            
+                        await UserModel.findOne({ username: username }).then(async (u) => {
+            
+                            if (u == null) {
+            
+                                return res.status(404).json({ error: "User doesn't exist" });
+            
+                            } else {
+            
+                                u.id = user.id;
+                                u.username = user.username;
+                                u.email = user.email;
+                                u.name = user.name;
+                                u.surname = user.surname;
+                                u.profileID= user.profileID;
+            
+            
+                                await u.save().then(async (u) => {
+            
+                                    return res.json(u).status(200);
+            
+                                }).catch((error: Error) => { throw error; });
+            
+                            }
+            
+                        });
+            
+                    }
+
+                }
+            );
+        }
+
+    };
 }
 
 

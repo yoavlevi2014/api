@@ -836,6 +836,25 @@ describe("Users", () => {
 
       })
   });
+
+  it("edit user", (done) => {
+    request(app).put("/users/edit/UserOne").set('Authorization', `Bearer ${authToken}`)
+      .send({
+        id: UserOne.id,
+        username: "NewUser",
+        email: UserOne.email,
+        name: UserOne.name,
+        surname: UserOne.surname,
+        profileID: UserOne.profileID
+      })
+      .end((error, response) => {
+        
+        expect(response.status).to.eql(200);
+        console.log(response.body);
+        done(error);
+
+      })
+  });
   // .....
 
   // // Decline request (with all the right data)
