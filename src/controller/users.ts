@@ -984,9 +984,7 @@ class UserController {
           u.name = user.name;
           u.surname = user.surname;
           u.profileID = user.profileID;
-          if (user.admin) {
-            u.admin = user.admin;
-          }
+          u.admin = user.admin;
 
           await u
             .save()
