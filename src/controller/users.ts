@@ -33,7 +33,7 @@ class UserController {
 
         }).catch((error: Error) => {
 
-            // TODO handle this shit
+            // TODO handle this stuff
             // maybe it handles itself idk
             // either way this seems to throw a 500 if it breaks so thats great i guess
             throw error;
@@ -77,7 +77,7 @@ class UserController {
 
         }).catch((error: Error) => {
 
-            // TODO handle this shit
+            // TODO handle this stuff
             throw error;
 
         });
@@ -117,7 +117,7 @@ class UserController {
 
         }).catch((error: Error) => {
 
-            // TODO handle this shit
+            // TODO handle this stuff
             throw error;
 
         });
@@ -129,7 +129,7 @@ class UserController {
      * /users/friends/request:
      *   post:
      *     description: Sends a friend request from one user to another
-     *     need body shit here
+     *     need body stuff here
      *     responses:
      *       201:
      *         description: Returns a JSON array of all the users in the database
@@ -137,7 +137,7 @@ class UserController {
      *         description: Request is missing one or more user
      *       403:
      *         description: There is an error with your request
-     *         need body shit here to explain the various options
+     *         need body stuff here to explain the various options
      *       404:
      *         description: One or more of the users in the request doesn't exist
      *       500:
@@ -244,7 +244,7 @@ class UserController {
 
         }).catch((error: Error) => {
 
-            // TODO handle this shit
+            // TODO handle this stuff
             // maybe it handles itself idk
             // either way this seems to throw a 500 if it breaks so thats great i guess
             throw error;
@@ -586,7 +586,7 @@ class UserController {
 
         }).catch((error: Error) => {
 
-            // TODO handle this shit
+            // TODO handle this stuff
             throw error;
 
         });
@@ -995,6 +995,80 @@ class UserController {
         })
     }
 
+    /**
+    * @openapi
+    * /users/edit/:user:/:
+    *   get:
+    *     description: Edit a users details
+    *     responses:
+    *       200:
+    *         description: Successfully edited user details
+    *       400:
+    *         description: Properties missing
+    *       500:
+    *         description: Internal server error
+    */
+    // Seperate route needed for passwords
+    public static editUser: RequestHandler = async (req, res) => {
+
+        const username: string = req.params.user;
+
+        const user: User = {
+            id: req.body.id,
+            username: req.body.username,
+            email: req.body.email,
+            name: req.body.name,
+            surname: req.body.surname,
+            profileID: req.body.profileID
+        };
+
+        if (!user.id) return res.status(400).json({ error: "Username is missing" });
+        if (!user.username) return res.status(400).json({ error: "Username is missing" });
+        if (!user.email) return res.status(400).json({ error: "Email is missing" });
+        if (!user.name) return res.status(400).json({ error: "Name is missing" });
+        if (!user.surname) return res.status(400).json({ error: "Surname is missing" });
+        if (!user.profileID) return res.status(400).json({ error: "Username is missing" });
+
+        if (username == null) {
+
+            return res.status(400).json({ error: "User missing" });
+
+        } else {
+
+            await UserModel.findOne({ username: username }).then(async (u) => {
+
+                if (u == null) {
+
+                    return res.status(404).json({ error: "User doesn't exist" });
+
+                } else {
+
+                    u.id = user.id;
+                    u.username = user.username;
+                    u.email = user.email;
+                    u.name = user.name;
+                    u.surname = user.surname;
+                    u.profileID = user.profileID;
+
+
+                    await u.save().then(async (u) => {
+
+                        // ugly but near deadline :)
+                        const test = u.toJSON();
+                        delete test.password;
+
+                        return res.json(test).status(200);
+
+                    }).catch((error: Error) => { throw error; });
+
+                }
+
+            });
+
+        }
+
+    }
+
     public static fetchNewEvents: RequestHandler = async (req, res) => {
         const at = req.headers.authorization?.split(' ')[1];
 
@@ -1014,22 +1088,23 @@ class UserController {
                             await EventModel.find({}).sort({ 'created': -1 }).then(async (events) => {
 
                                 return res.status(200).json(events);
-                
+
                             }).catch((error: Error) => {
-                
+
                                 throw error;
-                
+
                             });
                         }
                     })
                 }
             )
         }
-    }
+    }   
+
 }
 
 
-// Friends and shit
+// Friends and stuff
 
 // ---Friends---
 
