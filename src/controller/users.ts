@@ -964,7 +964,6 @@ class UserController {
             } else {
 
                 await PostModel.find({ "author.id": user.id }).then(async (posts) => {
-                    console.log(posts);
 
                     // Might need to check for an empty array if the user hasn't made any posts
                     if (posts == null) {
