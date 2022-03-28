@@ -7,7 +7,7 @@ export interface Event {
     user: User,
     message: string,
     created: number
-};
+}
 
 const EventModel = model<Event>("events", EventSchema);
 
