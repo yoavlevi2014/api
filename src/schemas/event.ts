@@ -9,6 +9,6 @@ const EventSchema = new Schema<Event>(
         created: { type: Number, required: true, index: true },
     },
     { timestamps: true }
-);
+)
 
 export default EventSchema;
