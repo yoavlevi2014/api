@@ -506,6 +506,94 @@ class PostController {
             )
         }
     }
+
+    /**
+    * @openapi
+    * /posts/edit/:post:/:
+    *   get:
+    *     description: Edit a posts details
+    *     responses:
+    *       200:
+    *         description: Successfully edited post details
+    *       400:
+    *         description: Properties missing
+    *       500:
+    *         description: Internal server error
+    */
+    // Seperate route needed for passwords
+    public static editPost: RequestHandler = async (req, res) => {
+
+        const postid: string = req.params.post;
+        
+        const post: Post = {
+            id: req.body.id,
+            author: req.body.author,
+            title: req.body.title,
+            content: req.body.content,
+            created: req.body.created,
+            users: req.body.users,
+            size: req.body.size
+        }
+
+        if (!post.id) return res.status(400).json({ error: "id is missing" });
+        if (!post.author) return res.status(400).json({ error: "Author is missing" });
+        if (!post.title) return res.status(400).json({ error: "Post title is missing" });
+        if (!post.content) return res.status(400).json({ error: "Post content is missing" });
+        if (!post.created) return res.status(400).json({ error: "Created is missing" });
+        if (!post.users) return res.status(400).json({ error: "Users is missing" });
+        if (!post.size) return res.status(400).json({ error: "Post size is missing" });
+        
+
+        const at = req.headers.authorization?.split(' ')[1];
+
+        if (at) {
+            await jwt.verify(
+                at,
+                process.env.SEED as string,
+                async (err, token) => {
+                    if (err || !token) {
+                        return res.status(403).json({ error: "Error verifying token" });
+                    }
+
+                    if (postid == null) {
+
+                        return res.status(400).json({ error: "Post id parameter missing" });
+            
+                    } else {
+            
+                        await PostModel.findOne({ id: postid }).then(async (p) => {
+            
+                            if (p == null) {
+            
+                                return res.status(404).json({ error: "Post doesn't exist" });
+            
+                            } else {
+            
+                                p.id = post.id;
+                                p.author = post.author;
+                                p.title = post.title;
+                                p.content = post.content;
+                                p.created = post.created;
+                                p.users = post.users;
+                                p.size = post.size;
+            
+                                await p.save().then(async (p) => {
+
+                                    return res.json(p).status(200);
+            
+                                }).catch((error: Error) => { throw error; });
+            
+                            }
+            
+                        });
+            
+                    }
+
+                }
+            );
+        }
+
+    };
 }
 
 export default PostController;
