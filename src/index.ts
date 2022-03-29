@@ -30,7 +30,10 @@ const main = async () => {
   app.use(nocache());
   app.use(express.json());
   app.use(morgan("tiny"));
-  app.use(express.urlencoded({ extended: true }));
+  app.use(express.urlencoded({
+    extended: true,
+    limit: '3mb'
+  }));
   app.use(function (_req, res, next) {
     res.setHeader("Access-Control-Allow-Origin", "*");
     res.setHeader(
