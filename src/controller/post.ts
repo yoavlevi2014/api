@@ -516,18 +516,43 @@ class PostController {
             if (p == null) {
               return res.status(404).json({ error: "Post doesn't exist" });
             } else {
-              p.id = post.id;
-              p.author = post.author;
-              p.title = post.title;
-              p.content = post.content;
-              p.created = post.created;
-              p.users = post.users;
-              p.size = post.size;
 
-              await p
-                .save()
-                .then(async (p) => {
-                  return res.json(p).status(200);
+                await PostModel.findOne({ id: post_id }).then(async (post) => {
+
+                    if (post == null) {
+
+                        return res.status(400).json({ error: "Invalid post ID" });
+
+                    } else {
+
+                        if (post.likes == null) {
+                            post.likes = [user.username];
+                        } else {
+
+                            if (post.likes.includes(user.username)) {
+                                const index = post.likes.findIndex((element) => { return element == user.username });
+                                post.likes.splice(index, 1);
+                            } else {
+                                post.likes.push(user.username);
+                            }
+
+                        }
+
+                        await post.save().then(async () => {
+
+                            logEvent(user, `${user.username} liked a new post`);
+
+                            // Return the post object
+                            return res.status(201).json(post);
+
+                        }).catch((e: Error) => {
+
+                            return res.status(500).json({ error: e.name });
+
+                        });
+                    }
+                }).catch((err) => {
+                    throw err;
                 })
                 .catch((error: Error) => {
                   throw error;

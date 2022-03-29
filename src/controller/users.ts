@@ -550,7 +550,7 @@ class UserController {
         await user
           .save()
           .then(async () => {
-            logEvent(user, `Bio`);
+            logEvent(user, `Bio updated`);
 
             return res.status(201).json(user);
           })
