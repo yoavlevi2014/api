@@ -2,6 +2,7 @@ import { RequestHandler } from "express";
 import UserModel from "@models/user";
 import bcrypt from "bcrypt";
 import jwt from "jsonwebtoken";
+import { logEvent } from "@helpers/eventLogger";
 
 /**
  * @openapi
@@ -77,6 +78,7 @@ export const login: RequestHandler = async (req, res) => {
           //     throw err;
           //   });
           delete user["password"];
+          logEvent(user, `Logged in`);
           return res.json({ user: user, tokens: { at: at, rt: rt } });
         } else {
           return res.json({ error: "Oops, you typed something incorrectly!" });

@@ -116,7 +116,7 @@ export const register: RequestHandler = async (req, res) => {
     name: req.body.name,
     surname: req.body.surname,
     password: req.body.password,
-    profileID: ""
+    profileID: "",
   };
 
   // There's probably a better way of doing this but you need to check all properties are defined
@@ -155,15 +155,20 @@ export const register: RequestHandler = async (req, res) => {
         } else {
           user.password = bcrypt.hashSync(user.password as string, 10);
 
-          await UserModel.find({ profileID : { $regex: `${user.name.toLocaleLowerCase()}.${user.surname.toLocaleLowerCase()}`, $options: "i" } }).then(async (users) => {
-
-            user.profileID = `${user.name.toLocaleLowerCase()}.${user.surname.toLocaleLowerCase()}.${users.length + 1}`;
-
-          }).catch((error) => {
-
-            throw(error);
-
+          await UserModel.find({
+            profileID: {
+              $regex: `${user.name.toLocaleLowerCase()}.${user.surname.toLocaleLowerCase()}`,
+              $options: "i",
+            },
           })
+            .then(async (users) => {
+              user.profileID = `${user.name.toLocaleLowerCase()}.${user.surname.toLocaleLowerCase()}.${
+                users.length + 1
+              }`;
+            })
+            .catch((error) => {
+              throw error;
+            });
 
           await new UserModel({ ...user })
             .save()
@@ -174,7 +179,7 @@ export const register: RequestHandler = async (req, res) => {
                   // Return the user object without hashed password
                   delete user["password"];
 
-                  logEvent(user, `${user.username} just signed up an account`);
+                  logEvent(user, `Registered`);
 
                   return res
                     .status(201)

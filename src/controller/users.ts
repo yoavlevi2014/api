@@ -169,10 +169,7 @@ class UserController {
                         await new FriendRequestModel({ ...request })
                           .save()
                           .then(async () => {
-                            logEvent(
-                              fromUser,
-                              `${from} just sent a friend request to ${to}`
-                            );
+                            logEvent(fromUser, `Friend request to ${to}`);
 
                             return res.status(201).json(request);
                           })
@@ -399,10 +396,7 @@ class UserController {
                               await request
                                 .remove()
                                 .then(async () => {
-                                  logEvent(
-                                    to,
-                                    `${to.username} just became friends with ${from.username}`
-                                  );
+                                  logEvent(to, `Befriended ${from.username}`);
 
                                   return res
                                     .status(200)
@@ -556,7 +550,7 @@ class UserController {
         await user
           .save()
           .then(async () => {
-            logEvent(user, `${user.username} just updated their bio`);
+            logEvent(user, `Bio updated`);
 
             return res.status(201).json(user);
           })
@@ -640,7 +634,7 @@ class UserController {
                         .then(async () => {
                           logEvent(
                             fromUser,
-                            `${fromUser.username} just sent a canvas request to ${toUser.username} `
+                            `Join request ${toUser.username} `
                           );
 
                           return res.status(201).json(request);
@@ -712,10 +706,7 @@ class UserController {
                       await request
                         .remove()
                         .then(async () => {
-                          logEvent(
-                            to,
-                            `${to.username} just accepted a canvas request from ${from.username}`
-                          );
+                          logEvent(to, `${from.username} Joined`);
 
                           return res.status(200).json(request);
                         })
